@@ -1,33 +1,68 @@
 
 
 import React, { useRef, useEffect } from 'react';
-
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    LinearScale,
+    CategoryScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Legend,
+    Tooltip,
+    Title,    
+    ChartData
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Chart } from 'react-chartjs-2';
+
 import { logicMath } from '@/utils/funcs';
 
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+    LinearScale,
+    CategoryScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Legend,
+    Tooltip,
+    Title
 );
 
 
+// function triggerTooltip(chart) {
+//     const tooltip = chart?.tooltip;
 
-export function ChartShow({ records, chartSchema,table=false }) {
+//     if (!tooltip) {
+//         return;
+//     }
+
+//     if (tooltip.getActiveElements().length > 0) {
+//         tooltip.setActiveElements([], { x: 0, y: 0 });
+//     } else {
+//         const { chartArea } = chart;
+
+//         tooltip.setActiveElements(
+//             [
+//                 {
+//                     datasetIndex: 0,
+//                     index: 2,
+//                 },
+//                 {
+//                     datasetIndex: 1,
+//                     index: 2,
+//                 },
+//             ],
+//             {
+//                 x: (chartArea.left + chartArea.right) / 2,
+//                 y: (chartArea.top + chartArea.bottom) / 2,
+//             }
+//         );
+//     }
+
+//     chart.update();
+// }
+
+export function ChartShow1({ records, chartSchema,table=false }) {
     const chartRef = useRef(null);
     const dataRef=useRef({});
    
@@ -57,35 +92,35 @@ export function ChartShow({ records, chartSchema,table=false }) {
 
 
 
-    // const options = {
-    //     responsive: true,
-    //     interaction: {
-    //         mode: 'index',
-    //         intersect: false,
-    //     },
-    //     stacked: false,
-    //     plugins: {
-    //         title: {
-    //             display: true,
-    //             text: chartSchema.chartName,//'Chart.js Line Chart - Multi Axis'
-    //         },
-    //     },
-    //     scales: {
-    //         y: {
-    //             type: 'linear',
-    //             display: true,
-    //             position: 'left',
-    //         },
-    //         y1: {
-    //             type: 'linear',
-    //             display: true,
-    //             position: 'right',
-    //             grid: {
-    //                 drawOnChartArea: false,
-    //             },
-    //         },
-    //     },
-    // };
+    const options = {
+        responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        stacked: false,
+        plugins: {
+            title: {
+                display: true,
+                text: chartSchema.chartName,//'Chart.js Line Chart - Multi Axis'
+            },
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false,
+                },
+            },
+        },
+    };
 
 
     useEffect(() => {
@@ -118,7 +153,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
                 ))}
             </table>}
 
-            <Line data={{
+            <Chart ref={chartRef} type='bar' data={{
                 labels:records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`),
                 datasets:chartSchema?.lines?.map(line => ( 
                     {
@@ -149,7 +184,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
                 }
             }} />
 
-           
+            {/* <Chart ref={chartRef} type='bar' data={data} options={options} /> */}
         </>
     );
 }
