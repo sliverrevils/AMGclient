@@ -10,7 +10,7 @@ import {
     LineElement,
     Legend,
     Tooltip,
-    Title
+    Title    
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 
@@ -28,38 +28,38 @@ ChartJS.register(
 );
 
 
-function triggerTooltip(chart) {
-    const tooltip = chart?.tooltip;
+// function triggerTooltip(chart) {
+//     const tooltip = chart?.tooltip;
 
-    if (!tooltip) {
-        return;
-    }
+//     if (!tooltip) {
+//         return;
+//     }
 
-    if (tooltip.getActiveElements().length > 0) {
-        tooltip.setActiveElements([], { x: 0, y: 0 });
-    } else {
-        const { chartArea } = chart;
+//     if (tooltip.getActiveElements().length > 0) {
+//         tooltip.setActiveElements([], { x: 0, y: 0 });
+//     } else {
+//         const { chartArea } = chart;
 
-        tooltip.setActiveElements(
-            [
-                {
-                    datasetIndex: 0,
-                    index: 2,
-                },
-                {
-                    datasetIndex: 1,
-                    index: 2,
-                },
-            ],
-            {
-                x: (chartArea.left + chartArea.right) / 2,
-                y: (chartArea.top + chartArea.bottom) / 2,
-            }
-        );
-    }
+//         tooltip.setActiveElements(
+//             [
+//                 {
+//                     datasetIndex: 0,
+//                     index: 2,
+//                 },
+//                 {
+//                     datasetIndex: 1,
+//                     index: 2,
+//                 },
+//             ],
+//             {
+//                 x: (chartArea.left + chartArea.right) / 2,
+//                 y: (chartArea.top + chartArea.bottom) / 2,
+//             }
+//         );
+//     }
 
-    chart.update();
-}
+//     chart.update();
+// }
 
 export function ChartShow({ records, chartSchema,table=false }) {
     const chartRef = useRef(null);
@@ -142,7 +142,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
                     </tr>
                 ))}
             </table>}
-            <Chart ref={chartRef} type='bar' data={data} options={{
+            {/* <Chart ref={chartRef} type='bar' data={data} options={{
                 responsive:true,
                 interaction:{
                     mode:'index',
@@ -158,7 +158,8 @@ export function ChartShow({ records, chartSchema,table=false }) {
                 scales:{
                     
                 }
-            }} />
+            }} /> */}
+
             {/* <Chart ref={chartRef} type='bar' data={data} options={options} /> */}
         </>
     );
