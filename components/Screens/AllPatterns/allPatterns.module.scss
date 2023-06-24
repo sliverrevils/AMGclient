@@ -1,0 +1,66 @@
+.allPatternsWrapper{
+    padding: 10px;
+    h3{
+        display: block;
+        text-align: center;
+    }
+    ul{
+       // border: 1px solid tomato;
+        padding: 5px 10px;
+        margin: 20px;
+        margin-left: 20px;
+
+       list-style: decimal; 
+       //box-shadow: 2px 2px 5px -3px #00000094;
+
+       li{
+        cursor: pointer;
+        border-radius: 15px;
+        background: #FF8056;
+        color: white;
+        padding: 10px;
+        margin-bottom: 15px;
+        box-shadow: 2px 2px 5px -1px #00000094;
+
+       }
+
+       ul{
+        box-shadow: none;
+        
+        li{
+            color: black;
+            background: white;
+            padding: 0;
+            border-radius: 5px;
+            padding: 3px 5px;
+            margin-bottom: 5px;
+            box-shadow: 2px 2px 5px -1px #00000094;
+            display: flex;
+            
+            span:nth-child(1){
+                display: block;
+                color:red;
+                width: 120px;
+                
+            }
+        }
+        border: 0;
+        list-style: circle;
+       }
+    }
+
+    .selectedPattern{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        width: 100%;
+
+        .close{
+            width: 25px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+    }
+}

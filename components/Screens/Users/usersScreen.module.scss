@@ -1,0 +1,34 @@
+.usersWrapper{
+    padding: 30px 10px 10px 10px;
+    
+
+    td{
+        cursor: pointer;
+    }
+    .userInfo{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+
+        .close{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+        }
+
+        .infoLine{
+            border: 1px solid rgba(0, 0, 0, 0.26);
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 5px;
+
+
+        }
+
+        .controlBtns{
+            display: flex;
+        }
+
+    }
+}
