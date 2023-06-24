@@ -142,7 +142,24 @@ export function ChartShow({ records, chartSchema,table=false }) {
                     </tr>
                 ))}
             </table>}
-            <Chart ref={chartRef} type='bar' data={data} {...{options}} />
+            <Chart ref={chartRef} type='bar' data={data} options={{
+                responsive:true,
+                interaction:{
+                    mode:'index',
+                    intersect: false
+                },
+                plugins:{
+                    title:{
+                        display:true,
+                        text:chartSchema.chartName
+                    }
+                    
+                },
+                scales:{
+                    
+                }
+            }} />
+            {/* <Chart ref={chartRef} type='bar' data={data} options={options} /> */}
         </>
     );
 }
