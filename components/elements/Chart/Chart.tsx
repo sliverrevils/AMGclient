@@ -10,7 +10,8 @@ import {
     LineElement,
     Legend,
     Tooltip,
-    Title    
+    Title,    
+    ChartData
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 
@@ -63,8 +64,10 @@ ChartJS.register(
 
 export function ChartShow({ records, chartSchema,table=false }) {
     const chartRef = useRef(null);
+    const dataRef=useRef({});
+   
 
-    const xPath = records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`);
+    const xPath  = records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`);
     const datasets = chartSchema?.lines?.map(line => ( 
         {
             type: 'line',
@@ -81,6 +84,13 @@ export function ChartShow({ records, chartSchema,table=false }) {
         labels: xPath,
         datasets: datasets,
     };
+
+    dataRef.current={
+        labels: xPath,
+        datasets: datasets,
+    }
+
+
 
     const options = {
         responsive: true,
@@ -142,7 +152,21 @@ export function ChartShow({ records, chartSchema,table=false }) {
                     </tr>
                 ))}
             </table>}
-            {/* <Chart ref={chartRef} type='bar' data={data} options={{
+
+            <Chart ref={chartRef} type='bar' data={{
+                labels:records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`),
+                datasets:chartSchema?.lines?.map(line => ( 
+                    {
+                        type: 'line',
+                        label: line.name,
+                        borderColor: line.lineColor,
+                        borderWidth: 4,
+                        fill: false,
+                        data: records.map((el, index) => logicMath(line.logicString, el.fields, index)),
+                        tension: 0.4, //soft angels
+                    }
+                ))
+            }} options={{
                 responsive:true,
                 interaction:{
                     mode:'index',
@@ -158,7 +182,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
                 scales:{
                     
                 }
-            }} /> */}
+            }} />
 
             {/* <Chart ref={chartRef} type='bar' data={data} options={options} /> */}
         </>
