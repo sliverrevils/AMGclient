@@ -112,6 +112,23 @@ export default function useOrg() {
             return false;
         }
     }
+
+    const deleteSection = async (id: number, update: () => {}) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.get(`sections/delete/${id}`);
+            update();
+            dispatch(setLoadingRedux(false));
+            if (created) {
+                toast.success(`Секция успешно удалёна`);
+            }
+            return true
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    }
 //ADMINISTRATORS 
     const addSectionAdministrator = async (section_id: number, office_id: number, department_id: number, user_id: number, descriptions: string, update: () => {}) => {
         dispatch(setLoadingRedux(true));
@@ -186,5 +203,5 @@ const deleteChartFromAdministrator = async (administrator_id: number,chart_id: n
     
 
 
-    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator }
+    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator }
 }

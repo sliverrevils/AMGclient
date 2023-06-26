@@ -75,10 +75,6 @@ export default function ChartFillerScreen() {
                 console.log('SET', event.target.value)
                 setCurrentPattern(patterns[+event.target.value - 1]);
                 setChartState(!!event.target.value ? patterns[+event.target.value - 1]?.fields.map(field => ({ ...field, value: '' })) : []);
-
-
-
-
             }}>
                 <option value={0}>Выберите шаблон</option>
                 {
@@ -107,7 +103,7 @@ export default function ChartFillerScreen() {
                             
                             {field.type==='number'&&<input type={'number'} value={chartState[idx].value} onChange={event => changeFieldValue(idx, event.target.value)} />}
                             {field.type === 'select' &&
-                                <select onChange={event => changeFieldValue(idx, event.target.value)} >
+                                <select style={{padding:'5px 20px',margin:0}} onChange={event => changeFieldValue(idx, event.target.value)} >
                                     {
                                         Object.keys(field.fieldOptions).map((option, idx) =>
                                             <option key={idx + option} value={field.fieldOptions[option]}>

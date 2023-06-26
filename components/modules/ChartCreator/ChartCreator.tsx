@@ -87,29 +87,35 @@ export default function ChartCreatorScreen() {
                 <input className={styles.patternName} placeholder="укажите название шаблна" value={chartName} onChange={event => setChartName(event.target.value)} />  
                 <textarea placeholder="описание" value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />             
             </div>
-            <div className={styles.addFieldWrap}>
-                <span className={styles.helpText}>Добавление поля</span>
-                <select value={type} onChange={event=>setType(event.target.value)}>
-                    <option value={''}>выберите тип поля</option>
-                    <option value={'number'}>цифровое поле</option>
-                    <option value={'select'}>поле выбора</option>
-                </select>
-                <input type="text" value={inputFieledName} onChange={event => setInputFieledName(event.target.value)} placeholder="название поля" />
+            
+            {
+                addFieldsPanel
+                    ? <div className={styles.addFieldWrap}>
+                        <span className={styles.helpText}>Добавление поля</span>
+                        <select value={type} onChange={event => setType(event.target.value)}>
+                            <option value={''}>выберите тип поля</option>
+                            <option value={'number'}>цифровое поле</option>
+                            <option value={'select'}>поле выбора</option>
+                        </select>
+                        <input type="text" value={inputFieledName} onChange={event => setInputFieledName(event.target.value)} placeholder="название поля" />
 
-                {
-                type==='select'&&<>     
-                <span className={styles.help}> пример поля со значениями : " поле1 = 22, поле2 = 33 "</span>           
-                <span className={styles.help}> после выбора полю будет присвоено указанное значение"</span>           
-                <input value={fieldOptions} onChange={event=>setFieldOptions(event.target.value)} placeholder="опции поля со значениями"/>
-                
-                </>
-                }
+                        {
+                            type === 'select' && <>
+                                <span className={styles.help}> пример поля со значениями : " поле1 = 22, поле2 = 33 "</span>
+                                <span className={styles.help}> в заполнении шаблона, после выбора полю будет присвоено указанное значение"</span>
+                                <input value={fieldOptions} onChange={event => setFieldOptions(event.target.value)} placeholder="опции поля со значениями" />
 
-                <button className="btn" disabled={!((inputFieledName.length >= 3)&&type)} onClick={addField}>Добавить поле</button>
+                            </>
+                        }
 
-            </div>
+                        <button className="btn" disabled={!((inputFieledName.length >= 3) && type)} onClick={addField}>Добавить поле</button>
+                    </div>
+                    : <button className="btn" onClick={() => setAddFieldsPanel(true)} disabled={!chartName.length} style={{width:300}}>Добавить поле в шаблон</button>
+            }
 
-            <div className={styles.addLineWrap}>
+            {
+            addLinePanel
+            ?<div className={styles.addLineWrap}>
             <span className={styles.helpText}>Добавление линии</span>           
                 <input type="text" placeholder="название линии" value={lineName} onChange={event => setLineName(event.target.value)} />
                 <span className={styles.help}>@index  - порядковый индекс записи в списке, отсчёт с нуля</span>
@@ -120,6 +126,8 @@ export default function ChartCreatorScreen() {
                 <input type={'color'} value={lineColor} onChange={event => setLineColor(event.target.value)} style={{ height: 30, borderRadius: 10 }} />
                 <button className="btn" disabled={!(lineName.length >= 2 && (/@[1-9]/.test(logicString)||/@index/.test(logicString)) && !/[A-z,А-я]/.test(logicString.replaceAll('@index','')))} onClick={addLine}>Добавить линию</button>
             </div>
+            :<button className="btn" onClick={() => setAddLinePanel(true)} disabled={!chartName.length} style={{width:300}}>Добавить линию в шаблон</button>
+            }
 
 
             

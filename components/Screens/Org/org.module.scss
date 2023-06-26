@@ -5,6 +5,7 @@
     width: 100%;
     align-items: flex-start;
     .orgHead{
+        width: 100%;
         h2{
             display: block;
             text-align: center;
@@ -42,6 +43,16 @@
             .officeName {
                 font-weight: 600;
             }
+            img{
+                &:nth-child(2){
+                    opacity: .4;
+                    width: 23px;
+                    cursor: pointer;
+                    &:hover{
+                      opacity: 1;
+                    }
+                  }
+            }
         }
 
     }
@@ -67,6 +78,14 @@
         display: flex;
         justify-content: space-between;
         cursor: pointer;
+
+        img{
+            width: 30px;
+            &:nth-child(2){
+                width: 20px;
+                opacity: .2;
+            }
+        }
     }
 
     .departmentItem {
@@ -86,6 +105,17 @@
         .departmentHead {
             display: flex;
             justify-content: space-between;
+            
+            img{
+                &:nth-child(2){
+                    opacity: .4;
+                    width: 23px;
+                    cursor: pointer;
+                    &:hover{
+                      opacity: 1;
+                    }
+                  }
+            }
         }
 
 

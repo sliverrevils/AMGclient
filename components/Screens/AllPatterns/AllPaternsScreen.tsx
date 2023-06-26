@@ -60,9 +60,9 @@ export default function AllPatternsScreen() {
                     <ul>
                         {JSON.parse(selectedPattern.lines + '').map((line: LineI) => <li>{line.name}</li>)}
                     </ul>
-                    <pre>
+                    {/* <pre>
                         {JSON.stringify(selectedPattern, null, 2)}
-                    </pre>
+                    </pre> */}
                 </div>
             }
 

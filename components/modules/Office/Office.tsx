@@ -40,7 +40,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
 
                 <div className={styles.officeHead}>
                     <div className={'org_title_line1'}><img src="svg/org/office.svg" /><span>Отделение: {officeItem.name}</span></div>
-                    <div onClick={() => deleteOffice(officeItem.id, updateOrgScheme)}><img src="svg/org/delete.svg" /></div>
+                    <img  src="svg/org/delete.svg" onClick={() => deleteOffice(officeItem.id, updateOrgScheme)} />
                 </div>
 
                 <div className="org_param_line"> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>

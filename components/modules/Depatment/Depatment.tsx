@@ -44,8 +44,11 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
     return (
         <div className={styles.departmentItem}>
             <div className={styles.departmentHead} >
-                <div className={'org_title_line2'}> <img src="svg/org/department.svg"/><span> Отдел: {departmentItem.name}</span></div>              
-                <div onClick={() => deleteDepartment(departmentItem.id, updateOrgScheme)}><img src="svg/org/delete.svg"/></div>
+                <div className={'org_title_line2'}> <img src="svg/org/department.svg" />
+                    <span> Отдел: {departmentItem.name}</span>
+                </div>
+                <img src="svg/org/delete.svg" onClick={() => deleteDepartment(departmentItem.id, updateOrgScheme)} />                   
+                
             </div>
 
             <div className="org_param_line"> <img src="svg/org/leadership.svg"/>{departmentItem.leadership ? userById(+departmentItem.leadership)?.name : "не установлен"}</div> 

@@ -10,10 +10,10 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     // const administrators: Array<number> = JSON.parse(sectionItem.administrators);
     const [inputAddAdmin, setInputAddAdmin] = useState<number>(1);
     const [addAdminField, setAddAdminField] = useState(false);
-    const [adminsListOpen, setAdminsListOpen] = useState(false);
+    const [adminsListOpen, setAdminsListOpen] = useState(!!!sectionItem.administrators.length);
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState('');
     const [selectAddChart, setSelectAddChart] = useState(1);
-    const { addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator } = useOrg();
+    const { addSectionAdministrator, deleteSectionAdministrator, deleteSection } = useOrg();
 
     const adminsListToggle = () => setAdminsListOpen(state => !state);
     const addAdminFieldToggle = () => setAddAdminField(state => !state);
@@ -23,7 +23,10 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
 
     const addAdministrator = () => {
         addSectionAdministrator(sectionItem.id, office_id, department_id, inputAddAdmin, inputDescriptionsAddAdmin, updateOrgScheme)
-            .then(() => setInputDescriptionsAddAdmin(''))
+            .then(() =>{ 
+                setInputDescriptionsAddAdmin('');
+                setAddAdminField(false);
+            })
     }
 
     const findChartById = (id: number): ChartI | undefined => {
@@ -38,8 +41,13 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
         <div key={sectionItem.id + '_section'} className={styles.sectionItem}>
             <div className={styles.sectionItemHead}>
                 <div className={'org_title_line3'}>
+                    <span>
                     <img src="svg/org/section.svg" />
                     <span>Секция: {sectionItem.name}</span>
+
+                    </span>
+
+                    <img onClick={()=>deleteSection(sectionItem.id,updateOrgScheme)} src="svg/org/delete.svg"  />
                 </div>
 
             </div>
