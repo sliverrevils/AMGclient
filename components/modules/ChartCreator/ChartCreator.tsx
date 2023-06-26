@@ -81,25 +81,27 @@ export default function ChartCreatorScreen() {
 
     return (
         <div className={styles.chartCreatorWrapper}>
-
-
             <h3>Создание шаблона</h3>
-            <input className={styles.patternName} placeholder="название шаблона шаблона" value={chartName} onChange={event => setChartName(event.target.value)} />
-
+            <div className={styles.nameWrap}>
+                <span className={styles.helpText}>Название шаблона</span>               
+                <input className={styles.patternName} placeholder="укажите название шаблна" value={chartName} onChange={event => setChartName(event.target.value)} />  
+                <textarea placeholder="описание" value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />             
+            </div>
             <div className={styles.addFieldWrap}>
-                <h5>Добавление поля</h5>
-                <input type="text" value={inputFieledName} onChange={event => setInputFieledName(event.target.value)} placeholder="название поля" />
-
+                <span className={styles.helpText}>Добавление поля</span>
                 <select value={type} onChange={event=>setType(event.target.value)}>
                     <option value={''}>выберите тип поля</option>
                     <option value={'number'}>цифровое поле</option>
                     <option value={'select'}>поле выбора</option>
                 </select>
+                <input type="text" value={inputFieledName} onChange={event => setInputFieledName(event.target.value)} placeholder="название поля" />
 
                 {
-                type==='select'&&<>
-                <h6>поле1=22, поле2=33</h6>
-                <input value={fieldOptions} onChange={event=>setFieldOptions(event.target.value)} placeholder="опции поля. Пример :  поле1=22, поле2=33"/>
+                type==='select'&&<>     
+                <span className={styles.help}> пример поля со значениями : " поле1 = 22, поле2 = 33 "</span>           
+                <span className={styles.help}> после выбора полю будет присвоено указанное значение"</span>           
+                <input value={fieldOptions} onChange={event=>setFieldOptions(event.target.value)} placeholder="опции поля со значениями"/>
+                
                 </>
                 }
 
@@ -108,16 +110,20 @@ export default function ChartCreatorScreen() {
             </div>
 
             <div className={styles.addLineWrap}>
-            <h5>Добавление линии</h5>
-            <h6>@index  - порядковый индекс записи в списке</h6>
+            <span className={styles.helpText}>Добавление линии</span>           
                 <input type="text" placeholder="название линии" value={lineName} onChange={event => setLineName(event.target.value)} />
-                <input type="text" style={{ color: `rgb(224, 4, 224)` }} placeholder="логика линии" value={logicString} onChange={event => setLogicString(event.target.value)} />
-                <input type={'color'} value={lineColor} onChange={event => setLineColor(event.target.value)} style={{ height: 50, borderRadius: 10 }} />
+                <span className={styles.help}>@index  - порядковый индекс записи в списке, отсчёт с нуля</span>
+                <span className={styles.help}>@1 - обращение к первому полю схемы ( обращаться можно ко всем указывая их номер) </span>
+                <span className={styles.help}>пример описания логики : " ( @1 + @index ) \ 2 "</span>
+                <input type="text" style={{ color: `rgb(224, 4, 224)` }} placeholder="логика линии" value={logicString} onChange={event => setLogicString(event.target.value)} /> 
+                <span className={styles.help}>цвет отображения линии на графике ( желательно выбирать не самые светлые оттенки) </span>              
+                <input type={'color'} value={lineColor} onChange={event => setLineColor(event.target.value)} style={{ height: 30, borderRadius: 10 }} />
                 <button className="btn" disabled={!(lineName.length >= 2 && (/@[1-9]/.test(logicString)||/@index/.test(logicString)) && !/[A-z,А-я]/.test(logicString.replaceAll('@index','')))} onClick={addLine}>Добавить линию</button>
             </div>
 
-            <textarea placeholder="описание" value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />
-            <br />
+
+            
+            
 
             {
             !!chartName.length&&<><h2>Схема шаблона</h2>
@@ -166,28 +172,28 @@ export default function ChartCreatorScreen() {
             </>
             }
 
-            <div>
-                <h2>Chart scheme</h2>
-                <pre>
-                    {JSON.stringify({
-                        "name": "тест выбора",
-                        "fields": [
-                            {
-                                "id": 1,
-                                "name": "поле выбора",
-                                "type": "select",
-                                "fieldOptions": {
-                                    "меню1": 22,
-                                    "меню2": 33
-                                }
+        {false&&<div>
+            <h2>Chart scheme</h2>
+            <pre>
+                {JSON.stringify({
+                    "name": "тест выбора",
+                    "fields": [
+                        {
+                            "id": 1,
+                            "name": "поле выбора",
+                            "type": "select",
+                            "fieldOptions": {
+                                "меню1": 22,
+                                "меню2": 33
                             }
-                        ],
-                        "lines": []
-                    }, null, 2)}
-                </pre>
+                        }
+                    ],
+                    "lines": []
+                }, null, 2)}
+            </pre>
 
-                <pre>{JSON.stringify(chartSchema, null, 2)}</pre>
-            </div>
+            <pre>{JSON.stringify(chartSchema, null, 2)}</pre>
+        </div>}
 
 
         </div>

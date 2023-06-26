@@ -38,86 +38,141 @@
         }
     }
 
-    .patternName{
-        padding: 5px 10px;
-        border-radius:5px;
+    .helpText{
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        background: #FF8056;
+        color:white;
+        padding: 5px 15px;
+        
+    }
 
-        width: 100%;
-        resize: none;
-        padding: 10px 20px;
-        border-radius:10px;
-        font-size: 20px;
-        outline: 0;
-        border: 0;
-        box-shadow: 0px 0px 12px -3px #00000060;  
-        margin-bottom: 30px;
+    .help{
+        
+        padding: 3px 20px;
+        font-size: 14px;
+        border: 2px solid rgba(0, 0, 0, 0.397);
+        border-radius: 5px;
+        background: #b8c41850;
+        color:gray ;
+        display: flex;
+        opacity: .7;
+        margin: 3px;
+        margin-left: 30px;
+        margin-right: 20px;
+    }
 
-        &::placeholder{
-            font-weight: 400;
-            opacity: .3;
+    .nameWrap{
+        margin: 10px;
+        border-radius: 10px 10px 2px 2px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0px 0px 12px -3px #00000060; 
+        .patternName{
+            font-size: 17px;
+            padding: 5px 10px;
+            outline: 0; 
+            border: 2px solid black;
+            width: 400px;
+            border-radius: 4px;
+            margin: 10px;
+
+            &::placeholder{
+                opacity: .6;
+            }
+            &:focus{
+                outline: 0;             
+        
+            }
+    
         }
-        &:focus{
-                
-            outline: 0;
+        textarea{
+            font-size: 17px;
+            padding: 5px 10px;
+            outline: 0; 
+            border: 2px solid black;
+            width: 400px;
+            border-radius: 4px;
+            margin: 10px;
+
         }
 
     }
 
-
     .addFieldWrap{
-        padding: 0px 10px;
-        margin-bottom: 10px;
+        margin: 10px;
+        border-radius: 10px 10px 2px 2px;
         display: flex;
         flex-direction: column;
-        padding-top: 20px;
-        border-radius:10px;
-        justify-content: space-between;
-        box-shadow: 0px 0px 12px -3px #00000060;        
-        input{
+        overflow: hidden;
+        box-shadow: 0px 0px 12px -3px #00000060;  
+        select{
+            font-size: 17px;
             padding: 5px 10px;
-            font-size: 20px;
-            width: 300px;
-            border: 0;
-           
-            font-weight: 600;
-            &:focus{
-                
-                outline: 0;
-            }
+            outline: 0; 
+            border: 2px solid black;
+            width: 400px;
+            border-radius: 4px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        input{           
+            font-size: 17px;
+            padding: 5px 10px;
+            outline: 0; 
+            border: 2px solid black;
+            width: 400px;
+            border-radius: 4px;
+            margin: 10px;
+
             &::placeholder{
-                font-weight: 400;
-                opacity: .3;
+                opacity: .6;
+            }
+            &:focus{
+                outline: 0;             
+        
             }
         }
+
+        button{
+            width: 200px;
+            align-self: flex-end;
+        }
+
     }
 
     .addLineWrap{
-        padding: 0px 10px;
-        margin-bottom: 10px;
+        margin: 10px;
+        border-radius: 10px 10px 2px 2px;
         display: flex;
         flex-direction: column;
-        padding-top: 20px;
-        gap: 10px;
-        border-radius:10px;
-        justify-content: space-between;
-        box-shadow: 0px 0px 12px -3px #00000060; 
+        overflow: hidden;
+        box-shadow: 0px 0px 12px -3px #00000060;  
 
         input{
+            font-size: 17px;
             padding: 5px 10px;
-            font-size: 20px;
-            width: 300px;
-            border: 0;
-           // outline: 1px solid black;
-           
-            font-weight: 600;
-            &:focus{
-                
-                outline: 0;
-            }
+            outline: 0; 
+            border: 2px solid black;
+            width: 400px;
+            border-radius: 4px;
+            margin: 10px;
+
             &::placeholder{
-                font-weight: 400;
-                opacity: .3;
+                opacity: .6;
             }
+            &:focus{
+                outline: 0;             
+        
+            }
+        }
+
+        button{
+            width: 200px;
+            align-self: flex-end;
         }
 
 
