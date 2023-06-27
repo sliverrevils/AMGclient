@@ -170,7 +170,7 @@ export default function ChartCreatorScreen() {
                 {
                     inputDescriptions.length
                         ? <div className={styles.descriptions}>
-                            <span>описание линии</span>
+                            <span>описание шаблона</span>
                             <div>{inputDescriptions}</div>
                         </div>
                         : ''

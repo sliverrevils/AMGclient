@@ -3,6 +3,7 @@ import { OfficeI, UserFullI } from "@/types/types";
 import { useEffect, useRef, useState } from "react";
 import styles from './org.module.scss';
 import Office from "@/components/modules/Office/Office";
+import Modal from "@/components/elements/Modal/Modal";
 
 
 export default function OrgScreen() {
@@ -16,9 +17,11 @@ export default function OrgScreen() {
     const [addOffice, setAddOffice] = useState(false);
     const [inputLeadership, setInputLeadership] = useState('');
     const [inputDescriptions, setInputDescriptions] = useState('');
+    const [currentOfficeId,setCurrentOfficeId]=useState<number|null>(null);
 
     const addOfficeToggle = () => setAddOffice(state => !state);
     const updateOrgScheme = () => getOrgFullScheme(setOrg, setUsers, setCharts);
+
     const userById = (id: number) => users.find(el => el.id === id);
     const creaetOfficeHandle = () => {
         createOffice(inputOfficeName, +inputLeadership || null, inputDescriptions, inputCkp)
@@ -46,6 +49,14 @@ export default function OrgScreen() {
     }, [inputLeadership])
     return (
         <div className={styles.orgWrap}>
+            {
+            !!currentOfficeId&&
+            <Modal closeModalFunc={()=>setCurrentOfficeId(null)}>
+                <div style={{color:'white'}}> dsadas</div>
+                <Office officeItem={org.find(office=>office.id==currentOfficeId)} {...{ charts, updateOrgScheme, users, userById, setCurrentOfficeId}}/>
+            </Modal>
+            }
+
             <div className={styles.orgHead}>
                 
                 <h2>Отделения</h2>
@@ -63,14 +74,41 @@ export default function OrgScreen() {
                             <button onClick={creaetOfficeHandle} className="add">Создать офис✅</button>
                             <img src="svg/org/close_field_white.svg" onClick={addOfficeToggle} className="close"/>
                         </div>
-                        : <div onClick={addOfficeToggle} className="btn">Добавить отделение</div>
+                        : <div onClick={addOfficeToggle} className={styles.addOfficeBtn}>
+                            <img src="svg/org/vaadin_office.svg" />
+                            <span>+</span>
+                            </div>
 
                 }
             </div>
             {/* <pre>{JSON.stringify(org, null, 2)}</pre> */}
             <div className={styles.officeList}>
                 {
-                    org.map(office => <Office key={office.id + '_officeItem'} officeItem={office} {...{ charts, updateOrgScheme, users, userById }} />)
+                    org.map((office, idx:number )=> {
+
+                        return<div className={styles.tableItem} onClick={()=>setCurrentOfficeId(office.id)}>
+                            <div className={styles.officeHead}>
+                                <div className={styles.officeNumber}>
+                                    <span>{idx}</span>
+                                    <img src="svg/org/vaadin_office.svg" />
+                                </div>
+                                <div className={styles.officeName} > {office.name}</div>
+                            </div>
+                            
+                            <div className={styles.leadership}>
+                                {userById(office.leadership)?.name}
+                            </div>
+                            <div className={styles.help} >Руководитель отделения</div>
+
+                            <div className={styles.ckp}>
+                                {office.ckp}
+                            </div>
+                            <div className={styles.help} >ЦКП</div>
+
+                        {/* <Office key={office.id + '_officeItem'} officeItem={office} {...{ charts, updateOrgScheme, users, userById, setCurrentOfficeId}}/> */}
+                        </div>
+                    
+                })
                 }
             </div>
         </div>

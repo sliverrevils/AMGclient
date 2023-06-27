@@ -5,16 +5,34 @@
     width: 100%;
     align-items: flex-start;
     .orgHead{
+        display: flex;
+        flex-direction: column;
         width: 100%;
         h2{
             display: block;
             text-align: center;
         }
     }
+}
+.addOfficeBtn{
+  //border: 1px solid black;  
+  cursor: pointer;
+ 
+  background: #FF8056;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 25px;
+  width: 60px;
+  border-radius: 15px;
+  margin-left: 30px;
+box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
+&:hover{
+    background: #fa6f40;
+    box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.568);
 
-
-
-
+}
 }
 
 //----------- ОТДЕЛ
@@ -22,8 +40,67 @@
     width: 100%;
     padding: 10px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    .tableItem{
+        //border: 2px solid black;
+        flex: 0 0 356px;
+        background: #FF8056;
+        cursor: pointer;
+        padding: 6px 5px;        
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.20), 0px 2px 4px 0px rgba(0, 0, 0, 0.20), 0px 7px 7px 0px rgba(0, 0, 0, 0.17), 0px 16px 10px 0px rgba(0, 0, 0, 0.10), 0px 29px 12px 0px rgba(0, 0, 0, 0.03), 0px 45px 13px 0px rgba(0, 0, 0, 0.00);
+
+        .help{
+            color: white;
+            font-size: 13px;
+            text-align: right;
+            letter-spacing: .7px;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .officeHead{
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+            .officeNumber{
+                display: flex;
+                align-items: center;
+                img{
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            .officeName{
+                width: 100%;
+                text-align: center;
+                letter-spacing: .8px;
+            }
+
+        }
+
+        .leadership{
+            border-radius: 3px;
+            font-size: 16px;
+            background: white;
+            padding: 3px 5px;
+        }
+
+        .ckp{
+            border-radius: 3px;
+            font-size: 13px;
+            background: white;
+            padding: 3px 5px;
+        }
+
+    }
 
 
     .officeItem {
@@ -39,6 +116,7 @@
         .officeHead {
             display: flex;
             justify-content: space-between;
+            cursor: pointer;
 
             .officeName {
                 font-weight: 600;

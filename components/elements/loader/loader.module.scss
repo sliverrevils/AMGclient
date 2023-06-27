@@ -5,27 +5,20 @@
     background: rgba(0, 0, 0, 0.453);
     display: flex;
     justify-content: center;
-    align-items: center;
-    
+    align-items: center;    
     backdrop-filter: blur(5px);
-   
-
     .iconWrap{
         position: relative;
         border: 10px solid rgba(255, 255, 255, 0.137);
         padding: 10px;
-        border-radius: 20%;
-        
+        border-radius: 20%;        
         .message{
             position:absolute;
             bottom: -30px;
             color:rgb(255, 255, 255);
             text-align: center;
-        }
-        
-    }
-
-    
+        }       
+    }    
 }
 .loading_false{
     display: none;
