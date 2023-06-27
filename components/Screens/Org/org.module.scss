@@ -4,35 +4,111 @@
     flex-direction: column;
     width: 100%;
     align-items: flex-start;
-    .orgHead{
+
+    .orgHead {
         display: flex;
         flex-direction: column;
         width: 100%;
-        h2{
+
+        h2 {
             display: block;
             text-align: center;
         }
     }
 }
-.addOfficeBtn{
-  //border: 1px solid black;  
-  cursor: pointer;
- 
-  background: #FF8056;
-  padding: 5px 10px;
-  display: flex;
-  align-items: center;
-  color: white;
-  font-size: 25px;
-  width: 60px;
-  border-radius: 15px;
-  margin-left: 30px;
-box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
-&:hover{
-    background: #fa6f40;
-    box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.568);
 
+.addOfficeBtn {
+    //border: 1px solid black;  
+    cursor: pointer;
+
+    background: #FF8056;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 25px;
+    width: 60px;
+    border-radius: 15px;
+    margin-left: 30px;
+    box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
+
+    &:hover {
+        background: #fa6f40;
+        box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.568);
+    }
 }
+
+//ADD OFFICE
+.addOffice{
+    width: 700px;
+    //border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    background: white;   
+    position: relative;
+    gap: 10px;
+    padding: 15px 10px;
+
+    input,textarea,select{
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 0;
+        outline: 3px solid rgba(128, 128, 128, 0.247);
+
+        &:focus{
+            border: 0;
+            outline: 3px solid #fa6e4079 ;
+        }
+    }
+
+    textarea{
+        resize: vertical;
+    }
+    select{
+        
+    }
+
+    button{
+        padding: 10px 10px;
+        border-radius: 5px;
+        width: 200px;
+        align-self: flex-end;
+        margin-top: 20px;
+        background: #FF8056;
+        color: #fff;
+        letter-spacing: 1px;
+        font-weight: 500;
+        border: 0;
+        box-shadow: 2px 2px 5px 1.3px rgba(0, 0, 0, 0.637);
+        &:hover{
+            cursor: pointer;
+            box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.637);
+
+        }
+    }
+
+    h3{
+        color: rgb(0, 0, 0);
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .close{
+        width: 30px;
+        cursor: pointer;
+        position: absolute;
+        top: 3px;
+        right: 3px;
+
+    }
+    
+    .addHelp{
+        color: rgba(128, 128, 128, 0.527);
+        font-size: 14px;
+        transform: translateY(8px) translateX(10px);
+        letter-spacing: 1px;
+    }
 }
 
 //----------- ОТДЕЛ
@@ -44,18 +120,19 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
-    .tableItem{
+
+    .tableItem {
         //border: 2px solid black;
         flex: 0 0 356px;
         background: #FF8056;
         cursor: pointer;
-        padding: 6px 5px;        
+        padding: 6px 5px;
         border-radius: 8px;
         display: flex;
         flex-direction: column;
         box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.20), 0px 2px 4px 0px rgba(0, 0, 0, 0.20), 0px 7px 7px 0px rgba(0, 0, 0, 0.17), 0px 16px 10px 0px rgba(0, 0, 0, 0.10), 0px 29px 12px 0px rgba(0, 0, 0, 0.03), 0px 45px 13px 0px rgba(0, 0, 0, 0.00);
 
-        .help{
+        .help {
             color: white;
             font-size: 13px;
             text-align: right;
@@ -63,22 +140,25 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
             margin-right: 10px;
             margin-bottom: 5px;
         }
-        
-        .officeHead{
+
+        .officeHead {
             color: white;
             font-size: 18px;
             display: flex;
             align-items: center;
             margin-bottom: 3px;
-            .officeNumber{
+
+            .officeNumber {
                 display: flex;
                 align-items: center;
-                img{
+
+                img {
                     width: 20px;
                     height: 20px;
                 }
             }
-            .officeName{
+
+            .officeName {
                 width: 100%;
                 text-align: center;
                 letter-spacing: .8px;
@@ -86,14 +166,14 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
 
         }
 
-        .leadership{
+        .leadership {
             border-radius: 3px;
             font-size: 16px;
             background: white;
             padding: 3px 5px;
         }
 
-        .ckp{
+        .ckp {
             border-radius: 3px;
             font-size: 13px;
             background: white;
@@ -121,15 +201,17 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
             .officeName {
                 font-weight: 600;
             }
-            img{
-                &:nth-child(2){
+
+            img {
+                &:nth-child(2) {
                     opacity: .4;
                     width: 23px;
                     cursor: pointer;
-                    &:hover{
-                      opacity: 1;
+
+                    &:hover {
+                        opacity: 1;
                     }
-                  }
+                }
             }
         }
 
@@ -150,16 +232,17 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
     gap: 10px;
     position: relative;
     //border: 2px solid rgba(0, 0, 0, 0.233);
-    
+
 
     .departmentsListHead {
         display: flex;
         justify-content: space-between;
         cursor: pointer;
 
-        img{
+        img {
             width: 30px;
-            &:nth-child(2){
+
+            &:nth-child(2) {
                 width: 20px;
                 opacity: .2;
             }
@@ -183,16 +266,17 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
         .departmentHead {
             display: flex;
             justify-content: space-between;
-            
-            img{
-                &:nth-child(2){
+
+            img {
+                &:nth-child(2) {
                     opacity: .4;
                     width: 23px;
                     cursor: pointer;
-                    &:hover{
-                      opacity: 1;
+
+                    &:hover {
+                        opacity: 1;
                     }
-                  }
+                }
             }
         }
 
@@ -222,9 +306,11 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
         justify-content: space-between;
         margin-bottom: 10px;
         cursor: pointer;
-        img{
+
+        img {
             width: 30px;
-            &:nth-child(2){
+
+            &:nth-child(2) {
                 width: 20px;
                 opacity: .2;
             }
@@ -250,9 +336,10 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
         gap: 10px;
         padding: 0px 5px 0px 0;
 
-        img{
+        img {
             width: 20px;
         }
+
         // img:first-child{
         //     width: 30px;
         // }
@@ -260,13 +347,13 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
         .administrator {
             margin-bottom: 5px;
             margin-left: 40px;
-           // border: 1px solid rgb(14, 119, 0);
-           box-shadow: 1px 1px 5px 2px #6b6b6b67;
+            // border: 1px solid rgb(14, 119, 0);
+            box-shadow: 1px 1px 5px 2px #6b6b6b67;
             padding: 0px 10px;
             border-radius: 10px;
             background-color: #ff80561a;
 
-            .administratorHead{
+            .administratorHead {
                 padding: 2px 10px;
                 display: flex;
                 justify-content: space-between;
@@ -274,39 +361,43 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
                 border-radius: 0 0 10px 10px;
                 color: white;
 
-                .userId{
+                .userId {
                     display: flex;
                     justify-content: center;
                     gap: 4px;
                     align-items: center;
-                    img{
+
+                    img {
                         opacity: .2;
                         width: 15px;
                     }
                 }
-                .userName{
+
+                .userName {
                     font-size: 15px;
                     display: flex;
                     align-items: center;
                     gap: 5px;
 
-                    img{
+                    img {
                         width: 14px;
                     }
 
                 }
-                .userDel{
+
+                .userDel {
                     cursor: pointer;
                     opacity: .5;
-                    &:hover{
+
+                    &:hover {
                         opacity: 1;
                         transform: scale(120%);
                     }
                 }
-                
+
             }
 
-            .descriptions{
+            .descriptions {
                 display: flex;
                 gap: 10px;
                 opacity: .5;
@@ -320,7 +411,7 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
             }
 
 
-            .chartsList{
+            .chartsList {
                 //border: 1px solid black;
                 background-color: rgb(255, 255, 255);
                 border: 2px solid rgba(128, 128, 128, 0.445);
@@ -329,45 +420,48 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
                 //margin-left: 20px;
                 margin-bottom: 10px;
 
-                h5{
+                h5 {
                     display: block;
                     text-align: center;
                     padding: 0;
                     margin: 0;
                     font-size: 13px;
-                    color:rgb(75, 74, 74);
+                    color: rgb(75, 74, 74);
                 }
 
-                .addChartBtn{
+                .addChartBtn {
                     cursor: pointer;
-                    &:hover{
+
+                    &:hover {
                         transform: scale(120%);
                     }
                 }
 
 
 
-                .addChart{
+                .addChart {
                     display: flex;
                     gap: 20px;
                     align-items: center;
                     padding: 10px;
 
-                    select{
+                    select {
                         width: 100%;
                         max-width: 400px;
                         border-radius: 10px;
                         padding: 3px 10px;
                     }
-                    img{
+
+                    img {
                         cursor: pointer;
                     }
                 }
-                img{
+
+                img {
                     width: 20px;
                 }
 
-                .chartItem{
+                .chartItem {
                     font-size: 15px;
                     letter-spacing: 1px;
                     opacity: .9;
@@ -381,26 +475,31 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
                     box-shadow: 1px 1px 5px -1px black;
                     background: #fff;
 
-                    .chartId{
+                    .chartId {
                         display: flex;
                         align-items: center;
-                        span{
+
+                        span {
                             font-weight: 600;
                             opacity: .6;
                         }
-                        img{
+
+                        img {
                             opacity: .2;
                         }
                     }
-                    .chartName{
+
+                    .chartName {
                         font-size: 14px;
                         font-weight: 600;
                         opacity: .8;
                     }
-                    .chartDel{
+
+                    .chartDel {
                         cursor: pointer;
                         opacity: .5;
-                        &:hover{
+
+                        &:hover {
                             opacity: 1;
                             transform: scale(120%);
                         }
@@ -418,10 +517,10 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
             cursor: pointer;
 
             img {
-                &:first-child{
+                &:first-child {
                     width: 30px;
                 }
-               
+
                 &:nth-child(2) {
                     opacity: .3;
                     width: 20px;
@@ -429,7 +528,7 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
             }
         }
 
-        .addAdminBtn{
+        .addAdminBtn {
             width: 100%;
             display: flex;
             justify-content: left;
@@ -440,20 +539,24 @@ box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
         .addAdmin {
             border: 1px solid black;
             display: flex;
-            align-items:center;
+            align-items: center;
             margin: 5px 0 10px 2px;
             padding: 5px 10px;
             border-radius: 5px;
             display: flex;
             justify-content: space-between;
-            input,select{
+
+            input,
+            select {
                 padding: 5px 10px;
                 border-radius: 5px;
             }
-            img{
+
+            img {
                 cursor: pointer;
                 width: 20px;
             }
+
             // select {
             //     border: 0;
             //     padding: 0px;

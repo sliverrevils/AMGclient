@@ -78,7 +78,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                             </select>
                             <input type="text" value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
                             <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />
-                            <button onClick={creaetDepartmentHandle} className="add">Создать отдел✅</button>
+                            <button onClick={creaetDepartmentHandle} className="add">Создать отдел</button>
                             <img src="svg/org/close_field_white.svg" onClick={addDepartmentToggle} className="close" />
                         </div>
                     }

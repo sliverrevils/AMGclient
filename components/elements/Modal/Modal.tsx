@@ -14,9 +14,9 @@ export default function Modal({children,closeModalFunc=()=>{}}){
 
     return (
         <div ref={conteinerRef} className={styles.modalWrapper}>
-            <div className={styles.modalClose} onClick={closeModalFunc}>
-                X
-            </div>
+            
+            <img src="svg/org/close_field_white.svg" onClick={closeModalFunc} className={styles.modalClose}/>
+            
             <div className={styles.modalContent}>
                 {children}
             </div>

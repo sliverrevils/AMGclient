@@ -5,23 +5,29 @@
     z-index: 99;
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 20px;    
+    
     &::after{
         content: '';
         position: absolute;        
         inset: 0 0 0 0;
-        background: rgba(0, 0, 0, 0.705);
+        background: rgba(0, 0, 0, 0.87);
         filter: brightness(200%);
         z-index: 100;
     }   
 
     .modalContent{
-        background: white;
-        border: 2px solid white;
-        padding: 20px 30px;
+        background-color: #ffffff;
+        
+        
+        padding: 10px;
         overflow-y: auto;
         border-radius: 20px;
         z-index: 200;   
+        box-shadow: 4px 4px 54px 54px rgba(0, 0, 0, 0.37);
+
+
         
         &::-webkit-scrollbar-thumb{
             background-color: #FF8056;
@@ -36,5 +42,10 @@
         color: white;
         cursor: pointer;
         z-index: 200;
+        opacity: .2;
+        transition: all 300ms ease-in-out;
+        &:hover{
+            opacity: .6;
+        }
     }
 }

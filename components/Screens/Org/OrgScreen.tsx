@@ -63,18 +63,24 @@ export default function OrgScreen() {
                 <h2>Отделения</h2>
                 {
                     addOffice
-                        ? <div className={`addField`}>
-                            <h3>Новое отделение</h3>
+                        ?<Modal closeModalFunc={()=>setAddOffice(false)}> 
+                        <div className={styles.addOffice}>
+                            <h3>создание нового отделения</h3>
+                            <span className={styles.addHelp}>Название отделения</span>
                             <input type="text" value={inputOfficeName} onChange={event => setinputOfficeName(event.target.value)} placeholder="Назавние отделения" />
-                            <input type="text" value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                            <span className={styles.addHelp}>КПЦ</span>
+                            <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                            <span className={styles.addHelp}>Руководитель</span>
                             <select value={inputLeadership} onChange={event => setInputLeadership(event.target.value)}>
                                 <option value={''}>выбор руководителя</option>
                                 {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
                             </select>
+                            <span className={styles.addHelp}>Описание</span>
                             <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание отделения"/>
-                            <button onClick={creaetOfficeHandle} className="add">Создать офис✅</button>
-                            <img src="svg/org/close_field_white.svg" onClick={addOfficeToggle} className="close"/>
+                            <button onClick={creaetOfficeHandle} className="add">Создать офис</button>
+                            <img src="svg/org/close_field_white.svg" onClick={addOfficeToggle} className={styles.close}/>
                         </div>
+                        </Modal>
                         : <div onClick={addOfficeToggle} className={styles.addOfficeBtn}>
                             <img src="svg/org/vaadin_office.svg" />
                             <span>+</span>
