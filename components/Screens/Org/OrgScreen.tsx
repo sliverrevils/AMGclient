@@ -21,6 +21,7 @@ export default function OrgScreen() {
 
     const addOfficeToggle = () => setAddOffice(state => !state);
     const updateOrgScheme = () => getOrgFullScheme(setOrg, setUsers, setCharts);
+    const findOffice=():OfficeI|undefined=>org.find(office=>office.id==currentOfficeId);
 
     const userById = (id: number) => users.find(el => el.id === id);
     const creaetOfficeHandle = () => {
@@ -50,10 +51,10 @@ export default function OrgScreen() {
     return (
         <div className={styles.orgWrap}>
             {
-            !!currentOfficeId&&
+            !!findOffice()&&
             <Modal closeModalFunc={()=>setCurrentOfficeId(null)}>
                 <div style={{color:'white'}}> dsadas</div>
-                <Office officeItem={org.find(office=>office.id==currentOfficeId)} {...{ charts, updateOrgScheme, users, userById, setCurrentOfficeId}}/>
+                <Office officeItem={findOffice()} {...{ charts, updateOrgScheme, users, userById}}/>
             </Modal>
             }
 

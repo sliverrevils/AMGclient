@@ -5,7 +5,7 @@ import { useState } from "react";
 import useOrg from "@/hooks/useOrg";
 
 
-export default function Office({ officeItem, updateOrgScheme, users, userById, charts , setCurrentOffice }: { officeItem: OfficeI, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[] ,setCurrentOffice:any}) {
+export default function Office({ officeItem, updateOrgScheme, users, userById, charts }: { officeItem: OfficeI|undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[] }) {
 
     const [inputDepatmentName, setInputDepartmentName] = useState('');
     const [inputCode, setInputCode] = useState('');
@@ -19,6 +19,10 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
     const { deleteOffice, createDepartment } = useOrg();
 
     const addDepartmentToggle = () => setAddDepartment(state => !state);
+
+    if(!officeItem){
+        return <>not found</>
+    }
 
     const creaetDepartmentHandle = () => {
         createDepartment(officeItem.id, inputDepatmentName, inputCode, +inputLeadership, inputDescriptions, inputCkp)
@@ -34,11 +38,12 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
             });
     }
 
+
     return (
         <>
             <div key={officeItem.id + '_office'} className={styles.officeItem}>
 
-                <div className={styles.officeHead} onClick={()=>setCurrentOffice(officeItem)}>
+                <div className={styles.officeHead}>
                     <div className={'org_title_line1'}><img src="svg/org/office.svg" /><span>Отделение: {officeItem.name}</span></div>
                     <img  src="svg/org/delete.svg" onClick={() => deleteOffice(officeItem.id, updateOrgScheme)} />
                 </div>
