@@ -48,21 +48,20 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                 {/* <img src="svg/org/department.svg" /> */}
                     <span>{departmentItem.name}</span>
                 </div>
-                <img src="svg/org/delete.svg" onClick={() => deleteDepartment(departmentItem.id, updateOrgScheme)} />                   
+                <img src="svg/org/delete.svg" onClick={() => confirm(`Вы точно хотите удалить отдел "${departmentItem.name}" ?`)&&deleteDepartment(departmentItem.id, updateOrgScheme)} />                   
                 
             </div>
 
-            <div className="org_param_line"> <img src="svg/org/leadership.svg"/>{departmentItem.leadership ? userById(+departmentItem.leadership)?.name : "не установлен"}</div> 
-            <div className="org_param_line"><img src="svg/org/ckp.svg"/>{departmentItem.ckp}</div> 
-            <div className="org_param_line"><img src="svg/org/code.svg"/>{departmentItem.code}</div> 
-            <div className="org_param_line"><img src="svg/org/description.svg"/>{departmentItem.descriptions || 'нет описания'}</div>
+            <div className={styles.propLine}> <img src="svg/org/leadership.svg"/>{departmentItem.leadership ? userById(+departmentItem.leadership)?.name : "не установлен"}</div> 
+            <div className={styles.propLine}><img src="svg/org/ckp.svg"/>{departmentItem.ckp}</div> 
+            <div className={styles.propLine}><img src="svg/org/code.svg"/>{departmentItem.code}</div> 
+            <div className={styles.propLine}><img src="svg/org/description.svg"/>{departmentItem.descriptions || 'нет описания'}</div>
             
-            <div className={styles.sectionsList}>
-                <div className={styles.sectionsListHead} onClick={sectionsOpenToggle}>
-                        <div className={`org_param_line`} > <img src="svg/org/section.svg"/><span> секции : {departmentItem.sections.length}</span></div>
-                        {departmentItem.sections.length?<img className="open_list" src={`svg/org/${sectionsOpen?"arrow_dawn":"arrow_up"}.svg`}/>:<span> </span> }                                              
-                         <img src="svg/org/add.svg" onClick={addSectionToggle}/>
-                </div>
+            <div className={styles.sectionsList}>                                                    
+                         <div className={styles.addItemBtn} onClick={addSectionToggle}>
+                            Добавить секцию
+                            <img src="svg/org/add_white.svg" />
+                        </div>                
                 {
                 addSection
                     && 
@@ -76,7 +75,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                     </div>                   
             }
                 {
-                    sectionsOpen && departmentItem.sections.map(section => <Section key={section.id + '_sectionItem'} sectionItem={section} {...{charts, users, userById, updateOrgScheme, office_id, department_id:departmentItem.id }} />)
+                    departmentItem.sections.map(section => <Section key={section.id + '_sectionItem'} sectionItem={section} {...{charts, users, userById, updateOrgScheme, office_id, department_id:departmentItem.id }} />)
                 }
             </div>
         </div>

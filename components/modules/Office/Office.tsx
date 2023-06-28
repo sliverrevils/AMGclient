@@ -49,12 +49,12 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                         <img src="svg/org/vaadin_office.svg" />
                             <span>{officeItem.name}</span>
                         </div>
-                        <img src="svg/org/delete.svg" onClick={() => deleteOffice(officeItem.id, updateOrgScheme)} />
+                        <img src="svg/org/delete.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`)&&deleteOffice(officeItem.id, updateOrgScheme)} />
                     </div>
 
-                    <div className="org_param_line"> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
-                    <div className="org_param_line"><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
-                    <div className="org_param_line"> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
+                    <div className={styles.propLine}> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
+                    <div className={styles.propLine}><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
+                    <div className={styles.propLine}> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
                 </div>
 
                 <div className={` ${styles.departmentsList}`}>
@@ -62,7 +62,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                 
                     {/* <div className={styles.departmentsListHead} onClick={departmentsOpenToggle}>
 
-                        <div className="org_param_line" ><img src="svg/org/department.svg" />отделы: {officeItem.departments.length}</div>
+                        <div className={styles.propLine} ><img src="svg/org/department.svg" />отделы: {officeItem.departments.length}</div>
                         {
                             officeItem.departments.length
                                 ? <img className="open_list" src={`svg/org/${departmentsOpen ? "arrow_dawn" : "arrow_up"}.svg`} />

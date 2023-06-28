@@ -40,7 +40,7 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
 
         <div key={sectionItem.id + '_section'} className={styles.sectionItem}>
             <div className={styles.sectionItemHead}>
-                <div className={'org_title_line3'}>
+                <div className={styles.propLine}>
                     <span>
                     <img src="svg/org/section.svg" />
                     <span>Секция: {sectionItem.name}</span>
@@ -51,10 +51,10 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                 </div>
 
             </div>
-            <div className="org_param_line"><img src="svg/org/ckp.svg" />{sectionItem.ckp}</div>
-            <div className="org_param_line"><img src="svg/org/description.svg" />{sectionItem.descriptions || 'нет описания'}</div>
+            <div className={styles.propLine}><img src="svg/org/ckp.svg" />{sectionItem.ckp}</div>
+            <div className={styles.propLine}><img src="svg/org/description.svg" />{sectionItem.descriptions || 'нет описания'}</div>
             <div className={`${styles.administratorsList}`}>
-                <div className={`org_param_line ${styles.administratorsField}`} onClick={adminsListToggle}>
+                <div className={styles.propLine} onClick={adminsListToggle}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
                         <img src="svg/org/admins.svg" />
                         <span onClick={adminsListToggle}>администраторы: {sectionItem.administrators.length}</span>
