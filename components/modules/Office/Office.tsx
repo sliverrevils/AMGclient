@@ -5,7 +5,7 @@ import { useState } from "react";
 import useOrg from "@/hooks/useOrg";
 
 
-export default function Office({ officeItem, updateOrgScheme, users, userById, charts }: { officeItem: OfficeI|undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[] }) {
+export default function Office({ officeItem, updateOrgScheme, users, userById, charts }: { officeItem: OfficeI | undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[] }) {
 
     const [inputDepatmentName, setInputDepartmentName] = useState('');
     const [inputCode, setInputCode] = useState('');
@@ -20,7 +20,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
 
     const addDepartmentToggle = () => setAddDepartment(state => !state);
 
-    if(!officeItem){
+    if (!officeItem) {
         return <>not found</>
     }
 
@@ -42,22 +42,30 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
     return (
         <>
             <div key={officeItem.id + '_office'} className={styles.officeItem}>
+                
+                <div className={styles.office}>
+                    <div className={styles.officeHead}>
+                        <div className={styles.officeName}>
+                        <img src="svg/org/vaadin_office.svg" />
+                            <span>{officeItem.name}</span>
+                        </div>
+                        <img src="svg/org/delete.svg" onClick={() => deleteOffice(officeItem.id, updateOrgScheme)} />
+                    </div>
 
-                <div className={styles.officeHead}>
-                    <div className={'org_title_line1'}><img src="svg/org/office.svg" /><span>Отделение: {officeItem.name}</span></div>
-                    <img  src="svg/org/delete.svg" onClick={() => deleteOffice(officeItem.id, updateOrgScheme)} />
+                    <div className="org_param_line"> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
+                    <div className="org_param_line"><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
+                    <div className="org_param_line"> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
                 </div>
 
-                <div className="org_param_line"> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
-                <div className="org_param_line"><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
-                <div className="org_param_line"> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
-                <div className={` ${styles.departmentsList} ${departmentsOpen ? styles.departmentsListOpen : ''}`}>
-                    <div className={styles.departmentsListHead} onClick={departmentsOpenToggle}>
+                <div className={` ${styles.departmentsList}`}>
+                
+                
+                    {/* <div className={styles.departmentsListHead} onClick={departmentsOpenToggle}>
 
                         <div className="org_param_line" ><img src="svg/org/department.svg" />отделы: {officeItem.departments.length}</div>
                         {
                             officeItem.departments.length
-                                ? <img className="open_list" src={`svg/org/${departmentsOpen ? "arrow_dawn" : "arrow_up"}.svg`}  />
+                                ? <img className="open_list" src={`svg/org/${departmentsOpen ? "arrow_dawn" : "arrow_up"}.svg`} />
                                 : <span> </span>
                         }
                         {
@@ -65,7 +73,8 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                                 ? <img src="svg/org/add.svg" onClick={addDepartmentToggle} />
                                 : <span> </span>
                         }
-                    </div>
+                    </div> */}
+                  
                     {
                         addDepatment
                         &&
@@ -84,8 +93,9 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                     }
 
                     {
-                        departmentsOpen && officeItem.departments.map(department => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id }} />)
+                        officeItem.departments.map(department => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id }} />)
                     }
+                    
                 </div>
 
             </div>

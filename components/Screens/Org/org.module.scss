@@ -31,8 +31,11 @@
     border-radius: 15px;
     margin-left: 30px;
     box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.568);
+    opacity: .4;
+    transition: all 200ms ease-in-out;
 
     &:hover {
+        opacity: 1;
         background: #fa6f40;
         box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.568);
     }
@@ -80,7 +83,7 @@
         letter-spacing: 1px;
         font-weight: 500;
         border: 0;
-        box-shadow: 2px 2px 5px 1.3px rgba(0, 0, 0, 0.637);
+        box-shadow: 2px 2px 5px 1.3px rgba(0, 0, 0, 0.637);       
         &:hover{
             cursor: pointer;
             box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.637);
@@ -120,9 +123,25 @@
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+    transition: all 200ms ease-in-out;
 
+    // &.active {
+    //     &::after {
+    //         content: '';
+    //         position: fixed;
+    //         inset: 0 0 0 0;
+    //         background: rgba(0, 0, 0, 0.133);
+    //         z-index: 2;
+    //         filter: grayscale(0%);
+    //     }
+
+    // }
+
+
+    //OFFICE ITEM
     .tableItem {
         //border: 2px solid black;
+
         flex: 0 0 356px;
         background: #FF8056;
         cursor: pointer;
@@ -130,7 +149,19 @@
         border-radius: 8px;
         display: flex;
         flex-direction: column;
-        box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.20), 0px 2px 4px 0px rgba(0, 0, 0, 0.20), 0px 7px 7px 0px rgba(0, 0, 0, 0.17), 0px 16px 10px 0px rgba(0, 0, 0, 0.10), 0px 29px 12px 0px rgba(0, 0, 0, 0.03), 0px 45px 13px 0px rgba(0, 0, 0, 0.00);
+        box-shadow: 4px 4px 8px 1px rgba(0, 0, 0, 0.329);
+        //box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.20), 0px 2px 4px 0px rgba(0, 0, 0, 0.20), 0px 7px 7px 0px rgba(0, 0, 0, 0.17), 0px 16px 10px 0px rgba(0, 0, 0, 0.10), 0px 29px 12px 0px rgba(0, 0, 0, 0.03), 0px 45px 13px 0px rgba(0, 0, 0, 0.00);
+        transition: all 200ms ease-in-out;
+        &:hover{
+            transform: scale(110%);
+            box-shadow: 4px 4px 18px 2px rgba(0, 0, 0, 0.219);
+
+
+        }
+        &.activeItem{
+           // background-color: black;
+            z-index: 5;
+        }
 
         .help {
             color: white;
@@ -181,31 +212,50 @@
         }
 
     }
+}
 
+.officeItem {
+    margin-top: 20px;
+    padding: 10px;
+    margin: 5px;
 
-    .officeItem {
-        margin-top: 20px;
-        padding: 10px;
-        margin: 5px;
-        background: #FFFFFF;
-        box-shadow: 0px 0px 12px -3px #00000060;
+   // box-shadow: 0px 0px 12px -3px #00000060;
+    border-radius: 14px;
+    //border: 2px solid rgba(0, 0, 0, 0.233);
+    //background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .office {
         border-radius: 14px;
-        //border: 2px solid rgba(0, 0, 0, 0.233);
-
+        // padding: 10px;
+        margin: 10px;
+        background: white;
+        width: 500px;
+        padding: 5px;
 
         .officeHead {
             display: flex;
             justify-content: space-between;
             cursor: pointer;
+            background: #FF8056;
+            border-radius: 10px 10px 0 0;
+            padding: 5px;
+
+
 
             .officeName {
-                font-weight: 600;
+                font-weight: 500;
+                width: 100%;
+                color: white;
+                text-align: center;
             }
 
             img {
                 &:nth-child(2) {
                     opacity: .4;
-                    width: 23px;
+                    width: 20px;
                     cursor: pointer;
 
                     &:hover {
@@ -214,13 +264,14 @@
                 }
             }
         }
-
     }
+
+
 }
 
 //----------- ОТДЕЛЕНИЕ
 .departmentsList {
-    background: #FFFFFF;
+    //background: #FFFFFF;
     //box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.18);
     border-radius: 14px;
     width: 100%;
@@ -228,7 +279,7 @@
     //cursor: pointer;
     //margin-top: 20px;
     display: flex;
-    flex-direction: column;
+    
     gap: 10px;
     position: relative;
     //border: 2px solid rgba(0, 0, 0, 0.233);
@@ -257,10 +308,10 @@
         border-radius: 14px;
         // width: 95%;
         padding: 10px;
-        margin-left: 35px;
-        margin-right: 5px;
+
         display: flex;
         flex-direction: column;
+        width: 500px;
 
 
         .departmentHead {
@@ -285,14 +336,14 @@
 
 }
 
-.departmentsListOpen {
-    border-radius: 20px;
-    //outline: 3px solid rgba(5, 5, 5, 0.03);
-    padding-bottom: 10px;
-    //padding-top: 5px;
-    // background: rgba(231, 93, 93, 0.062);
-    border-left: 4px solid #FF8056;
-}
+// .departmentsListOpen {
+//     border-radius: 20px;
+//     //outline: 3px solid rgba(5, 5, 5, 0.03);
+//     padding-bottom: 10px;
+//     //padding-top: 5px;
+//     // background: rgba(231, 93, 93, 0.062);
+//     border-left: 4px solid #FF8056;
+// }
 
 .sectionsList {
     //border: 2px solid rgba(0, 0, 0, 0.233);
