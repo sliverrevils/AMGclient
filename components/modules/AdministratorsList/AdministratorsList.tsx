@@ -24,9 +24,8 @@ export default function AdministratorsList({ user_id, userById, idx, admin, upda
                         <img src="svg/org/admin.svg" />
                         <span>{user.name}</span> 
                     </span>
-                    <span className={styles.userDel} onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}>
-                        <img src="svg/org/admin_del.svg" />
-                    </span>
+                    <img src="svg/org/admin_del.svg"  className={styles.userDel} onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}/>
+                     
                 </div>
 
                 <div className={styles.descriptions}>

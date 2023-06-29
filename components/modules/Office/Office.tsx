@@ -49,12 +49,16 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                         <img src="svg/org/vaadin_office.svg" />
                             <span>{officeItem.name}</span>
                         </div>
-                        <img src="svg/org/delete.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`)&&deleteOffice(officeItem.id, updateOrgScheme)} />
+                        <img src="svg/org/delete_white.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`)&&deleteOffice(officeItem.id, updateOrgScheme)} />
                     </div>
 
                     <div className={styles.propLine}> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
                     <div className={styles.propLine}><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
                     <div className={styles.propLine}> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
+                    <div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{background:'steelblue'}}>
+                            Добавить отделение
+                            <img src="svg/org/add_white.svg" />
+                        </div> 
                 </div>
 
                 <div className={` ${styles.departmentsList}`}>

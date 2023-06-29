@@ -64,7 +64,7 @@ export default function OrgScreen() {
                 {
                     addOffice
                         ? <Modal closeModalFunc={() => setAddOffice(false)}>
-                            <div className={styles.addOffice}>
+                            <div className={styles.addForm}>
                                 <h3>создание нового отделения</h3>
                                 <span className={styles.addHelp}>Название отделения</span>
                                 <input type="text" value={inputOfficeName} onChange={event => setinputOfficeName(event.target.value)} placeholder="Назавние отделения" />
@@ -78,7 +78,7 @@ export default function OrgScreen() {
                                 <span className={styles.addHelp}>Описание</span>
                                 <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание отделения" />
                                 <button onClick={creaetOfficeHandle} className="add">Создать офис</button>
-                                <img src="svg/org/close_field_white.svg" onClick={addOfficeToggle} className={styles.close} />
+                                <img src="svg/org/close_field.svg" onClick={addOfficeToggle} className={styles.close} />
                             </div>
                         </Modal>
                         : <div onClick={addOfficeToggle} className={styles.addOfficeBtn}>

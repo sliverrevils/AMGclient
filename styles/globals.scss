@@ -91,11 +91,11 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
-body::-webkit-scrollbar {
+*::-webkit-scrollbar {
   background-color: white;
 }
 
-body::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background-color: #FF8056;
   border-radius: 5px;
 }
