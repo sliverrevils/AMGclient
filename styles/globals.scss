@@ -93,11 +93,16 @@ body {
 
 *::-webkit-scrollbar {
   background-color: white;
+  width: 10px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: #FF8056;
   border-radius: 5px;
+ 
+  width: 10px;
 }
 
 .container {

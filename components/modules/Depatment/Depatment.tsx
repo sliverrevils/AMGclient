@@ -73,14 +73,19 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                 {
                     addSection
                     &&
-                    <div className={styles.addForm} style={{ width: 330 }}>
-                        <h3>Новая секция</h3>
-                        <input type="text" value={inputSectionName} onChange={event => setInputSectionName(event.target.value)} placeholder="название секции" />
-                        <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
-                        <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание секции" />
-                        <button onClick={creaetDepartmentHandle}>Добавить секцию</button>
-                        {/* <img src="svg/org/close_field_white.svg" onClick={addSectionToggle} className="close" /> */}
-                        <img src="svg/org/close_field.svg" onClick={addSectionToggle} className={styles.close} />
+                    <div className={styles.addSectionForm}>
+                        <div className={styles.addForm} >
+                            <h3>Новая секция</h3>
+                            <span className={styles.addHelp}>Название секции</span>
+                            <input type="text" value={inputSectionName} onChange={event => setInputSectionName(event.target.value)} placeholder="название секции" />
+                            <span className={styles.addHelp}>КПЦ секции</span>
+                            <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                            <span className={styles.addHelp}>Описание секции</span>
+                            <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание секции" />
+                            <button onClick={creaetDepartmentHandle}>Добавить секцию</button>
+                            {/* <img src="svg/org/close_field_white.svg" onClick={addSectionToggle} className="close" /> */}
+                            <img src="svg/org/close_field.svg" onClick={addSectionToggle} className={styles.close} />
+                        </div>
                     </div>
                 }
                 {

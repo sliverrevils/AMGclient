@@ -341,6 +341,33 @@
         cursor: pointer;
     }
 
+    .addDepartmentForm{
+        width: 350px;
+        
+        //-------------------------------------------------
+        animation: open 200ms ease-in;
+        .addForm{
+            width: 350px;
+            box-shadow:  10px 10px 20px #000000f1;
+            h3{
+              color: steelblue;
+              font-weight: 600;  
+              
+            }
+
+            button{
+                background: steelblue;
+            }
+
+            .addHelp{
+                color: steelblue;
+                opacity: .5;
+
+            }
+        }
+
+    }
+
 }
 .department{
     height: 100%;
@@ -414,14 +441,8 @@
     }
 }
 
-// .departmentsListOpen {
-//     border-radius: 20px;
-//     //outline: 3px solid rgba(5, 5, 5, 0.03);
-//     padding-bottom: 10px;
-//     //padding-top: 5px;
-//     // background: rgba(231, 93, 93, 0.062);
-//     border-left: 4px solid #FF8056;
-// }
+
+//SECTIONS
 
 .sectionsList { 
     border-radius: 14px;
@@ -429,6 +450,33 @@
     display: flex;
     flex-direction: column;
     gap: 20px;    
+
+    .addSectionForm{
+        box-shadow:  10px 10px 20px #000000f1;
+        z-index: 30;
+        border-radius: 7px;
+        overflow: hidden;        
+        width: 100%;
+        animation: open 200ms ease-in;
+        .addForm{
+           width: 100%;
+            h3{
+                color: #2a9955d7;
+                font-weight: 600;
+            }
+    
+            .addHelp{
+                color: #2a9955d7;
+                opacity: .7;
+            }
+
+            button{
+                background: #2a9955d7;
+            }
+
+        }
+
+    }
 
     .sectionsListHead {
         display: flex;
@@ -802,5 +850,15 @@
 
 
         }
+    }
+}
+
+@keyframes open{
+    from{
+        transform: translateY(-100px) scale(0%);
+        opacity: 0;
+    }to{
+        opacity: 1;
+        transform: translateY(0px) scale(100%);
     }
 }

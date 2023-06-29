@@ -62,37 +62,28 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                 </div>
 
                 <div className={` ${styles.departmentsList}`}>
-                
-                
-                    {/* <div className={styles.departmentsListHead} onClick={departmentsOpenToggle}>
-
-                        <div className={styles.propLine} ><img src="svg/org/department.svg" />отделы: {officeItem.departments.length}</div>
-                        {
-                            officeItem.departments.length
-                                ? <img className="open_list" src={`svg/org/${departmentsOpen ? "arrow_dawn" : "arrow_up"}.svg`} />
-                                : <span> </span>
-                        }
-                        {
-                            !addDepatment
-                                ? <img src="svg/org/add.svg" onClick={addDepartmentToggle} />
-                                : <span> </span>
-                        }
-                    </div> */}
                   
                     {
                         addDepatment
                         &&
-                        <div className="addField">
+                        <div className={styles.addDepartmentForm}>
+                            <div className={styles.addForm} >
                             <h3>Новый отдел</h3>
+                            <span className={styles.addHelp}>Название отдела</span>
                             <input type="text" value={inputDepatmentName} onChange={event => setInputDepartmentName(event.target.value)} placeholder="название отдела" />
+                            <span className={styles.addHelp}>код отдела</span>
                             <input type="text" value={inputCode} onChange={event => setInputCode(event.target.value)} placeholder="код отдела" />
+                            <span className={styles.addHelp}>Руководитель отдела</span>
                             <select value={inputLeadership} onChange={event => setInputLeadership(event.target.value)}>
                                 {users.map(user => <option key={user.id + user.name + '_userItem'} value={user.id}>id:{user.id} {user.name}</option>)}
                             </select>
-                            <input type="text" value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                            <span className={styles.addHelp}>КЦП отдела</span>
+                            <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                            <span className={styles.addHelp}>Описание отдела</span>
                             <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />
                             <button onClick={creaetDepartmentHandle} className="add">Создать отдел</button>
-                            <img src="svg/org/close_field_white.svg" onClick={addDepartmentToggle} className="close" />
+                            <img src="svg/org/close_field.svg" onClick={addDepartmentToggle} className={styles.close} />
+                            </div>
                         </div>
                     }
 
