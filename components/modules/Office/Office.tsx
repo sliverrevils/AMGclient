@@ -56,7 +56,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                     <div className={styles.propLine}><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
                     <div className={styles.propLine}> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
                     <div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{background:'steelblue'}}>
-                            Добавить отделение
+                            Добавить отдел
                             <img src="svg/org/add_white.svg" />
                         </div> 
                 </div>
