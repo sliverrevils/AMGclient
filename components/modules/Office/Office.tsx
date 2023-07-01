@@ -45,13 +45,14 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                 
                 <div className={styles.office}>
                     <div className={styles.officeHead}>
+                        <div className={styles.help}>отделение</div>
                         <div className={styles.officeName}>
                         <img src="svg/org/vaadin_office.svg" />
                             <span>{officeItem.name}</span>
                         </div>
                         <img src="svg/org/delete_white.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`)&&deleteOffice(officeItem.id, updateOrgScheme)} />
                     </div>
-
+                    <div className={styles.officeBody}>
                     <div className={styles.propLine}> <img src="svg/org/leadership.svg" /><span>{officeItem.leadership ? userById(+officeItem.leadership)?.name : "не установлен"}</span></div>
                     <div className={styles.propLine}><img src="svg/org/ckp.svg" /><span>{officeItem.ckp}</span></div>
                     <div className={styles.propLine}> <img src="svg/org/description.svg" /> <span>{officeItem.descriptions || 'нет описания'}</span></div>
@@ -59,6 +60,9 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                             Добавить отдел
                             <img src="svg/org/add_white.svg" />
                         </div> 
+
+                    </div>
+
                 </div>
 
                 <div className={` ${styles.departmentsList}`}>
@@ -88,7 +92,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                     }
 
                     {
-                        officeItem.departments.map(department => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id }} />)
+                        officeItem.departments.map((department, indexDep:number) => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id, indexDep }} />)
                     }
                     
                 </div>

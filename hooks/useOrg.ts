@@ -96,10 +96,10 @@ export default function useOrg() {
     }
 
     //--------------------Sections
-    const createSection = async (name: string, descriptions: string, office_id: number, department_id: number, ckp: string) => {
+    const createSection = async (name: string, descriptions: string, office_id: number, department_id: number, ckp: string, leadership:number) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post('sections/create', { name, descriptions, office_id, department_id, ckp });
+            const created: any = await axiosClient.post('sections/create', { name, descriptions, office_id, department_id, ckp,leadership });
             dispatch(setLoadingRedux(false));
             if (created) {
                 console.log('CREATED SECTIONS', created);

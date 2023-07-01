@@ -49,6 +49,7 @@ export interface SectionI{
     "office_id": number,
     "department_id": number,
     "name": string,
+    "leadership": number,
     "administrators": Array<AdministratorI>,
     "descriptions": string,
     "createdAt": string,

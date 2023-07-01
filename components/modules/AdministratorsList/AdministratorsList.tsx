@@ -31,7 +31,7 @@ export default function AdministratorsList({ user_id, userById, idx, admin, upda
                 <div className={styles.descriptions}>
                     <img src="svg/org/description.svg" />
                     <div>
-                    {admin.descriptions}
+                    {admin.descriptions||'без описания'}
                     </div>
                 </div>
 
