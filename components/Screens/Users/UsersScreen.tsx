@@ -38,6 +38,9 @@ export default function UsersScreen() {
                 </div>
                 </div>
                 : <><h2>Все сотрудники</h2>
+                 <div>
+                    add user
+                 </div>
                     <table>
                         <thead>
                             <tr>
