@@ -13,7 +13,7 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     const [adminsListOpen, setAdminsListOpen] = useState(!!!sectionItem.administrators.length);
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState('');
     const [selectAddChart, setSelectAddChart] = useState(1);
-    const { addSectionAdministrator, deleteSectionAdministrator, deleteSection } = useOrg();
+    const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } = useOrg();
 
     const adminsListToggle = () => setAdminsListOpen(state => !state);
     const addAdminFieldToggle = () => setAddAdminField(state => !state);
@@ -35,6 +35,27 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
             return charts.find(chart => chart.id === id)
     }
 
+    //update
+
+    const [updated, setUpdated] = useState(false);
+    const [sectionName, setSectionName] = useState(sectionItem?.name || '');
+    const [sectionLeadership, setSectionLeadership] = useState(sectionItem?.leadership || null);
+    const [sectionDescriptions, setSectionDescriptions] = useState(sectionItem?.descriptions || '');
+    const [sectionCkp, setSectionCkp] = useState(sectionItem?.ckp || '');
+
+    const updateSetionHandle = () => {
+        updateSection(sectionItem!.id, sectionName, sectionLeadership, sectionDescriptions, sectionCkp, () => { updateOrgScheme(), setUpdated(false) });
+    }
+
+    useEffect(() => {
+        if (sectionItem!.name !== sectionName || sectionItem!.descriptions !== sectionDescriptions || sectionItem!.ckp !== sectionCkp || sectionItem?.leadership !== sectionLeadership)
+            setUpdated(true)
+        else
+            setUpdated(false)
+    }, [sectionName, sectionDescriptions, sectionCkp, sectionLeadership])
+
+    //update/
+
 
     useEffect(() => { console.log('ADMIN SELECT', inputAddAdmin) }, [inputAddAdmin])
     return (
@@ -42,17 +63,37 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
 
             <div key={sectionItem.id + '_section'} className={styles.sectionItem}>
                 <div className={styles.sectionItemHead}>
-                    <div className={styles.sectionName}>                        
-                        {/* <div className={styles.index} style={{ width: 20 }}><span>{index + 1}</span></div> */}
-                        <span style={{ width: '100%' }}>{sectionItem.name}</span>
-                        <div className={styles.help}>секция {index+1}</div>
+                    <div className={styles.help}>секция {index + 1}</div>
+                    {
+                        updated
+                            ? <div className={styles.update} onClick={updateSetionHandle}>
+                                <img src="svg/org/update_white.svg" />
+                            </div>
+                            : <div className={styles.update}></div>
+                    }
+                    <div className={styles.sectionName}>
+
+                        <input value={sectionName} onChange={event => setSectionName(event.target.value)} />
+
                     </div>
-                    <img onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />
+                    <img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />
                 </div>
                 <div className={styles.sectionBody}>
-                    <div className={styles.propLine}> <img src="svg/org/leadership.svg" />{sectionItem.leadership ? userById(+sectionItem.leadership)?.name : "не установлен"}</div>
-                    <div className={styles.propLine}><img src="svg/org/ckp.svg" />{sectionItem.ckp}</div>
-                    <div className={styles.propLine}><img src="svg/org/description.svg" />{sectionItem.descriptions || 'нет описания'}</div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/leadership.svg" />
+                        <select value={sectionLeadership || ''} onChange={event => setSectionLeadership(+event.target.value)}>
+                                <option value={''}>выбор руководителя</option>
+                                {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
+                            </select>
+                    </div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/ckp.svg" />
+                        <textarea value={sectionCkp} spellCheck="false" onChange={event => setSectionCkp(event.target.value)} />
+                    </div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/description.svg" />
+                        <textarea value={sectionDescriptions} spellCheck="false" onChange={event => setSectionDescriptions(event.target.value)} />
+                    </div>
                     <div className={`${styles.administratorsList}`}>
                         <div className={styles.propLine} onClick={adminsListToggle} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

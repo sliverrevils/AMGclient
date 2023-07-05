@@ -1,6 +1,6 @@
 .modalWrapper{
-   // background: rgba(0, 0, 0, 0.705);
-    position: fixed;
+    background: rgba(0, 0, 0, 0.705);
+    position: absolute;
     inset: 0 0 0 0;
     z-index: 99;
     display: flex;
@@ -8,25 +8,34 @@
     align-items: center;
     padding: 20px;    
     animation: enter 100ms ease-in;
+    overflow: hidden;
     
     
-    &::after{
-        content: '';
-        position: absolute;        
-        inset: 0 0 0 0;
-        background: rgba(0, 0, 0, 0.733);
-        filter: brightness(200%);
-        z-index: 100;
-    }   
+    
+  
 
     .modalContent{
+       
+       //border: 2px solid green;
+
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;        
+        position: relative;
         animation: enterChild 200ms ease-in;
-        //background-color: #ffffff;        
-        padding: 10px;
-        overflow-y: auto;
-        border-radius: 20px;
-        z-index: 200;   
+        // background-color: #ffffff;        
+        //padding: 150px;
         height: 100%;
+        //width: 80%;
+        //padding: 20px 0;
+
+        overflow: auto;
+        
+        border-radius: 20px;
+        //margin: 40px;
+        //padding: 20px;
+        z-index: 200;   
+        // height: 100%;
         //box-shadow: 14px 14px 7px 2px rgba(0, 0, 0, 0.349);
 
 
@@ -36,8 +45,8 @@
 
     .modalClose{
         position: absolute;
-        right: 40px;
-        top:20px;
+        right: 50px;
+        top:10px;
         color: white;
         cursor: pointer;
         z-index: 9999;

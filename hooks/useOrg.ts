@@ -24,11 +24,30 @@ export default function useOrg() {
         dispatch(setLoadingRedux(true));
         try {
             const created: any = await axiosClient.post('offices/create', { name, leadership, descriptions, ckp });
-            console.log('CREATE DES', descriptions);
+            //console.log('CREATE DES', descriptions);
+            dispatch(setLoadingRedux(false));
+            if (created) {
+                
+                toast.success(`Отделение "${created.name}" успешно содано`);                
+            }
+            return true
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    }
+
+    const updateOffice = async (officeId:number,name: string, leadership: null | number, descriptions: string, ckp: string, updateFunc?: any) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.post('offices/update/'+officeId, { name, leadership, descriptions, ckp });
+           // console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
                 console.log('CREATED OFFICE', created);
-                toast.success(`Отделение "${created.name}" успешно содано`);
+                toast.success(`Отделение "${created.data.name}" успешно обновлено`);
+                updateFunc&&updateFunc();
             }
             return true
         } catch (err) {
@@ -78,6 +97,25 @@ export default function useOrg() {
         }
     }
 
+    const updateDepatment = async (depatmentId:number,name: string, leadership: null | number,code:string, descriptions: string, ckp: string, updateFunc?: any) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.post('departments/update/'+depatmentId, { name, leadership,code, descriptions, ckp });
+           // console.log('CREATE DES', descriptions);
+            dispatch(setLoadingRedux(false));
+            if (created) {
+                
+                toast.success(`Отдел "${created.data.name}" успешно обновлён`);
+                updateFunc&&updateFunc();
+            }
+            return true
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    }
+
     const deleteDepartment = async (id: number, update: () => {}) => {
         dispatch(setLoadingRedux(true));
         try {
@@ -102,8 +140,27 @@ export default function useOrg() {
             const created: any = await axiosClient.post('sections/create', { name, descriptions, office_id, department_id, ckp,leadership });
             dispatch(setLoadingRedux(false));
             if (created) {
-                console.log('CREATED SECTIONS', created);
+                
                 toast.success(`Секция "${name}" успешно содана`);
+            }
+            return true
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    }
+
+    const updateSection = async (sectionId:number,name: string, leadership: null | number, descriptions: string, ckp: string, updateFunc?: any) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.post('sections/update/'+sectionId, { name, leadership, descriptions, ckp });
+           // console.log('CREATE DES', descriptions);
+            dispatch(setLoadingRedux(false));
+            if (created) {
+                
+                toast.success(`Секция "${created.data.name}" успешно обновлена`);
+                updateFunc&&updateFunc();
             }
             return true
         } catch (err) {
@@ -203,5 +260,5 @@ const deleteChartFromAdministrator = async (administrator_id: number,chart_id: n
     
 
 
-    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator }
+    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator, updateOffice , updateDepatment, updateSection}
 }

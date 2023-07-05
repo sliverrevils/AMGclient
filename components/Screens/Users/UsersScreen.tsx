@@ -8,7 +8,20 @@ export default function UsersScreen() {
     const { allUsers ,verificateUser, blockUserToggle} = useAuth();
     let { current: init } = useRef(true);
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
+    const [addUserField,setAddUserField] = useState(false);
 
+    const {createUser} = useAuth();
+    const [newUserName,setNewUserName]=useState('');
+    const [newUserSurname,setNewUserSurname]=useState('');
+    const [newUserPatronymic,setNewUserPatronymic]=useState('');
+    const [newUserEmail,setNewUserEmail]=useState('');
+    const [newUserPassword,setNewUserPassword]=useState('');
+    // const [newUser,setNewUser]=useState('');
+    // const [newUser,setNewUser]=useState('');
+
+    const singInHandle=()=>{
+        createUser(`${newUserName} ${newUserSurname} ${newUserPatronymic}`,'',newUserEmail,newUserPassword,()=>allUsers(setUsers))
+    }
 
 
     useEffect(() => {
@@ -37,10 +50,36 @@ export default function UsersScreen() {
                     {!currentUser.is_verificated&&<div className="btn" onClick={()=>{verificateUser(currentUser.id,setUsers), setCurrentUser(null)}}>Верифицировать</div>}
                 </div>
                 </div>
-                : <><h2>Все сотрудники</h2>
-                 <div>
-                    add user
-                 </div>
+                : <>
+                <h2>Список всех сотрудников</h2>
+                    {
+                        addUserField
+                            ? <div className={styles.addForm}>
+
+                                <h3>Создание новго пользователя</h3>
+
+                                <span className={styles.addHelp}>Имя</span>
+                                <input type="text" value={newUserName} onChange={event => setNewUserName(event.target.value.trim())} placeholder="" />
+
+                                <span className={styles.addHelp}>Фамилия</span>
+                                <input type="text" value={newUserSurname} onChange={event => setNewUserSurname(event.target.value.trim())} placeholder="" />
+
+                                <span className={styles.addHelp}>Отчество</span>
+                                <input type="text" value={newUserPatronymic} onChange={event => setNewUserPatronymic(event.target.value.trim())} placeholder="" />
+
+                                <span className={styles.addHelp}>Логин</span>
+                                <input type="text" value={newUserEmail} onChange={event => setNewUserEmail(event.target.value.trim())} placeholder="Укажите логин для авторизации пользователя" />
+
+                                <span className={styles.addHelp}>Пароль</span>
+                                <input type="text" value={newUserPassword} onChange={event => setNewUserPassword(event.target.value.trim())} placeholder="Укажите пароль без пробелов , минимум 5 символов" />
+
+
+                                <button onClick={singInHandle} className={styles.addBtn} style={{width:250}} disabled={!(newUserName.length&&newUserSurname.length&&newUserPatronymic.length&&newUserEmail.length&&newUserPassword.length>4)}>Добавить пользователя</button>
+                                <img src="svg/org/close_field.svg" onClick={()=>setAddUserField(false)} className={styles.close} />
+                            </div>
+                            : <div className="btn" onClick={() => setAddUserField(true)} style={{width:330,textAlign:'center'}}>Добавить новго пользователя</div>
+                    }
+                 
                     <table>
                         <thead>
                             <tr>

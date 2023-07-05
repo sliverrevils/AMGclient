@@ -79,6 +79,7 @@ export const useAuth=()=>{
                     return
                    }
                    toggleFunc();
+                   
                     toast.success(
                         `Поздравляем ! Вы успешно зарегистрировались! Дождитесь верификации администратора`
                         , {
@@ -92,6 +93,42 @@ export const useAuth=()=>{
                         theme: "light",
                         });
                     dispatch(logInRedux(data.user));
+                }
+               
+            })
+            .catch(axiosError)
+            .finally(()=>dispatch(setLoadingRedux(false)));        
+    }
+    const createUser=async(name:string,post:string, loginEmail:string,loginPassword:string,toggleFunc:any)=>{
+        dispatch(setLoadingRedux(true));
+            axiosClient.post('users/signup', {
+                "email":loginEmail,
+                "password":loginPassword,
+                "post":post,
+                name
+            })
+            .then(({data})=>{
+                console.log('SING UP DATA',data);
+                if(data){
+                   if(data.warningMessage){
+                    toast.error(data.warningMessage);
+                    return
+                   }
+                   toggleFunc();
+
+                    toast.success(
+                        `Пользователь ${loginEmail} успешно создан`
+                        , {
+                        position: "top-right",
+                        autoClose: 10000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        });
+                   // dispatch(logInRedux(data.user));
                 }
                
             })
@@ -152,12 +189,11 @@ export const useAuth=()=>{
                     theme: "light",
                     });
                     if(setUsersFunc)
-                    allUsers(setUsersFunc);
-                
+                    allUsers(setUsersFunc);                
             })
             .catch(axiosError)
             .finally(()=>dispatch(setLoadingRedux(false)));
         
     }
-    return {logout, singIn, singUp,  allUsers, verificateUser, blockUserToggle}
+    return {logout, singIn, singUp,  allUsers, verificateUser, blockUserToggle, createUser}
 }

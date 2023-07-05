@@ -14,7 +14,7 @@ export const authCheck=async():Promise<UserI|boolean|undefined>=>{
     catch (error) {
         const axiosError = error as AxiosError;
         if(axiosError.response?.status==403){
-            toast('НЕ АВТОРИЗОВАН');
+            toast('Пожалуйста авторизуйтесь');
             return false;
         }
     }

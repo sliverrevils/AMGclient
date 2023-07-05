@@ -1,7 +1,7 @@
 import { DepartmentI, OfficeI, UserFullI } from "@/types/types";
 import styles from '../../Screens/Org/org.module.scss';
 import Section from "../Section/Section";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useOrg from "@/hooks/useOrg";
 
 
@@ -16,7 +16,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
     const [inputCkp, setInputCkp] = useState('');
     const [inputLeadership, setInputLeadership] = useState('');
 
-    const { createSection } = useOrg();
+    const { createSection, updateDepatment } = useOrg();
 
     const addSectionToggle = () => setAddSection(state => {
         if (state) {
@@ -43,24 +43,67 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
             });
     }
 
+        //update
+
+        const [updated,setUpdated]=useState(false);
+        const [departmentName,setDepartmentName]=useState(departmentItem?.name||'');
+        const [departmentLeadership,setDepartmentLeadership]=useState(departmentItem?.leadership||null);
+        const [departmentCode,setDepartmentCode]=useState(departmentItem?.code||'');
+        const [departmentDescriptions,setDepartmentDescriptions]=useState(departmentItem?.descriptions||'');
+        const [departmentCkp,setDepartmentCkp]=useState(departmentItem?.ckp||'');
+    
+        const updateDepartmentHandle=()=>{
+            updateDepatment(departmentItem!.id,departmentName,departmentLeadership,departmentCode,departmentDescriptions,departmentCkp,()=>{updateOrgScheme(),setUpdated(false)});
+        }
+    
+        useEffect(()=>{        
+            if(departmentItem!.name!==departmentName||departmentItem!.descriptions!==departmentDescriptions||departmentItem!.ckp!== departmentCkp||departmentItem?.leadership!==departmentLeadership||departmentItem.code!== departmentCode)
+            setUpdated(true)       
+            else
+            setUpdated(false)
+        },[departmentName,departmentDescriptions,departmentCkp,departmentLeadership,departmentCode])
+    
+        //update/
+
     return (
         <div className={styles.department}>
             <div className={styles.departmentItem}>
                 <div className={styles.departmentHead} >
                     <div className={styles.help}>отдел {indexDep + 1}</div>
                     <div className={styles.departmentName}>
+                    {
+                            updated
+                                ? <div className={styles.update} onClick={updateDepartmentHandle}>
+                                    <img src="svg/org/update_white.svg" />
+                                </div>
+                                : <div className={styles.update}></div>
+                        }
                         {/* <img src="svg/org/department.svg" /> */}
-                        <span>{departmentItem.name}</span>
+                        <input value={departmentName} onChange={event=>setDepartmentName(event.target.value)}/>
                     </div>
                     <img src="svg/org/delete_white.svg" onClick={() => confirm(`Вы точно хотите удалить отдел "${departmentItem.name}" ?`) && deleteDepartment(departmentItem.id, updateOrgScheme)} />
 
                 </div>
 
                 <div className={styles.depatmentBody}>
-                    <div className={styles.propLine}> <img src="svg/org/leadership.svg" />{departmentItem.leadership ? userById(+departmentItem.leadership)?.name : "не установлен"}</div>
-                    <div className={styles.propLine}><img src="svg/org/ckp.svg" />{departmentItem.ckp}</div>
-                    <div className={styles.propLine}><img src="svg/org/code.svg" />{departmentItem.code}</div>
-                    <div className={styles.propLine}><img src="svg/org/description.svg" />{departmentItem.descriptions || 'нет описания'}</div>
+                    <div className={styles.propLine}> <img src="svg/org/leadership.svg" />
+                    <select value={departmentLeadership || ''} onChange={event => setDepartmentLeadership(+event.target.value)}>
+                                <option value={''}>выбор руководителя</option>
+                                {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
+                            </select>
+                    </div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/ckp.svg" />
+                        <textarea value={departmentCkp} spellCheck="false" onChange={event => setDepartmentCkp(event.target.value)} />
+                    </div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/code.svg" />
+                        <input value={departmentCode} spellCheck="false" onChange={event => setDepartmentCode(event.target.value)} />
+                    </div>
+                    <div className={styles.propLine}>
+                        <img src="svg/org/description.svg" />
+                        <textarea value={departmentDescriptions} spellCheck="false" onChange={event => setDepartmentDescriptions(event.target.value)} />
+                    </div>
 
                     <div className={styles.addItemBtn} onClick={addSectionToggle} style={{ background: '#2a9955d7' }}>
                         Добавить секцию
@@ -72,7 +115,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
             </div>
 
           
-                <div className={styles.sectionsList}>
+                {!!departmentItem.sections.length&&<div className={styles.sectionsList}>
 
                     {
                         addSection
@@ -88,9 +131,9 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                                     {users.map(user => <option key={user.id + user.name + '_userItem'} value={user.id}>id:{user.id} {user.name}</option>)}
                                 </select>
                                 <span className={styles.addHelp}>КПЦ секции</span>
-                                <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
+                                <textarea value={inputCkp} spellCheck="false" onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
                                 <span className={styles.addHelp}>Описание секции</span>
-                                <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание секции" />
+                                <textarea value={inputDescriptions} spellCheck="false" onChange={event => setInputDescriptions(event.target.value)} placeholder="Описание секции" />
                                 <button onClick={creaetDepartmentHandle}>Добавить секцию</button>
                                 {/* <img src="svg/org/close_field_white.svg" onClick={addSectionToggle} className="close" /> */}
                                 <img src="svg/org/close_field.svg" onClick={addSectionToggle} className={styles.close} />
@@ -100,7 +143,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                     {
                         departmentItem.sections.map((section, index: number) => <Section key={section.id + '_sectionItem'} sectionItem={section} {...{ charts, users, userById, updateOrgScheme, office_id, department_id: departmentItem.id, index }} />)
                     }
-                </div>
+                </div>}
             
         </div>
     )

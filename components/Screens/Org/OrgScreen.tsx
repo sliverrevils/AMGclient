@@ -53,7 +53,7 @@ export default function OrgScreen() {
         <div className={styles.orgWrap}>
             {
                 !!findOffice() &&
-                <Modal closeModalFunc={() => setCurrentOfficeId(null)}>                  
+                <Modal closeModalFunc={() => setCurrentOfficeId(null)} fullWidth={true}>                  
                     <Office officeItem={findOffice()} {...{ charts, updateOrgScheme, users, userById }} />
                 </Modal>
             }
@@ -63,7 +63,7 @@ export default function OrgScreen() {
                 <h2>Отделения</h2>
                 {
                     addOffice
-                        ? <Modal closeModalFunc={() => setAddOffice(false)}>
+                        ? <Modal closeModalFunc={() => setAddOffice(false)} >
                             <div className={styles.addForm}>
                                 <h3>создание нового отделения</h3>
                                 <span className={styles.addHelp}>Название отделения</span>

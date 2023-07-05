@@ -35,6 +35,20 @@
         width: 20px;
         cursor: pointer;
     }
+    input,textarea,select{
+        border: 0;
+        width: 100%;
+        background: transparent;
+        resize: vertical;
+        height: 100%;
+        &:focus{
+            outline: 0;
+        }
+    }
+    textarea{
+        font-size: 14px;
+        
+    }
 }
 // ADD ITEM 
 .addItemBtn{
@@ -159,6 +173,19 @@
     }
 }
 
+//UPDATE
+.update{
+   // border: 1px solid white;
+   width: 25px;
+   height: 25px;
+   cursor: pointer;
+   opacity: 1 !important;
+   img{
+    width: 25px;
+    height: 25px;
+   }
+}
+
 //----------- ОТДЕЛ
 .officeList {
     width: 100%;
@@ -238,6 +265,8 @@
                 width: 100%;
                 text-align: center;
                 letter-spacing: .8px;
+
+                
             }
 
         }
@@ -260,9 +289,13 @@
 }
 
 .officeItem {
-    margin-top: 20px;
+    //border: 1px solid rgb(216, 117, 5);
+  //  margin-top: 20px;
+    //padding: 50px;
     
-    padding: 10px;
+    width: 100%;
+    // overflow: auto;
+    height: 100%;
     //margin: 5px;
     border-radius: 14px;
     display: flex;
@@ -270,14 +303,9 @@
     align-items: center;
     gap: 35px;
     position: relative;
-    transition: all 200ms ease-in-out;
-
-    // background: rgb(255,128,86);
-    // background: -moz-radial-gradient(circle, rgba(255,128,86,0.27354691876750703) 0%, rgba(255,255,255,0) 78%);
-    // background: -webkit-radial-gradient(circle, rgba(255,128,86,0.27354691876750703) 0%, rgba(255,255,255,0) 78%);
-    // background: radial-gradient(circle, rgba(255,128,86,0.27354691876750703) 0%, rgba(255,255,255,0) 78%);
-    // filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff8056",endColorstr="#ffffff",GradientType=1);
+    transition: all 200ms ease-in-out;   
     
+
     
 
     .office {
@@ -298,6 +326,7 @@
         .officeHead {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             position: relative;
             cursor: pointer;
             background: #FF8056;
@@ -316,17 +345,33 @@
             }
 
             .officeName {
-                font-size: 20px;
-                text-shadow: 2px 2px 2px black;
-                font-weight: 500;
+               
                 width: 100%;
-                color: white;
+                
                 text-align: center;
+
+                display: flex;
+                justify-content: center;
+                padding: 5px 0 ;
+
+                input{
+                    border: 0;
+                    background: transparent;
+                    font-size: 20px;
+                    text-shadow: 2px 2px 2px black;
+                    font-weight: 500;
+                    color: white;
+                    width: 100%;
+                    text-align: center;
+                    &:focus{                        
+                        outline: 0;
+                    }
+                }
             }
 
             img {
                 
-                &:nth-child(3) {
+                &:nth-child(4) {
                     opacity: 0;
                     width: 20px;
                     cursor: pointer;
@@ -338,7 +383,7 @@
             }
             &:hover{
                 img{
-                    &:nth-child(3) {
+                    &:nth-child(4) {
                         opacity: .5;
                         &:hover {
                             transform: scale(140%);
@@ -370,9 +415,14 @@
 .departmentsList {
     border-radius: 14px;
     width: 100%;
-    display: flex;    
+    display: flex; 
+    align-items: flex-start;   
+
     gap: 45px;
-    position: relative;
+  
+
+    padding: 0 20px;
+
 
     .departmentsListHead {
         display: flex;
@@ -407,7 +457,7 @@
 
 }
 .department{
-    height: 100%;
+    // height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -415,7 +465,10 @@
     background: #4683b4;
     border-radius: 20px;
     padding-bottom: 5px;
-    width: 360px;
+    width: 100%;
+    //height: 100%;
+
+    //border: 1px solid white;
 
     background: rgb(42,153,85);
     background: -moz-linear-gradient(90deg, rgba(42,153,85,1) 0%, rgba(70,131,180,1) 100%);
@@ -439,10 +492,10 @@
     justify-content: space-between;
     flex-direction: column;
     width: 350px;
-    height: 230px;
+    //height: 230px;
     transition: all 200ms ease-in-out;
     // margin-right: 20px;
-    transform: scale(110%);
+    // transform: scale(110%);
 
     .departmentHead {
         display: flex;
@@ -467,6 +520,21 @@
             font-weight: 500;
             text-align: center;
             width: 100%;
+            display: flex;
+
+            input{
+                border: 0;
+                background: transparent;
+                font-size: 17px;
+                text-shadow: 2px 2px 2px black;
+                font-weight: 500;
+                color: white;
+                width: 100%;
+                text-align: center;
+                &:focus{                        
+                    outline: 0;
+                }
+            }
 
         }
         img {
@@ -527,6 +595,7 @@
     flex-direction: column;
     margin: 10px;
     gap: 30px;   
+    padding: 30px 0;
     
 
     .addSectionForm{
@@ -561,6 +630,7 @@
         justify-content: space-between;
         margin-bottom: 10px;
         cursor: pointer;
+        position: relative;
 
         img {
             width: 30px;
@@ -569,6 +639,7 @@
                 opacity: .2;
             }
         }
+
     }
     .sectionWrap{
         display: flex;
@@ -588,7 +659,7 @@
        // overflow: hidden;
        display: flex;
        flex-direction: column;
-       position: relative;
+       
        transform: translateX(-10px);
 
         .sectionItemHead{
@@ -602,7 +673,8 @@
             border-radius: 5px 5px 2px 2px;
             font-size: 15px;
             padding: 5px 5px;
-            
+            position: relative;
+
             .help{
                 position: absolute;
                 font-size: 13px;
@@ -611,6 +683,15 @@
                 letter-spacing: 1px;
                 opacity: .7;
             }
+            .delete{
+                width: 17px;
+                opacity:0;
+                cursor: pointer;
+
+            }
+
+            
+      
 
             .sectionName{
                 display: flex;
@@ -624,6 +705,21 @@
                 color: white;
                 text-align: center;
                 position: relative;
+                input{
+                    border: 0;
+                    background: transparent;
+                    font-size: 17px;
+                    text-shadow: 2px 2px 2px black;
+                    font-weight: 500;
+                    color: white;
+                    width: 100%;
+                    text-align: center;
+                    &:focus{                        
+                        outline: 0;
+                    }
+                }
+
+
 
                 .index{
 
@@ -643,15 +739,10 @@
                 }
 
             }
-            img{
-                width: 17px;
-                opacity:0;
-                cursor: pointer;
 
-            }
 
             &:hover{
-                img{
+                .delete{
                     opacity: .5;
                     &:hover{
                         transform: scale(140%);
