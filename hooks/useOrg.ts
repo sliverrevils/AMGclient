@@ -87,7 +87,7 @@ export default function useOrg() {
             });
             dispatch(setLoadingRedux(false));
             if (created) {
-                toast.success(`Отдел "${created.name}" успешно содан`);
+                toast.success(`Отдел "${created.data.name}" успешно содан`);
             }
             return true
         } catch (err) {

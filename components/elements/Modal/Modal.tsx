@@ -14,6 +14,7 @@ export default function Modal({children,closeModalFunc=()=>{},fullWidth=false}){
 
     return (
         <div ref={conteinerRef} className={styles.modalWrapper}>
+            <div className={styles.black}></div>
             
             <img src="svg/org/close_field_white.svg" onClick={closeModalFunc} className={styles.modalClose}/>
             

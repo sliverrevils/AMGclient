@@ -115,7 +115,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
             </div>
 
           
-                {!!departmentItem.sections.length&&<div className={styles.sectionsList}>
+                <div className={styles.sectionsList}>
 
                     {
                         addSection
@@ -143,7 +143,7 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                     {
                         departmentItem.sections.map((section, index: number) => <Section key={section.id + '_sectionItem'} sectionItem={section} {...{ charts, users, userById, updateOrgScheme, office_id, department_id: departmentItem.id, index }} />)
                     }
-                </div>}
+                </div>
             
         </div>
     )
