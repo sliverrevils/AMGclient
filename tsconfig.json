@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
@@ -35,7 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "components/Screens/StatisticScreen/StatisticScreen copy", "components/Screens/StatisticScreen/StatisticScreen copy.tsxaa"  ],
   "exclude": [
     "node_modules"
   ]

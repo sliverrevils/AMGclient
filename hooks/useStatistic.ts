@@ -51,11 +51,11 @@ export default function useStatistic(){
         setLoading(true);
         try {
             const statsArr: any = await axiosClient.get(`statistics/stats_by_chart_id/${id}`);
+
             setLoading(false);
 
-            if (statsArr.data) {  
-                           
-                console.log('ALL STATS BY CHART ID: '+id, statsArr.data.map(el=>({...el,fields:JSON.parse(el.fields)})));  
+            if (statsArr.data) {                             
+               // console.log('ALL STATS BY CHART ID: '+id, statsArr.data.map(el=>({...el,fields:JSON.parse(el.fields)})));  
                 setStatsArr(statsArr.data
                     .map(el=>({...el,fields:JSON.parse(el.fields)}))
                     .sort((stat_1,stat_2)=>new Date(+stat_1.dateStart).getTime() - new Date(+stat_2.dateStart).getTime())  
@@ -70,5 +70,30 @@ export default function useStatistic(){
         }
     }
 
-    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId}
+    const getPeriodByUserID=async (id:number=user.userId,pattern: number,dateStart:number, dateEnd:number, setStatsArr?:any):Promise<StatisticI[]>=>{
+        setLoading(true);
+        try {
+            const resArr: any = await axiosClient.post(`statistics/period/${id}`,{ // if id = 0 : gets all users statistic
+                pattern,
+                dateStart,
+                dateEnd
+            });
+            setLoading(false);
+            const withParsedFields:StatisticI[]=resArr.data.map(stat=>({...stat,fields:JSON.parse(stat.fields)}))
+
+            if (resArr) {                
+                //console.log('withParsedFields', withParsedFields);    
+                setStatsArr&&setStatsArr(withParsedFields)            
+                toast.warning(resArr.data.errorMessage);
+            }
+           
+            return withParsedFields
+        } catch (err) {
+            setLoading(false);
+            axiosError(err);
+            return [];
+        }
+    }
+
+    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID}
 }

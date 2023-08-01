@@ -5,7 +5,7 @@ import { useState } from "react";
 
 
 
-export default function AdministratorsList({ user_id, userById, idx, admin, updateOrgScheme, findChartById, charts }: { user_id: number, userById: any, idx: number, admin: AdministratorI, updateOrgScheme: any, findChartById: any, charts: ChartI[] }) {
+export default function AdministratorsList({ user_id, userById, idx, admin, updateOrgScheme, findChartById, charts, isAdmin }: { user_id: number, userById: any, idx: number, admin: AdministratorI, updateOrgScheme: any, findChartById: any, charts: ChartI[], isAdmin: boolean }) {
     const user: UserFullI | undefined = userById(user_id);
     const { deleteSectionAdministrator, deleteChartFromAdministrator, addChartToAdministrator } = useOrg();
     const [selectAddChart, setSelectAddChart] = useState(1);
@@ -24,7 +24,7 @@ export default function AdministratorsList({ user_id, userById, idx, admin, upda
                         <img src="svg/org/admin.svg" />
                         <span>{user.name}</span> 
                     </span>
-                    <img src="svg/org/admin_del.svg"  className={styles.userDel} onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}/>
+                    {isAdmin && <img src="svg/org/admin_del.svg"  className={styles.userDel} onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}/>}
                      
                 </div>
 
@@ -82,7 +82,7 @@ export default function AdministratorsList({ user_id, userById, idx, admin, upda
                         <img src="svg/org/user_deleted.svg" />
                     </span>
                     <span>deleted user</span>
-                    <span onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}><img src="svg/org/admin_del.svg" /></span>
+                   {isAdmin&& <span onClick={() => deleteSectionAdministrator(admin.id, updateOrgScheme)}><img src="svg/org/admin_del.svg" /></span>}
                 </div>
             </div>
         )

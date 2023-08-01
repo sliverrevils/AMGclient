@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSelector } from 'react-redux';
 import Loader from '@/components/elements/loader/Loader';
 import MainPage from '@/components/templates/MainPage/MainPage';
+import { setUsersRedux } from '@/redux/usersSlice';
 
 
 
@@ -22,7 +23,7 @@ export default function Main() {
 
   const initFirst=useRef(true);
   const dispatch=useDispatch();
-  const {logout}=useAuth();
+
 
   const {loadingFullScreen,loading}=useSelector((state:any)=>state.app)
   const {user}=useSelector((state:any)=>state.main)
@@ -33,7 +34,7 @@ export default function Main() {
       authCheck()
       .then((user)=>{        
         if(user){
-          dispatch(logInRedux(user))
+          dispatch(logInRedux(user));          
         }        
       })
     }

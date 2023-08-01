@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import AdministratorsList from "../AdministratorsList/AdministratorsList";
 
-export default function Section({ sectionItem, users, userById, updateOrgScheme, office_id, department_id, charts, index }: { sectionItem: SectionI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, department_id: number, charts: Array<ChartI>, index: number }) {
+export default function Section({ sectionItem, users, userById, updateOrgScheme, office_id, department_id, charts, index, isAdmin }: { sectionItem: SectionI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, department_id: number, charts: Array<ChartI>, index: number, isAdmin: boolean }) {
 
     // const administrators: Array<number> = JSON.parse(sectionItem.administrators);
     const [inputAddAdmin, setInputAddAdmin] = useState('');
@@ -65,7 +65,7 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                 <div className={styles.sectionItemHead}>
                     <div className={styles.help}>секция {index + 1}</div>
                     {
-                        updated
+                        updated && isAdmin
                             ? <div className={styles.update} onClick={updateSetionHandle}>
                                 <img src="svg/org/update_white.svg" />
                             </div>
@@ -73,26 +73,26 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                     }
                     <div className={styles.sectionName}>
 
-                        <input value={sectionName} onChange={event => setSectionName(event.target.value)} />
+                        <input value={sectionName} onChange={event => setSectionName(event.target.value)} disabled={!isAdmin} />
 
                     </div>
-                    <img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />
+                    {isAdmin &&<img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />}
                 </div>
                 <div className={styles.sectionBody}>
                     <div className={styles.propLine}>
                         <img src="svg/org/leadership.svg" />
-                        <select value={sectionLeadership || ''} onChange={event => setSectionLeadership(+event.target.value)}>
-                                <option value={''}>выбор руководителя</option>
+                        <select value={sectionLeadership || ''} onChange={event => setSectionLeadership(+event.target.value)} disabled={!isAdmin}>
+                                <option value={''}>администратор не назначен</option>
                                 {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
                             </select>
                     </div>
                     <div className={styles.propLine}>
                         <img src="svg/org/ckp.svg" />
-                        <textarea value={sectionCkp} spellCheck="false" onChange={event => setSectionCkp(event.target.value)} />
+                        <textarea value={sectionCkp} spellCheck="false" onChange={event => setSectionCkp(event.target.value)} disabled={!isAdmin} />
                     </div>
                     <div className={styles.propLine}>
                         <img src="svg/org/description.svg" />
-                        <textarea value={sectionDescriptions} spellCheck="false" onChange={event => setSectionDescriptions(event.target.value)} />
+                        <textarea value={sectionDescriptions} spellCheck="false" onChange={event => setSectionDescriptions(event.target.value)} disabled={!isAdmin} />
                     </div>
                     <div className={`${styles.administratorsList}`}>
                         <div className={styles.propLine} onClick={adminsListToggle} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -123,12 +123,12 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                             <img onClick={addAdminFieldToggle} src="svg/org/close_field.svg" /> */}
                                     </div>
                                 </div>
-                                : adminsListOpen && <div className={styles.addAdminBtn}> <img src="svg/org/admin_add.svg" onClick={addAdminFieldToggle} /></div>
+                                : adminsListOpen && isAdmin && <div className={styles.addAdminBtn}> <img src="svg/org/admin_add.svg" onClick={addAdminFieldToggle} /></div>
                         }
 
                         {
                             adminsListOpen && sectionItem.administrators.map((admin: AdministratorI, idx) => {
-                                return <AdministratorsList key={idx + 'adminsList'} {...{ admin, charts, findChartById, idx, updateOrgScheme, user_id: admin.user_id, userById }} />
+                                return <AdministratorsList key={idx + 'adminsList'} {...{ admin, charts, findChartById, idx, updateOrgScheme, user_id: admin.user_id, userById, isAdmin }} />
 
                             })
                         }

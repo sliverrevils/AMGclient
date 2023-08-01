@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import useOrg from "@/hooks/useOrg";
 
 
-export default function Office({ officeItem, updateOrgScheme, users, userById, charts }: { officeItem: OfficeI | undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[] }) {
+export default function Office({ officeItem, updateOrgScheme, users, userById, charts, isAdmin }: { officeItem: OfficeI | undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[], isAdmin: boolean }) {
 
     const [inputDepatmentName, setInputDepartmentName] = useState('');
     const [inputCode, setInputCode] = useState('');
@@ -68,7 +68,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                     <div className={styles.officeHead}>
                         <div className={styles.help}>отделение</div>
                         {
-                            updated
+                            updated && isAdmin
                                 ? <div className={styles.update} onClick={updateOfficeHandle}>
                                     <img src="svg/org/update_white.svg" />
                                 </div>
@@ -76,15 +76,15 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                         }
                         <div className={styles.officeName}>
                             {/* <img src="svg/org/vaadin_office.svg" /> */}
-                            <input value={officeName} onChange={event => setOfficeName(event.target.value)} />
+                            <input value={officeName} onChange={event => setOfficeName(event.target.value)} disabled={!isAdmin} />
                         </div>
-                        <img  src="svg/org/delete_white.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`) && deleteOffice(officeItem.id, updateOrgScheme)} />
+                       {isAdmin && <img  src="svg/org/delete_white.svg" onClick={() => confirm(`Вы точно хотите удалить оффис "${officeItem.name}" ?`) && deleteOffice(officeItem.id, updateOrgScheme)} />}
                     </div>
 
                     <div className={styles.officeBody}>
                         <div className={styles.propLine}>
                             <img src="svg/org/leadership.svg" />
-                            <select value={officeLeadership || ''} onChange={event => setOfficeLeadership(+event.target.value)}>
+                            <select value={officeLeadership || ''} onChange={event => setOfficeLeadership(+event.target.value)} disabled={!isAdmin}>
                                 <option value={''}>выбор руководителя</option>
                                 {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
                             </select>
@@ -92,52 +92,53 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                         </div>
                         <div className={styles.propLine}>
                             <img src="svg/org/ckp.svg" />
-                            <textarea value={officeCkp} spellCheck="false" onChange={event => setOfficeCkp(event.target.value)} />
+                            <textarea value={officeCkp} spellCheck="false" onChange={event => setOfficeCkp(event.target.value)} disabled={!isAdmin}/>
                         </div>
                         <div className={styles.propLine}>
                             <img src="svg/org/description.svg" />
-                            <textarea value={officeDescriptions} spellCheck="false" onChange={event => setOfficeDescriptions(event.target.value)} />
+                            <textarea value={officeDescriptions} spellCheck="false" onChange={event => setOfficeDescriptions(event.target.value)} disabled={!isAdmin} />
                         </div>
-                        <div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{ background: 'steelblue' }}>
+                        {isAdmin&&<div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{ background: 'steelblue' }}>
                             Добавить отдел
                             <img src="svg/org/add_white.svg" />
-                        </div>
+                        </div>}
 
                     </div>
 
                 </div>
+                
+                    <div className={` ${styles.departmentsList}`} style={{justifyContent:officeItem.departments.length<3?'center':'left'}}>
 
-                <div className={` ${styles.departmentsList}`}>
-
-                    {
-                        addDepatment
-                        &&
-                        <div className={styles.addDepartmentForm}>
-                            <div className={styles.addForm} >
-                                <h3>Новый отдел</h3>
-                                <span className={styles.addHelp}>Название отдела</span>
-                                <input type="text" value={inputDepatmentName} onChange={event => setInputDepartmentName(event.target.value)} placeholder="название отдела" />
-                                <span className={styles.addHelp}>код отдела</span>
-                                <input type="text" value={inputCode} onChange={event => setInputCode(event.target.value)} placeholder="код отдела" />
-                                <span className={styles.addHelp}>Руководитель отдела</span>
-                                <select value={inputLeadership} onChange={event => setInputLeadership(event.target.value)}>
-                                    {users.map(user => <option key={user.id + user.name + '_userItem'} value={user.id}>id:{user.id} {user.name}</option>)}
-                                </select>
-                                <span className={styles.addHelp}>КЦП отдела</span>
-                                <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" spellCheck={false} />
-                                <span className={styles.addHelp}>Описание отдела</span>
-                                <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />
-                                <button onClick={creaetDepartmentHandle} className="add">Создать отдел</button>
-                                <img src="svg/org/close_field.svg" onClick={addDepartmentToggle} className={styles.close} />
+                        {
+                            addDepatment
+                            &&
+                            <div className={styles.addDepartmentForm}>
+                                <div className={styles.addForm} >
+                                    <h3>Новый отдел</h3>
+                                    <span className={styles.addHelp}>Название отдела</span>
+                                    <input type="text" value={inputDepatmentName} onChange={event => setInputDepartmentName(event.target.value)} placeholder="название отдела" />
+                                    <span className={styles.addHelp}>код отдела</span>
+                                    <input type="text" value={inputCode} onChange={event => setInputCode(event.target.value)} placeholder="код отдела" />
+                                    <span className={styles.addHelp}>Руководитель отдела</span>
+                                    <select value={inputLeadership} onChange={event => setInputLeadership(event.target.value)} >
+                                        {users.map(user => <option key={user.id + user.name + '_userItem'} value={user.id}>id:{user.id} {user.name}</option>)}
+                                    </select>
+                                    <span className={styles.addHelp}>КЦП отдела</span>
+                                    <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" spellCheck={false} />
+                                    <span className={styles.addHelp}>Описание отдела</span>
+                                    <textarea value={inputDescriptions} onChange={event => setInputDescriptions(event.target.value)} />
+                                    <button onClick={creaetDepartmentHandle} className="add">Создать отдел</button>
+                                    <img src="svg/org/close_field.svg" onClick={addDepartmentToggle} className={styles.close} />
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
-                    {
-                        officeItem.departments.map((department, indexDep: number) => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id, indexDep }} />)
-                    }
+                        {
+                            officeItem.departments.map((department, indexDep: number) => <Depatment key={department.id + '_departmentItem'} departmentItem={department} {...{ charts, users, userById, updateOrgScheme, office_id: officeItem.id, indexDep, isAdmin }} />)
+                        }
 
-                </div>
+                    </div>
+               
 
             </div>
 

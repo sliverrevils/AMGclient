@@ -54,7 +54,7 @@ export default function ChartFillerScreen() {
             })
     }
 
-    const validate=():boolean=>!(dateStart&&dateEnd&&chartState.every(filed=>!!filed.value))
+    const validate=():boolean=>!(dateStart&&dateEnd&&chartState.every(field=>field.type=='number'||field.type=='select'? !!field.value:true))
 
     useEffect(() => {
         if (init.current) {
@@ -97,13 +97,14 @@ export default function ChartFillerScreen() {
                         <input type={'date'} value={dateEnd} onChange={event => setDateEnd(event.target.value)} />
                     </div>
 
-                    {chartState.length && currentPattern.fields.map((field, idx) => (
+                    {chartState.length && currentPattern.fields.filter(field=>field.type=='number'||field.type=='select').map((field, idx) =>(
                         <div key={field.name + idx} className={styles.field}>
                             <div className={styles.fieldName}>{field.name}</div>
                             
                             {field.type==='number'&&<input type={'number'} value={chartState[idx].value} onChange={event => changeFieldValue(idx, event.target.value)} />}
                             {field.type === 'select' &&
                                 <select style={{padding:'5px 20px',margin:0}} onChange={event => changeFieldValue(idx, event.target.value)} >
+                                    <option value={''}>выбор</option>
                                     {
                                         Object.keys(field.fieldOptions).map((option, idx) =>
                                             <option key={idx + option} value={field.fieldOptions[option]}>

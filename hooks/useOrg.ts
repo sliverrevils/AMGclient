@@ -195,7 +195,7 @@ export default function useOrg() {
             if (created) {
                 update();
                 console.log('ADD ADMINISTRATOR', created);
-                !created.data.errorMessage&&toast.success('Сотрудник добавлен в списки администраторов секции');
+                !created.data.errorMessage&&toast.success('В секцию добавлен сотрудник');
                 toast.warning(created.data.errorMessage);
             }
             return true
@@ -213,7 +213,7 @@ export default function useOrg() {
             update();
             dispatch(setLoadingRedux(false));
             if (created) {
-                toast.success(`Администратор успешно удалён`);
+                toast.success(`Сотрудник удалён из секции`);
                 toast.warning(created.data.errorMessage);
             }
             return true

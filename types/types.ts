@@ -83,6 +83,7 @@ export interface FieldI{
     "type":string,
     "fieldOptions":object
     "value"?:string|number
+    "fieldLogic"?:string
 }
 
 export interface LineI{
@@ -97,6 +98,7 @@ export interface ChartPatternI{
     "name":string,
     "fields": Array<FieldI>,
     "lines": Array<LineI>,
+    "access":number[],
     "descriptions": string,
     "created_by": number,
     "updated_by": number,
@@ -117,6 +119,34 @@ export interface StatisticI{
     "createdAt"?: string,
     "updatedAt"?: string,
 }
+
+export interface StatisticDataRowI {
+    name: string,
+    value: number | string
+}
+
+export interface ColumnI {
+    name: string,
+    logic: string,
+    initValue: number | null,
+    color: string,
+    key:number
+}
+
+export type RowI = {
+    key:number,
+    value:number|string
+}
+
+export interface TableI{
+    id:number,
+    name:string,
+    createdAt:string,
+    created_by:number,
+    view_pattern_id:number,
+    columns:ColumnI[],
+}
+
 
 
 

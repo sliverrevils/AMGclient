@@ -11,6 +11,7 @@ export default function ChartCreatorScreen() {
     const [addLinePanel, setAddLinePanel] = useState(false);
     const [chartName, setChartName] = useState('');
     const [logicString, setLogicString] = useState('');
+    const [viewLogicString, setViewLogicString] = useState('');
     const [lineName, setLineName] = useState('');
     const [lineColor, setLineColor] = useState('#32c34a');
     const [lines, setLines] = useState<Array<LineI>>([]);
@@ -33,11 +34,12 @@ export default function ChartCreatorScreen() {
             }).join();
         }
         
-        setFields(state => ([...state, { id: state.length + 1, name: inputFieledName, type, fieldOptions:JSON.parse(`{${replacedOptions}}`) }]));
+        setFields(state => ([...state, { id: state.length + 1, name: inputFieledName, type, fieldOptions:JSON.parse(`{${replacedOptions}}`), fieldLogic:viewLogicString }]));
         setType('');
         setInputFieledName('');
         setAddFieldsPanel(false);
         setFieldOptions('');
+        setViewLogicString('');
     }
 
     const delField = (id: number) => {
@@ -48,6 +50,16 @@ export default function ChartCreatorScreen() {
         setFields(state => state.map(el => {
             if (el.id == id) {
                 el.name = text;
+                return el;
+            } else
+                return el
+        }))
+    }
+
+    const changeFieldLogic = (id: number, text: string) => {
+        setFields(state => state.map(el => {
+            if (el.id == id) {
+                el.fieldLogic = text;
                 return el;
             } else
                 return el
@@ -94,16 +106,33 @@ export default function ChartCreatorScreen() {
                         <span className={styles.helpText}>Добавление поля</span>
                         <select value={type} onChange={event => setType(event.target.value)}>
                             <option value={''}>выберите тип поля</option>
-                            <option value={'number'}>цифровое поле</option>
-                            <option value={'select'}>поле выбора</option>
+                            <option value={'number'}>цифровое поле (заполнение)</option>
+                            <option value={'select'}>поле выбора (заполнение)</option>
+                            <option value={'view'}> логическое поле (отображение)</option>
                         </select>
                         <input type="text" value={inputFieledName} onChange={event => setInputFieledName(event.target.value)} placeholder="название поля" />
 
                         {
+                            type === 'number' && <>
+                                <span className={styles.help}> Цифровое поле - будет заполняться пользователем при заполнении статистки по шаблону</span>
+                                <span className={styles.help}> Доступ к значению поля, для просчётов линий или полей отображения, реализуется через декоратор "@"</span>
+                                
+
+                            </>
+                        }
+                        {
                             type === 'select' && <>
+                                <span className={styles.help}> Поле выбора - будет предоставлять пользователю выбора значения в выпадающем списке </span>
                                 <span className={styles.help}> пример поля со значениями : " поле1 = 22, поле2 = 33 "</span>
-                                <span className={styles.help}> в заполнении шаблона, после выбора полю будет присвоено указанное значение"</span>
+                                <span className={styles.help}> в заполнении шаблона, после выбора,  полю будет присвоено указанное значение"</span>
                                 <input value={fieldOptions} onChange={event => setFieldOptions(event.target.value)} placeholder="опции поля со значениями" />
+
+                            </>
+                        }
+                        {
+                            type === 'view' && <>                                
+                                <span className={styles.help}> Поле отображения - поле отображающее результат описанной в нем математической операции с цифровыми полями</span>
+                                <input value={viewLogicString} onChange={event => setViewLogicString(event.target.value)} placeholder="математическая логика поля" />
 
                             </>
                         }
@@ -139,10 +168,13 @@ export default function ChartCreatorScreen() {
 
                 <h3><span>назвние шаблона</span> {chartName}</h3>
                 {
-                    fields.map((field: any, idx: number) => <div key={field.id + '_field'} className={styles.addedField}>
-                        <span><span>поле</span>@{field.id}</span>   
+                    fields.map((field: FieldI, idx: number) => <div key={field.id + '_field'} className={styles.addedField}>
+                        <span><span>поле</span>{field.type=='number'||field.type=='select'?'@':''}{field.id}</span>   
 
                         {field.type=='number'&&<input value={field.name} onChange={event => changeField(field.id, event.target.value)} />}
+
+                        {field.type=='view'&&<input value={field.name} onChange={event => changeField(field.id, event.target.value)} />}
+                        {field.type=='view'&&<input value={field.fieldLogic} onChange={event => changeFieldLogic(field.id, event.target.value)} />}
 
                         {field.type == 'select' &&
                             <div>
@@ -175,12 +207,12 @@ export default function ChartCreatorScreen() {
                         </div>
                         : ''
                 }
-                <button className="btn" onClick={createSchemaChart} disabled={!(chartName.length >= 2)}>Сохранить шаблон</button>
+                <button className="btn"  onClick={createSchemaChart} disabled={!(chartName.length >= 2)}>Сохранить шаблон</button>
             </div>
             </>
             }
 
-        {false&&<div>
+        {/* {chartSchema&&<div>
             <h2>Chart scheme</h2>
             <pre>
                 {JSON.stringify({
@@ -201,7 +233,7 @@ export default function ChartCreatorScreen() {
             </pre>
 
             <pre>{JSON.stringify(chartSchema, null, 2)}</pre>
-        </div>}
+        </div>} */}
 
 
         </div>

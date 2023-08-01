@@ -13,7 +13,7 @@ export default function Aside() {
         <aside className={styles.menuWrap}>
             <ul>
                 {
-                    accessedRoutes.map(el=><li key={el.id+'_btn'} className={`${el.active}`} onClick={el.clickFunc}>{el.title}</li>)
+                    accessedRoutes.map(el=><li key={el.id+'_btn'} className={`${el.active} noselect`} onClick={el.clickFunc}>{el.title}</li>)
                 }
             </ul>
             <ul>

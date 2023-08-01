@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from './org.module.scss';
 import Office from "@/components/modules/Office/Office";
 import Modal from "@/components/elements/Modal/Modal";
+import { useSelector } from "react-redux";
 
 
 export default function OrgScreen() {
@@ -23,6 +24,8 @@ export default function OrgScreen() {
     const addOfficeToggle = () => setAddOffice(state => !state);
     const updateOrgScheme = () => getOrgFullScheme(setOrg, setUsers, setCharts);
     const findOffice = (): OfficeI | undefined => org.find(office => office.id == currentOfficeId);
+
+    const isAdmin=useSelector((state:any)=>state.main.user.role=='admin');
 
     const userById = (id: number) => users.find(el => el.id === id);
     const creaetOfficeHandle = () => {
@@ -54,7 +57,7 @@ export default function OrgScreen() {
             {
                 !!findOffice() &&
                 <Modal closeModalFunc={() => setCurrentOfficeId(null)} fullWidth={true}>                  
-                    <Office officeItem={findOffice()} {...{ charts, updateOrgScheme, users, userById }} />
+                    <Office officeItem={findOffice()} {...{ charts, updateOrgScheme, users, userById, isAdmin }} />
                 </Modal>
             }
 
@@ -81,7 +84,7 @@ export default function OrgScreen() {
                                 <img src="svg/org/close_field.svg" onClick={addOfficeToggle} className={styles.close} />
                             </div>
                         </Modal>
-                        : <div onClick={addOfficeToggle} className={styles.addOfficeBtn}>
+                        : isAdmin&&<div onClick={addOfficeToggle} className={styles.addOfficeBtn}>
                             <img src="svg/org/vaadin_office.svg" />
                             <span>+</span>
                         </div>

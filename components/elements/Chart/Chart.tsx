@@ -99,7 +99,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
 
     return (
         <>           
-            {table&&<table>
+            {/* {table&&<table>
                 <thead>
                     <td>дата</td>
                     {chartSchema.fields.map(el => <td key={el.id + 'th'}><span style={{ color: 'lightgray' }}>@{el.id}</span> {el.name}</td>)}
@@ -116,7 +116,7 @@ export function ChartShow({ records, chartSchema,table=false }) {
 
                     </tr>
                 ))}
-            </table>}
+            </table>} */}
 
             <Line data={{
                 labels:records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`),

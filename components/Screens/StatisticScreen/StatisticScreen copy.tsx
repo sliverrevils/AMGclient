@@ -13,7 +13,6 @@ import { logicMath } from "@/utils/funcs";
 import Modal from "@/components/elements/Modal/Modal";
 import useTable from "@/hooks/useTable";
 import { toast } from "react-toastify";
-import { setTimeout } from "timers";
 
 interface StatisticDataRowI {
     name: string,
@@ -34,13 +33,16 @@ interface TableI{
     created_by:number,
     view_pattern_id:number,
     columns:EditorRowI[],
+
+
+
 }
 
 export default function StatisticScreen() {
     const initTableRef = useRef(true);
     const [chartSchema, setChartSchema] = useState<any>({});
     const [selectedPatternId, setSelectedPatternId] = useState(0);
-    const [selectedTableId,setSelectedTableId]=useState<number|undefined>();
+    const [selectedTableId,setSelectedTableId]=useState(0);
     const [statArr, setStatArr] = useState<Array<StatisticI>>([]);
     const [statArrFiltered, setStatArrFiltered] = useState<Array<StatisticI>>([]);
     const [patterns, setPatterns] = useState<Array<ChartPatternI>>();
@@ -56,7 +58,7 @@ export default function StatisticScreen() {
     const [showTableEditor, setShowTableEditor] = useState(false);
 
             //TABLE EDITOR STATE
-            const [editorColumns, setEditorColumns] = useState<Array<EditorRowI>>([]);  
+            const [editorColumns, setEditorColumns] = useState<Array<EditorRowI>>([]);   
             const [costumLinesArr, setCostumLinesArr] = useState<Array<any>>([]);
             const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
 
@@ -70,7 +72,7 @@ export default function StatisticScreen() {
 
         //created  FOR pattern ID
         const [createdForId,setCreatedForId]=useState<number|undefined>();
-        const createdForIdRef=useRef(true);
+        const createdForIdRef=useRef(0);
 
 
 
@@ -80,12 +82,20 @@ export default function StatisticScreen() {
     //----------------------------------------------------------------------------------------------------------------TABLE EDITOR COMPONENT
     const DynamicTableOfStats = ({ modal = false }: { modal: boolean }) => {
         const currentPattern: ChartPatternI | undefined = patterns?.find(pattern => pattern.id == selectedPatternId);
-        const { userByID } = useUsers();        
+        const { userByID } = useUsers();
+        
         const [createdTableBody, setCreatedTableBody] = useState<Array<Array<number | string>>>([]);
+
         const [columnEditorName, setColumnEditorName] = useState('');
         const [columnEditorLogic, setColumnEditorLogic] = useState('');
         const [columnEditorInitialValue, setColumnEditorInitialValue] = useState('');
         const [columnEditorColor, setColumnEditorColor] = useState('');
+
+
+
+
+
+
         //-------------------------------------------------------TATISTIC DATA----- прсчёт полей 
 
         const [statisticRowsData, setStatisticRowsData] = useState<Array<StatisticDataRowI[]>>(statArrFiltered.map((stat, idxStat: number) => ([
@@ -127,7 +137,11 @@ export default function StatisticScreen() {
                 value: stat.updated_by ? `${userByID(stat.updated_by || 0)?.name} : ${new Date(stat.updatedAt + '').toLocaleString()}` : 'не обновлялась'
             }
         ])));
-      
+        //useEffect(() => { console.log('STAT DATA', statisticRowsData) }, [statisticRowsData]);
+
+        //useEffect(() => { console.log('STAT DATA INITIAL', statArrFiltered) }, [statArrFiltered]);
+
+        //-----PATTERN SCHEMA-----        
 
         //------------------------------------------------------------------------------------ADD NEW COLUMN 
 
@@ -137,15 +151,45 @@ export default function StatisticScreen() {
         }
 
 
+        //--------------------------------------------------------------------------------CREATE TABLE PROCESS---- (initial data to  {name, value})
 
+       
+        useEffect(() => { //------------------------------------- ON FIRST
+            if (statisticRowsData.length && editorColumns.length) {
+                let lastRow;
+                let lastRowData:any[]=editorColumns.map(column=>({value:column.initValue||0})); // записывает начальное значение по индексу столбца а не поля (сбивается логика при перестановке столбцов)
+               // const rowInitialValues=editorColumns.map(column=>column.initValue||0);
+
+                const created: Array<Array<number | string>> = statisticRowsData.map((rowData, rowIndex) => {
+                   // console.log('ROW DATA',rowData);
+                    const newRow = editorColumns.map((column, columnIndex: number) => {
+                        const sum = /@sum/.test(column.logic);
+                        const mathLogic = column.logic.replaceAll('@sum', '');// clear @sum
+                        const resultColumn =
+                            sum && rowIndex
+                                ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + Number(lastRow[columnIndex])
+                                : sum
+                                    ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + (column.initValue || 0)
+                                    : logicMath(mathLogic, rowData, rowIndex,lastRowData);
+                        return resultColumn;
+                    });
+                    // console.log('NEW ROW', newRow);
+                    lastRowData = [...rowData];
+                    lastRow = [...newRow];
+                    return newRow;
+                });
+
+                setCreatedTableBody(created);
+               // console.log('📊 \n', created);
+            }
+        }, [editorColumns, statisticRowsData]);
 
         //------------------------------------------------------------------------------------INITIAL COLUMNS  CREATING FUNC----------------------⚙️
 
         //-------------------------CREATE INIT COLUMNS FUNC ➡️⚙️
         const createInitTableEditor=()=>{            
-            
+            console.log('⚙️', statisticRowsData);
             if(!!statisticRowsData.length){
-                console.log('CREATING ALL COLUMNS⚙️', statisticRowsData);
             setEditorColumns(statisticRowsData[0].map((row, columnIndex: number) => (
                 {
                     name: row.name,
@@ -153,7 +197,8 @@ export default function StatisticScreen() {
                     initValue: null,
                     color: ''
                 }
-            )));            
+            )));
+            // setCreatedForId(selectedPatternId);
             }
         }
 
@@ -372,106 +417,53 @@ export default function StatisticScreen() {
             createTable(newTableName,selectedPatternId,editorColumns,setTables);
         }
 
-        //-------------------------------------------------------------- ПЕРЕДЕЛАТЬ НЕ НА ЭФФЕКТАХ !!!!!
-
-                //--------------------------------------------------------------------------------CREATE TABLE PROCESS---- (initial data to  {name, value})       
-        useEffect(() => { //------------------------------------- ON FIRST
-
-                    if (statisticRowsData.length && editorColumns.length && !createdTableBody.length) {
-                        console.log('CREATEING TABLE BODY💪💪💪💪💪💪💪💪💪')
-                        let lastRow;
-                        let lastRowData:any[]=editorColumns.map(column=>({value:column.initValue||0})); // записывает начальное значение по индексу столбца а не поля (сбивается логика при перестановке столбцов)
-                       // const rowInitialValues=editorColumns.map(column=>column.initValue||0);
-        
-                        const created: Array<Array<number | string>> = statisticRowsData.map((rowData, rowIndex) => {
-                           // console.log('ROW DATA',rowData);
-                            const newRow = editorColumns.map((column, columnIndex: number) => {
-                                const sum = /@sum/.test(column.logic);
-                                const mathLogic = column.logic.replaceAll('@sum', '');// clear @sum
-                                const resultColumn =
-                                    sum && rowIndex
-                                        ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + Number(lastRow[columnIndex])
-                                        : sum
-                                            ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + (column.initValue || 0)
-                                            : logicMath(mathLogic, rowData, rowIndex,lastRowData);
-                                return resultColumn;
-                            });
-                            // console.log('NEW ROW', newRow);
-                            lastRowData = [...rowData];
-                            lastRow = [...newRow];
-                            return newRow;
-                        });
-        
-                        setCreatedTableBody(created);
-                       // console.log('📊 \n', created);
-                    }
-                }, [editorColumns, statisticRowsData, createdTableBody]);
 
         useEffect(() => { // ----------------------------------------------------------------------- ON FIRST PATTERN SELECT 👇📈
             
-            //if (initTableRef.current && statisticRowsData.length && !createdTableBody.length) {   
-                               
-            if (initTableRef.current && statisticRowsData.length ) {                   
-                
-                console.log('FIRST CREATE TABLE ✅📊---!!!!!!! PATTERN : ',selectedPatternId) ;               
-               
-                initTableRef.current = false;   
-                
-               createInitTableEditor();
-                
+            if (initTableRef.current && statisticRowsData.length && !createdTableBody.length) {   
+                const selectedID= selectedPatternId;
+                console.log('FIRST CREATE TABLE ✅📊---!!!!!!! PATTERN : ',selectedID) ;
+                setCreatedForId(selectedID);
+                createdForIdRef.current=selectedID;
+                initTableRef.current = false;            
+                createInitTableEditor();
                 return
             }
-
+            if(!initTableRef.current&&createdForId!==selectedPatternId){                
+               
+                console.log('❌',createdForId);
+              // createInitTableEditor();
+            }
         }, [statisticRowsData, createdTableBody]);
         
-        //-------------------------------------------------------------------------------------------ON SELECT TABLE-----------------------------👇👇👇👇👇👇👇📊
+        //-------------------------------------------------------------------------------------------ON SELECT TABLE--------👇📊
 
-        useEffect(()=>{ //---------------------------------- при выборе таблицы
-            if(selectedTableId){ //если шаблон выбран
-                const currentTable=tables.find(table=>table.id===selectedTableId);//поиск таблицы выбранной таблицы из массива
-                if(currentTable){//если таблица найдена
+        useEffect(()=>{
+            if(selectedTableId){
+                const currentTable=tables.find(table=>table.id===selectedTableId);
+                if(currentTable){
                     console.log('SELECT TABLE ▶️ ',currentTable);
-                    
-                    setEditorColumns(currentTable.columns);//ставим таблицу в редактор
-                    
-                    setCreatedForId(selectedPatternId);
-                }              
+                    setEditorColumns(currentTable.columns);
+                }else{
+                    console.log('CREATE INIT TABLE  ▶️ ',currentTable);
+                   createInitTableEditor();
+                }               
             }else{
-                if(createdForIdRef.current){
-                    createdForIdRef.current=false;
-                    if(statisticRowsData.length)
-                    setTimeout(()=>{
-                       
-                        // //createInitTableEditor();
-                        // console.log('➡️➡️➡️➡️➡️➡️➡️➡️➡️➡️'),statisticRowsData;
-                        // setEditorColumns(statisticRowsData[0].map((row, columnIndex: number) => (
-                        //     {
-                        //         name: row.name,
-                        //         logic: `@${columnIndex + 1}`,
-                        //         initValue: null,
-                        //         color: ''
-                        //     }
-                        // )));  
+                console.log('TABLE NOT SELECT',selectedTableId)
 
-                    },1000)
-
-                    
-                }
-                
-
-              //  createInitTableEditor() ----- ???
             }
-        },[statisticRowsData,selectedTableId]);
+        },[selectedTableId]);
 
-
-
-
-
-
-
-        useEffect(()=>{console.log('🔁')},[])
-
-
+        //--TEST
+        useEffect(()=>{
+            console.log('CREATING FOR PATTERN ID',createdForId,createdForIdRef.current,'SELECTED ',selectedPatternId);
+            if(createdForIdRef.current!==selectedPatternId){
+                console.log('NEW CREATE !!!⚙️⚙️⚙️⚙️⚙️💻')
+                //setCreatedForId(selectedPatternId);
+                createdForIdRef.current=selectedPatternId
+                createInitTableEditor();
+            }
+        },[selectedPatternId])
 
         return (
             <>
@@ -568,7 +560,6 @@ export default function StatisticScreen() {
             setChartSchema(patterns?.find(pattern => pattern.id == selectedPatternId));
             getAllUserStatsByChartId(selectedPatternId, setStatArr);
             allTablesByPatternId(selectedPatternId,setTables);//-----------------GETS ALL TABLES
-            
         }
         else{
             setStatArr([]);
@@ -585,15 +576,11 @@ export default function StatisticScreen() {
     useEffect(()=>{
         if(selectedPatternId){
             console.log(`SELECT PATTERN ${selectedPatternId} `);
-            setSelectedTableId(undefined);
-            
-            initTableRef.current=true;
-            createdForIdRef.current=true; 
-                      
+            setSelectedTableId(0);
+            // setEditorColumns([]);
+            // initTableRef.current=true;
         }
-    },[selectedPatternId]);
-
-
+    },[selectedPatternId])
 
     return (
         <div className={styles.statsScreenWrapper}>
