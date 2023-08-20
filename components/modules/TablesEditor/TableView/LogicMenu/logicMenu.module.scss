@@ -1,0 +1,54 @@
+.logicMenuBlock{
+    padding: 25px 5px 10px 5px;
+    border-radius: 3px 15px 10px 10px;
+    background: white;
+    border: 4px solid rgba(192, 66, 7, 0.61);
+    position: absolute;
+    font-size: 14px;
+    box-shadow: 3px 3px 8px gray;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    animation: initMenu 100ms ease-in;
+    
+    .close{
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        opacity: .2;
+        cursor: pointer;
+        transition: all 100ms linear;
+        &:hover{
+            opacity: .4;
+            transform: scale(120%);
+        }
+    }
+
+    .fields{
+        cursor: pointer;
+        display: flex;
+        gap: 5px;       
+    }
+
+    .math {
+        cursor: pointer;
+        border-radius: 3px;
+        background: rgba(32, 146, 42, 0.842);
+        color: white;
+        padding: 1px 5px;
+
+    }
+}
+
+@keyframes initMenu{
+    from{
+        transform: translateY(-50%) scale(0%);
+        opacity: 0;
+    }
+    to{
+        transform:translateY(0%) scale(100%);
+        opacity: 1;
+    }
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux";
 import styles from './allPatterns.module.scss';
 import useUsers from "@/hooks/useUsers";
+import useStatistic from "@/hooks/useStatistic";
 
 
 
@@ -20,6 +21,9 @@ export default function AllPatternsScreen() {
 
     const { userByID } = useUsers();
     const { deleteChartPattern } = useChart();
+
+
+    const {deleteAllByChartID}= useStatistic()
 
     //init
     useEffect(() => {
@@ -64,6 +68,17 @@ export default function AllPatternsScreen() {
             </li>
         )
     }
+    const onDeletePattern=(pattern:ChartPatternI)=>{
+        if(confirm(`Вы действительно хотите удалить шаблон "${pattern.name}" ?`)){
+            deleteChartPattern(pattern.id, () => getAllPatterns( setAllPatterns));
+            onDeleteAllStatistics(pattern.id);
+        } 
+
+    }
+
+    const onDeleteAllStatistics=(chart_id:number)=>{
+        confirm('Удалить все записи статистик по этому шаблону?')&&deleteAllByChartID(chart_id);
+    }
 
     return (
         <div className={styles.allPatternsWrapper}>
@@ -75,7 +90,7 @@ export default function AllPatternsScreen() {
                             {
                                 allPaterns.map((pattern, idx: number) =>
                                     <li key={pattern.id + 'patItem'} onClick={(event: any) => event.target.tagName !== 'IMG' && setSelectedPattern(idx)}>
-                                        <img className={styles.close} onClick={() => confirm(`Вы действительно хотите удалить шаблон "${pattern.name}" ?`) && deleteChartPattern(pattern.id, () => getAllPatterns( setAllPatterns))} src="svg/org/close_field_white.svg" />
+                                        <img className={styles.close} onClick={() =>onDeletePattern(pattern) } src="svg/org/close_field_white.svg" />
                                         <div className={styles.patternName}>{pattern.name}</div>
                                         <div className={styles.patternDescriptions}>{pattern.descriptions || 'без описания'}</div>
                                         <div className={styles.patternCreate}>
@@ -148,6 +163,9 @@ export default function AllPatternsScreen() {
                     <ul>
                         {allPaterns[selectedPattern].lines.map((line: LineI,index:number) => <Line key={'_line_'+line.id} line={line} index={index} />)}
                     </ul>
+
+                    <button onClick={()=>onDeleteAllStatistics(allPaterns[selectedPattern].id)} style={{background:'tomato',color:'white',width:400,alignSelf:'flex-end',border:0,borderRadius:5,padding:'5px'}}>Удалить все записи статистик в этом шаблоне</button>
+
                     {/* <pre>
                         {JSON.stringify(allPaterns[selectedPattern], null, 2)}
                     </pre> */}

@@ -32,12 +32,20 @@ ChartJS.register(
 
 export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[]}:{records:any[], chartSchema:any, clickFunc?:any, costumLines?: any[]}) {
     const [modal,setModal] = useState(false);
-    // useEffect(()=>{
-    //     console.log('CHART SCHEME',chartSchema);
-    //     console.log('RECORDS',records);
-    // },[]);
+    const [reverse,setReverse]=useState(false);
 
-    const currentChart=<Line options={{
+
+    const currentChart=<>
+    {
+    !!records.length&&
+        <div
+          className='noselect'
+          onClick={() => setReverse(state => !state)}
+          style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          🔀
+        </div>
+    }
+    <Line options={{
       responsive: true,
       interaction: {
         mode: 'index' as const,
@@ -55,15 +63,34 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
           type: 'linear' as const,
           display: true,
           position: 'left' as const,
+          reverse,
         },
+        // y: {
+        //   type: 'linear' as const,
+        //   display: true,
+        //   position: 'left' as const,
+        // },
         y1: {
           type: 'linear' as const,
-          display: true,
+          display: false,
           position: 'right' as const,
           grid: {
             drawOnChartArea: false,
           },
+          // ticks:{
+          //   stepSize:1,
+          // },
+          reverse,
         },
+        // y1: {
+        //   type: 'linear' as const,
+        //   display: true,
+        //   position: 'right' as const,
+        //   grid: {
+        //     drawOnChartArea: false,
+        //   }
+        // },
+        
       },
     }} data={{
       labels:records.map(el =>`${ new Date(+el.dateStart).toLocaleDateString()} - ${ new Date(+el.dateEnd).toLocaleDateString()}`),
@@ -94,8 +121,14 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
       event.preventDefault();
       clickFunc?clickFunc():setModal(state=>true);
     }}/>
+    </>
 
   return <>
-    {modal?<Modal fullWidth={true} closeModalFunc={()=>setModal(false)}>{currentChart}</Modal> :currentChart}
+
+    {
+      modal
+        ? <Modal fullWidth={true} closeModalFunc={() => setModal(false)}>{currentChart}</Modal>
+        : currentChart
+    }
   </>
 }

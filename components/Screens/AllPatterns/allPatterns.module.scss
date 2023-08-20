@@ -134,6 +134,7 @@
     .selectedPattern {
         display: flex;
         flex-direction: column;
+       // align-items: flex-start;
         position: relative;
         width: 100%;
         //border: 3px solid rgba(0, 0, 0, 0.286);

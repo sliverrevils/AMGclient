@@ -47,7 +47,7 @@ export default function useTable(){
             dispatch(setLoadingRedux(false));
             let updatedParsed:TableI[]=[];
             if (created) {
-                updatedParsed=created.data.map((table:any)=>({...table,columns:JSON.parse(table.columns)})) as TableI[]
+                updatedParsed=created.data.map((table:any)=>({...table,columns:JSON.parse(table.columns)})) as TableI[];
                 if(created.data?.length&&updateState){                                  
                     updateState(updatedParsed);
                 }
@@ -63,5 +63,28 @@ export default function useTable(){
         }
     }
 
-    return { allTablesByPatternId, createTable}
+    const deleteTable = async (table_id,view_pattern_id,updateState?: any):Promise<TableI[]> => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.post(`tables/delete/${table_id}`,{               
+                view_pattern_id,               
+            });           
+            dispatch(setLoadingRedux(false));
+            let updatedParsed:TableI[]=[];
+            if (created) {
+                updatedParsed=created.data.map((table:any)=>({...table,columns:JSON.parse(table.columns)})) as TableI[];
+                if(created.data?.length&&updateState){                                  
+                    updateState(updatedParsed);
+                }                
+                toast.success(`Таблица успешно удалена`); 
+            }
+            return updatedParsed;
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return [];
+        }
+    }
+
+    return { allTablesByPatternId, createTable, deleteTable}
 }

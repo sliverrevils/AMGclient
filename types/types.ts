@@ -125,6 +125,10 @@ export interface StatisticDataRowI {
     value: number | string
 }
 
+export interface StatisticWithFieldValuesI extends StatisticI{
+    fields:Array<{name:string, value:number|string}>
+}
+
 export interface ColumnI {
     name: string,
     logic: string,
@@ -133,7 +137,7 @@ export interface ColumnI {
     key:number
 }
 
-export type RowI = {
+export type RowI = {   
     key:number,
     value:number|string
 }
@@ -146,6 +150,35 @@ export interface TableI{
     view_pattern_id:number,
     columns:ColumnI[],
 }
+
+export interface MenuI{
+    show:boolean,
+    position:{
+        x:number,
+        y:number
+    }
+}
+
+export interface CostumLineI{
+    name:string,
+    records:number[],
+    color:string,
+    key:number
+}
+
+export interface MonthI{
+    title: string;
+    value: number;
+    color: string;
+}
+
+export interface WeekI{
+    title: string;
+    titleShort: string;
+    value: number;
+    color: string;
+}
+
 
 
 

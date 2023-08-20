@@ -1,0 +1,39 @@
+.monthWrapper{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid pink;
+
+    .week{
+        border:1px solid  tomato;
+        display: flex;
+        padding: 3px;
+        gap: 5px;
+        .day{
+            width: 100%;
+            border: 1px solid green;
+            border-radius: 5px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dayOther{
+            width: 100%;
+            border: 1px solid green;
+            border-radius: 5px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: .4;
+
+        }
+
+        &:hover{
+            background: rgba(173, 216, 230, 0.5);
+            cursor: pointer;
+        }
+    }
+
+
+}

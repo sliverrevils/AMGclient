@@ -169,7 +169,7 @@ export default function StatisticScreen() {
                 name: 'Суммировать данные столбца ',
                 value: '@sum'
             },
-        ]
+        ];
 
         //------------------------------------------------ -------------------------------COSTUM LINES funcs---
         const addCostumLine = (name: string, records: number[], color = 'pink') => setCostumLinesArr((state: any[]) => [...state, { name, records, color }]); // ADD LINE TO CHART

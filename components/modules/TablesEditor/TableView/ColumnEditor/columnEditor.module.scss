@@ -1,0 +1,197 @@
+.columnEditorBlock{
+    //border: 2px solid tomato;
+    //padding: 5px;
+    //position: relative;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 5px;
+
+    .addColumnBtn{
+        background: #FF8056 ;
+        color: white;
+        font-size: 14px;
+        padding: 3px 7px;
+        border-radius: 3px;
+        box-shadow: 2px 2px 3px black;
+        transition: all 200ms ease-in;
+        &:hover{
+            cursor: pointer;
+            transform: scale(103%);
+            box-shadow: 3px 3px 6px black;
+        }
+
+    }
+    .saveTableBtn{
+        background: rgb(67, 155, 236);
+       
+        color: white;
+        font-size: 14px;
+        padding: 3px 7px;
+        border-radius: 3px;
+        box-shadow: 2px 2px 3px black;
+        transition: all 200ms ease-in;
+        &:hover{
+            cursor: pointer;
+            transform: scale(103%);
+            box-shadow: 3px 3px 6px black;
+        }
+
+    }
+    .deleteTableBtn{
+        background: #ca5a5a;
+       
+        color: white;
+        font-size: 14px;
+        padding: 3px 7px;
+        border-radius: 3px;
+        box-shadow: 2px 2px 3px black;
+        transition: all 200ms ease-in;
+        &:hover{
+            cursor: pointer;
+            transform: scale(103%);
+            box-shadow: 3px 3px 6px black;
+        }
+
+    }
+
+    .saveTableBlock{
+        width: 100%;
+        display: flex;        
+        justify-content: space-between;
+        gap: 20px;
+        background: rgba(67, 154, 236, 0.74);
+        padding: 5px 15px;
+        border-radius: 5px;
+        transition: all 200ms ease-in;
+
+        input{
+            border: 0;
+            padding: 3px 5px;
+            border-radius: 5px;
+            &:focus{
+                outline: 0;
+            }
+        }
+        .confirmSaveTableBtn{
+            border: 0;
+            background: rgb(109, 168, 97);
+            color: white;
+            font-size: 14px;
+            padding: 3px 7px;
+            border-radius: 3px;
+            box-shadow: 2px 2px 3px black;
+            transition: all 200ms ease-in;
+            &:hover{
+                cursor: pointer;
+                transform: scale(103%);
+                box-shadow: 3px 3px 6px black;
+            }
+            &:disabled{
+                cursor: not-allowed;
+                opacity: 1;
+                background: rgb(190, 190, 190);
+            }
+
+        }
+        .cancelSaveTableBtn{
+            border: 0;
+            background: #ca5a5a;
+       
+            color: white;
+            font-size: 14px;
+            padding: 3px 7px;
+            border-radius: 3px;
+            box-shadow: 2px 2px 3px black;
+            transition: all 200ms ease-in;
+            &:hover{
+                cursor: pointer;
+                transform: scale(103%);
+                box-shadow: 3px 3px 6px black;
+            }
+        }
+
+    }
+
+    .editColumnBlock{
+       
+        padding: 15px 10px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        position: relative;
+        border-radius: 3px 15px 10px 10px;
+        box-shadow: 3px 3px 8px rgb(68, 68, 68);
+        position: relative;
+        animation: initMenu 200ms ease-in-out;
+
+        
+        .close{
+            position: absolute;
+            top:5px;
+            right:5px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            opacity: .2;
+            transition: all 100ms linear;
+            &:hover{
+                opacity: .4;
+                transform: scale(120%);
+            }
+            
+        }
+
+        .inputsBlock{     
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 5px;
+
+            
+            .help{
+                font-size: 13px;
+            }
+
+            input{
+                border: 3px solid #FF8056;
+                border-radius: 5px;
+                padding: 3px 5px;
+                &:focus{
+                    outline: 0;
+                    //border: 0;
+                }
+            }
+        }
+
+        .buttonsBlock{
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            div{
+                transition: all 100ms linear;
+            }
+            div:hover{
+                transform: scale(140%);
+                cursor: pointer;
+            }
+        }        
+    }
+
+}
+
+
+@keyframes initMenu{
+    from{
+        transform: translateY(-50%) scale(0%);
+        opacity: 0;
+    }
+    to{
+        transform:translateY(0%) scale(100%);
+        opacity: 1;
+    }
+}

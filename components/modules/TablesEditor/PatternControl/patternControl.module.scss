@@ -1,0 +1,51 @@
+.patternControlBlock{
+    background: rgba(0, 128, 0, 0.137);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 5px;
+    border-radius: 10px;
+    align-items: flex-start;
+
+    button{
+        display: inline-block;        
+    }
+
+    .selectPattern{
+        border: 0;
+        padding: 3px 10px;
+        border-radius: 10px;        
+        border: 3px solid #FF8056;
+
+        option{
+
+        }
+
+    }
+
+    .selectUser{
+        border: 0;
+        padding: 3px 10px;
+        border-radius: 10px;
+
+    }
+
+    .timePeriodBlock{
+        display: flex;
+        gap: 20px;
+        input{
+            border: 0;
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+    }
+    .getStatBtn{
+        cursor: pointer;
+        background: #FF8056;
+        color: white;
+        padding: 5px 10px;
+        font-size: 15px;
+        border-radius: 5px;
+        box-shadow: 3px 2px 5px black;
+    }
+}

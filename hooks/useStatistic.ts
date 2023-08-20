@@ -95,5 +95,45 @@ export default function useStatistic(){
         }
     }
 
-    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID}
+    const deleteStatById= async (id:number,updateFunc?:any)=>{
+        setLoading(true);
+        try {
+            const res: any = await axiosClient.get(`statistics/delete/${id}`);
+            setLoading(false);
+
+            if (res) {                
+                console.log('DELETED', res);    
+                //setStatsArr(resArr.data)   
+                updateFunc&&updateFunc();         
+                toast.warning(res.data.errorMessage);
+            }
+            return true
+        } catch (err) {
+            setLoading(false);
+            axiosError(err);
+            return false;
+        }
+    }
+    const deleteAllByChartID= async (chart_id:number,updateFunc?:any)=>{
+        setLoading(true);
+        try {
+            const res: any = await axiosClient.get(`statistics/deleteall_by_chart_id/${chart_id}`);
+            setLoading(false);
+
+            if (res) {                
+                console.log('DELETED', res);    
+                //setStatsArr(resArr.data)   
+                updateFunc&&updateFunc();     
+                toast.success(res.data.message)    
+                toast.warning(res.data.errorMessage);
+            }
+            return true
+        } catch (err) {
+            setLoading(false);
+            axiosError(err);
+            return false;
+        }
+    }
+
+    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID, deleteStatById, deleteAllByChartID}
 }

@@ -5,10 +5,16 @@ import { ChartPatternI, FieldI, StatisticI, UserFullI, UserI ,StatisticDataRowI}
 import { logicMath } from "@/utils/funcs";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import styles from './patternControl.module.scss';
 
 
 
-export default function PatternControl({setStatisticRowsData,setCurrentPattern}:{setStatisticRowsData:any,setCurrentPattern:any}) {    
+export default function PatternControl({setStatisticRowsData,setCurrentPattern,setStatisticsArr}
+    :{
+        setStatisticRowsData:any,
+        setCurrentPattern:any,
+        setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>
+    }) {    
 
     //--------------------------------------------------------------------------------------STATES🎪
     const [allPatterns, setAllPatterns] = useState<Array<ChartPatternI>>([]); //all accessed patterns (admin:all, user: only accessed)
@@ -64,6 +70,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
     //create array of array with all fields with placed data
     const createInitialDataArray=(initialStatisticsArray:StatisticI[]): StatisticDataRowI[][] =>{
         const calcedData= initialStatisticsArray.map((stat, idxStat: number) => ([
+
             {
                 name: 'Период',
                 value: new Date(+stat.dateStart).toLocaleDateString() + '/' + new Date(+stat.dateEnd).toLocaleDateString()
@@ -92,7 +99,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
             {
                 name: 'Создана',
                 value: new Date(stat.createdAt + '').toLocaleString()
-            },
+            },            
             {
                 name: 'Автор',
                 value: userByID(stat.created_by)?.name
@@ -100,7 +107,11 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
             {
                 name: 'Обновлена',
                 value: stat.updated_by ? `${userByID(stat.updated_by || 0)?.name} : ${new Date(stat.updatedAt + '').toLocaleString()}` : 'не обновлялась'
-            }
+            },
+            {
+                name:'id',
+                value:stat.id
+            },
         ]));
         setStatisticRowsData(calcedData); //SAVE to GLOBAL
         return calcedData
@@ -114,6 +125,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
         console.log('🐣STATISTIC INIT DATA ARRAY',statsArr);
         const createdDataArr=createInitialDataArray(statsArr)
         console.log('📰CREATED DATA ARRAY',createdDataArr);
+        setStatisticsArr(statsArr);
         setCurrentPattern(currentPattern(selectedPatternId));
     }
 
@@ -144,10 +156,8 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
 
 
     return (
-        <div style={{ border: '2px solid green', padding: 5 }}>
-            <h3>pattern control</h3>
-
-            <select value={selectedPatternId} onChange={onSelectPattern}>
+        <div className={styles.patternControlBlock}>
+            <select className={styles.selectPattern} value={selectedPatternId} onChange={onSelectPattern}>
                 <option value={0}>Выберете шаблон</option>
                 {
                     allPatterns?.map((pattern, idx: number) =>
@@ -160,7 +170,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
 
             {
                 isAdmin&&!!selectedPatternId &&
-                <select value={selectedUserId} onChange={event => setSelectedUserId(+event.target.value)}>
+                <select className={styles.selectUser} value={selectedUserId} onChange={event => setSelectedUserId(+event.target.value)}>
                     <option value={0}>Все пользователи</option>
                     {
                         users.filter(user => currentPattern(selectedPatternId)?.access.includes(user.id))?.map((user, idx: number) =>
@@ -171,13 +181,13 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern}:
                     }
                 </select>
             }
-            <div>               
+            {!!selectedPatternId&&<div className={styles.timePeriodBlock}>               
                 <input type="date" value={timeNumberToString(dateStart)} onChange={event=>setDateStart(timeStrToNumber(event.target.value))}  />
                 <input type="date" value={timeNumberToString(dateEnd)} onChange={event=>setDateEnd(timeStrToNumber(event.target.value))}  />
-            </div>
-            <hr/>
-            <button onClick={getStatistics}>ПОЛУЧИТЬ СТАТИСТИКУ ЗА ПЕРИОД</button>
-            <hr/>
+            </div>}
+           
+            {!!selectedPatternId&&<div className={styles.getStatBtn} onClick={getStatistics}>загрузить записи</div>}
+            
 
         </div>
     )
