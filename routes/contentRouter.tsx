@@ -23,7 +23,7 @@ export const accessRoutesArray: Array<{ id: number, title: string, access: Array
     { id: 6, title: "Добавить статистику", access: ['admin', 'user'], Component: ChartFillerScreen },
     { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen },
     { id: 8, title: "Отчеты", access: ['admin'], Component: ReportsScreen },
-    { id: 9, title: "Контроль статистик", access: ['admin'], Component: ControlScreen },
+    { id: 9, title: "Контроль записей", access: ['admin'], Component: ControlScreen },
 
 ]
 

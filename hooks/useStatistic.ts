@@ -94,6 +94,29 @@ export default function useStatistic(){
             return [];
         }
     }
+    const getAllByPeriod=async (dateStart:number, dateEnd:number, setStatsArr?:any):Promise<StatisticI[]>=>{
+        setLoading(true);
+        try {
+            const resArr: any = await axiosClient.post(`statistics/allByPeriod`,{                 
+                dateStart,
+                dateEnd
+            });
+            setLoading(false);
+            const withParsedFields:StatisticI[]=resArr.data.map(stat=>({...stat,fields:JSON.parse(stat.fields)}))
+
+            if (resArr) {                
+                //console.log('withParsedFields', withParsedFields);    
+                setStatsArr&&setStatsArr(withParsedFields)            
+                toast.warning(resArr.data.errorMessage);
+            }
+           
+            return withParsedFields
+        } catch (err) {
+            setLoading(false);
+            axiosError(err);
+            return [];
+        }
+    }
 
     const deleteStatById= async (id:number,updateFunc?:any)=>{
         setLoading(true);
@@ -135,5 +158,5 @@ export default function useStatistic(){
         }
     }
 
-    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID, deleteStatById, deleteAllByChartID}
+    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID, deleteStatById, deleteAllByChartID, getAllByPeriod}
 }

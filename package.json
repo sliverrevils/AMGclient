@@ -17,6 +17,7 @@
     "@types/react-redux": "^7.1.25",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
+    "exceljs": "^4.3.0",
     "faker": "^6.6.6",
     "next": "13.4.4",
     "react": "18.2.0",

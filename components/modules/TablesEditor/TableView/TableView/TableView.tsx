@@ -1,5 +1,5 @@
 import useTable from "@/hooks/useTable"
-import { ChartPatternI, ColumnI, CostumLineI, MenuI, RowI, StatisticDataRowI, TableI } from "@/types/types"
+import { ChartPatternI, ColumnI, CostumLineI, MenuI, RowI, StatisticDataRowI, TableI, UserI } from "@/types/types"
 import { calcTrendColumn, logicMath } from "@/utils/funcs"
 import React, { useEffect, useMemo, useState } from "react"
 import { useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import Modal from "@/components/elements/Modal/Modal";
 import TableBody from "./tableElements/TableBody";
 import ColumnItem from "./tableElements/ColumnItem";
 import { toast } from "react-toastify";
+import { createExelFile } from "@/utils/exelFuncs";
 
 
 
@@ -40,6 +41,7 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
     //---SELECTORS
 
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
+    const user:UserI=useSelector((state:any)=>state.main.user);
 
     //---FUNCS
 
@@ -208,6 +210,15 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
             return
         }
     }
+    //create exel file
+    const onCreateExelFile=()=>{
+        createExelFile({
+            columns,
+            rows,
+            fileName:tables.find(table=>table.id==selectedTableId)?.name||`все поля шаблона "${currentPattern?.name}"`,
+            user
+        })
+    }
 
 
     //Table HTML
@@ -229,6 +240,17 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
             <tbody>
                 <TableBody {...{ rows, setIsFullScreenTable }} />
             </tbody>
+
+            <tfoot>
+                <tr>
+                    <td >                        
+                        <div onClick={onCreateExelFile} className={styles.exelFileBtn}>                            
+                            <img src="svg/other/file_white.svg"/>
+                            <span>Exel</span>
+                            </div>
+                        </td>
+                </tr>
+            </tfoot>
 
         </table>
     ), [columns, rows, selectedColumnIndex]);

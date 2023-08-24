@@ -80,3 +80,24 @@
     }
    }
 }
+
+.exelFileBtn{
+        
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    background: rgba(23, 136, 23, 0.849);
+    justify-content: center;
+    border-radius: 10px;
+    padding: 2px 5px;
+    cursor: pointer;
+    img{
+        width: 17px;
+        height: 17px;
+    }
+    span{
+        color: white;
+        font-size: 12px;
+        
+    }
+}

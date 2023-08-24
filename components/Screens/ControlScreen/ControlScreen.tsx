@@ -1,10 +1,11 @@
+import StatisticControl from "@/components/modules/StatisticControl/StatisticControl";
 
 
 export default function ControlScreen(){
 
     return (
-    <h1>
-        Statistic control
-    </h1>
+    <div>
+        <StatisticControl/>
+    </div>
     )
 }

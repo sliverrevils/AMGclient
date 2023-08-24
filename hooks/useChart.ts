@@ -131,5 +131,16 @@ export default function useChart() {
 
     } 
 
-    return {createChartPattern, getUserPatterns, getAllPatterns, addAccessToChart, removeAccessToChart, deleteChartPattern}
+    //CHART BY ID
+    const chartById=(chartArr:ChartPatternI[],chartId:number)=>{
+        let chart:ChartPatternI|undefined;
+        if(chartArr.length){
+           chart = chartArr.find(chart=>chart.id==chartId);
+        }
+        if(chart){
+            return chart
+        }
+    }
+
+    return {createChartPattern, getUserPatterns, getAllPatterns, addAccessToChart, removeAccessToChart, deleteChartPattern, chartById}
 }

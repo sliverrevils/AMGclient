@@ -1,0 +1,28 @@
+.statControlWrapper{
+    display: flex;
+    flex-direction: column;
+
+    .periodBlock{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+
+        .datesBlock{
+            display:flex;
+            gap: 20px;
+        }
+    }
+
+    .statisticsBlock{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .statisticItem{
+            display: flex;
+            gap:10px;
+            font-size: 12px;
+        }
+    }
+}
