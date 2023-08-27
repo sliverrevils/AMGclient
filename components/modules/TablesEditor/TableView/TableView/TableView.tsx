@@ -88,7 +88,7 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
                     sum && rowIndex
                         ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + Number(lastRow[columnIndex].value)
                         : sum
-                            ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + (column.initValue || 0)
+                            ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + Number(column.initValue || 0)
                             : logicMath(mathLogic, rowData, rowIndex, lastRowData);
                 // return resultColumn;
                 return {

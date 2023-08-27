@@ -73,7 +73,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
             {
                 name: 'Период',
-                value: new Date(+stat.dateStart).toLocaleDateString() + '/' + new Date(+stat.dateEnd).toLocaleDateString()
+                value: new Date(+stat.dateStart).toLocaleDateString() + '\n' + new Date(+stat.dateEnd).toLocaleDateString()
             },
             ...stat.fields.map((field: FieldI) => {
                 if (field.type === 'select')
@@ -102,7 +102,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
             },            
             {
                 name: 'Автор',
-                value: userByID(stat.created_by)?.name
+                value: userByID(stat.created_by)?.name||'пользователь удалён'
             },
             {
                 name: 'Обновлена',
