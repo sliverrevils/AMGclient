@@ -24,16 +24,18 @@ export const logicMath = (logic, fields, index, lastFields?) => { //logic- strin
             })
 
         // console.log('LOGIC/VALUES ', logicWithValue);
-        let res: any;
+        let res: any=null;
         try {
             // console.log('MATH STRING ',logicWithValue)
             res = +eval(logicWithValue)
+            // console.log('MATH res ',res)
 
         } catch {
             // console.log('MATH ERROR')
         }
         //console.log('MATH RES ',logicWithValue)
-        return res || logicWithValue.replaceAll(/[-|+|*|/]/g, '');
+        //return res || logicWithValue.replaceAll(/[-|+|*|/]/g, '');
+        return res!==null?res:logicWithValue.replaceAll(/[-|+|*|/]/g, '');
 
     } else
         return 0;

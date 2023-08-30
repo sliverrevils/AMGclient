@@ -15,6 +15,10 @@ const mathArr = [
         name: 'Просчитать тренд ',
         value: '@trend'
     },
+    {
+        name: 'НД ЧП',
+        value: '@ndchp'
+    }
 ];
 
 export default function LogicMenu({statisticRowsData, setLogicColumn, logicMenu, setlogicMenu}

@@ -46,6 +46,25 @@ export default function useStatistic(){
             return false;
         }
     }
+    const updateStatistic=async (stat_id:number,body:StatisticI ,id:number=user.userId)=>{
+        setLoading(true);
+        try {
+            const updated: any = await axiosClient.post(`statistics/update/${stat_id}`,body);
+            setLoading(false);
+
+            if (updated.data) {  
+                           
+                console.log('UPDATED', updated);                
+                toast.warning(updated.data.errorMessage);
+                toast.success('Запись обновлена'); 
+            }
+            return true
+        } catch (err) {
+            setLoading(false);
+            axiosError(err);
+            return false;
+        }
+    }
 
     const getAllUserStatsByChartId=async (id:number,setStatsArr:any)=>{
         setLoading(true);
@@ -129,6 +148,7 @@ export default function useStatistic(){
                 //setStatsArr(resArr.data)   
                 updateFunc&&updateFunc();         
                 toast.warning(res.data.errorMessage);
+                toast.success(res.data.message);  
             }
             return true
         } catch (err) {
@@ -158,5 +178,5 @@ export default function useStatistic(){
         }
     }
 
-    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID, deleteStatById, deleteAllByChartID, getAllByPeriod}
+    return{ getAllByUserID, createStatistic, getAllUserStatsByChartId, getPeriodByUserID, deleteStatById, deleteAllByChartID, getAllByPeriod, updateStatistic}
 }

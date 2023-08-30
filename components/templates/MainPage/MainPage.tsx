@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setUsersRedux } from "@/redux/usersSlice";
+import Head from "next/head";
 
 export default function MainPage() {
 
@@ -26,6 +27,9 @@ export default function MainPage() {
     }, [])
     return (
         <>
+           <Head>
+                <title>AMG статистика</title>
+            </Head>
             <Header />
 
             <MainLayout>

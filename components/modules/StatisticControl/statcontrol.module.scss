@@ -1,8 +1,14 @@
 .statControlWrapper{
+    
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 
     .periodBlock{
+        border: 1px solid rgba(89, 154, 228, 0.493);
+        border-radius:10px;
+        padding: 10px;
+        margin: 10px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -14,6 +20,17 @@
         }
     }
 
+    .filterBlock{
+        border: 1px solid rgba(255, 99, 71, 0.493);
+        border-radius:10px;
+        padding: 10px;
+        margin: 10px;
+        display: flex;
+        
+        gap: 10px;
+
+    }
+
     .statisticsBlock{
         display: flex;
         flex-direction: column;
@@ -23,6 +40,46 @@
             display: flex;
             gap:10px;
             font-size: 12px;
+        }
+
+        table{
+            .tableHead{
+                font-size: 12px;
+            }
+            .tableBody{
+                font-size: 10px;
+
+                tr{
+                    .createDate{
+                        background: rgba(153, 205, 50, 0.596);
+                    }
+                }
+            }
+        }
+    }
+
+    .statEditorBlock{
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+        gap: 10px;
+
+        .field{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            input,textarea{
+                border: 2px solid tomato;
+                padding: 2px 5px;
+                border-radius: 5px;
+            }
+
+            .fieldName{
+                font-size: 12px;
+            }
         }
     }
 }

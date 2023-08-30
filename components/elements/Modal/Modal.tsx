@@ -6,6 +6,7 @@ export default function Modal({children,closeModalFunc=()=>{},fullWidth=false}){
 
     useEffect(()=>{
        
+        window.scrollTo(0,0);
         document.documentElement.style.overflow='hidden';
         
 

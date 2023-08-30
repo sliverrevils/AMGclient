@@ -77,12 +77,16 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
 
             const newRow = columns.map((column, columnIndex: number) => {
                 const sum = /@sum/.test(column.logic);
+                const ndchp= /@ndchp/.test(column.logic);
 
                 if (/@trend/.test(column.logic)) {
                     mathTrend = [...new Set([...mathTrend, columnIndex])]
                 }
 
-                const mathLogic = column.logic.replaceAll('@sum', '').replaceAll('@trend', '');// clear @sum
+                const mathLogic = column.logic
+                    .replaceAll('@sum', '')
+                    .replaceAll('@trend', '')
+                    .replaceAll('@ndchp', '')
 
                 const resultColumn =
                     sum && rowIndex
@@ -91,6 +95,15 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
                             ? Number(logicMath(mathLogic, rowData, rowIndex, lastRowData)) + Number(column.initValue || 0)
                             : logicMath(mathLogic, rowData, rowIndex, lastRowData);
                 // return resultColumn;
+
+                if(ndchp){
+                    return {
+                        // ID !!
+                         key: Math.random(),
+                         value: resultColumn<=0?'НД':'ЧП'
+                     }
+                }
+
                 return {
                    // ID !!
                     key: Math.random(),
