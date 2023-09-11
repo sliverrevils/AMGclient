@@ -71,7 +71,7 @@ export default function ChartCreatorScreen() {
         setLines(state => ([...state, { id: state.length + 1, name: lineName, logicString, lineColor }]));
         setLineName('');
         setLogicString('');
-        setLineColor('black');
+        setLineColor('#ff8056');
         setAddLinePanel(false);
     }
 
@@ -86,7 +86,7 @@ export default function ChartCreatorScreen() {
             setInputDescriptions('');
             setInputFieledName('');
             setLineName('');
-            setLineColor('black');
+            setLineColor('#ff8056');
         
         });
     }

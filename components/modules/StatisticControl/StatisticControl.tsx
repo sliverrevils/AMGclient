@@ -6,7 +6,7 @@ import { ChartPatternI, FieldI, StatisticI } from "@/types/types";
 import useUsers from "@/hooks/useUsers";
 import useChart from "@/hooks/useChart";
 import Modal from "@/components/elements/Modal/Modal";
-import { stat } from "fs";
+
 
 
 
@@ -26,13 +26,14 @@ export default function StatisticControl() {
     const [dateEndEditor, setDateEndEditor] = useState<any>();
     const [chartState, setChartState] = useState<Array<{ name: string, value: string, type: string }>>([]); // !!!!-------type!
     const [descriptionsEditor, setDescriptionsEditor] = useState('');
+    const [isFilterBlock,setIsFilterBlock]=useState(false);
 
 
     //REFS
     const init = useRef(true);
 
     //HOOKS
-    const { getAllByPeriod , deleteStatById, updateStatistic} = useStatistic();
+    const { getAllByPeriod, deleteStatById, updateStatistic } = useStatistic();
     const { userByID, users } = useUsers();
     const { getAllPatterns, chartById } = useChart();
 
@@ -76,7 +77,7 @@ export default function StatisticControl() {
 
         const record = { dateStartEditor, dateEndEditor, fields: [...chartState] };
 
-       // alert(JSON.stringify(record, null, 2));
+        // alert(JSON.stringify(record, null, 2));
         // setRecords(state => ([...state, record]));
         // console.log('CHART STATE');
         // if (currentPattern && record)
@@ -93,25 +94,25 @@ export default function StatisticControl() {
         //         setDateEnd('');
         //         setDescriptions('');
         //     })
-        console.log('DATE START',dateEndEditor)
-        if(selectedStat)
-        updateStatistic(selectedStat.id!, {
-            chart_id: selectedStat.chart_id,
-            fields: JSON.stringify(record.fields),
-            dateStart:dateStartEditor,
-            dateEnd: dateEndEditor,
-            created_by: selectedStat.created_by,
-            descriptions: descriptionsEditor || null
-        }).then(()=>{
-            setSelectedStat(null);
-            onLoadStats();
-        })
+        console.log('DATE START', dateEndEditor)
+        if (selectedStat)
+            updateStatistic(selectedStat.id!, {
+                chart_id: selectedStat.chart_id,
+                fields: JSON.stringify(record.fields),
+                dateStart: dateStartEditor,
+                dateEnd: dateEndEditor,
+                created_by: selectedStat.created_by,
+                descriptions: descriptionsEditor || null
+            }).then(() => {
+                setSelectedStat(null);
+                onLoadStats();
+            })
     }
 
-    const onDeleteRecord=()=>{
-        if(selectedStat){
-            if(confirm('Вы точно хотите удалить запись ?')){
-                deleteStatById(selectedStat.id!,()=>onLoadStats()).then(()=>{
+    const onDeleteRecord = () => {
+        if (selectedStat) {
+            if (confirm('Вы точно хотите удалить запись ?')) {
+                deleteStatById(selectedStat.id!, () => onLoadStats()).then(() => {
                     setSelectedStat(null);
                 })
             }
@@ -123,11 +124,19 @@ export default function StatisticControl() {
             const currentPattern = allPatterns.find(pattern => pattern.id == selectedStat.chart_id);
 
             if (!currentPattern) {
-                return <div className={styles.statEditorBlock}>Шаблон был удалён</div>
+                return <div className={styles.statEditorBlock}>
+                    <span>Шаблон был удалён</span>
+                    <button onClick={onDeleteRecord} className={styles.deleteBtn} >Удалить запись</button>
+                    </div>
             }
 
             return (
                 <div className={styles.statEditorBlock}>
+                    <div className={styles.patternInfo}>
+                        {currentPattern.name || 'удалённый шаблон⚠️'}
+                    </div>
+
+
                     <div className={styles.field}>
                         <div className={styles.fieldName}>Период</div>
                         <input type={'date'} value={timeNumberToString(+dateStartEditor)} onChange={event => setDateStartEditor(timeStrToNumber(event.target.value))} />
@@ -168,11 +177,42 @@ export default function StatisticControl() {
 
                     </div>
 
-                    <button onClick={onUpdateRecord} className="btn"  >Обновить запись</button>
-                    <button onClick={onDeleteRecord} className="btn"  >Удалить запись</button>
+                    <button onClick={onUpdateRecord} className={styles.updateBtn} >Обновить запись</button>
+                    <div className={styles.infoBlock}>
+                    <span className={styles.infoDate}>
+                            {
+                                new Date(selectedStat.createdAt!).toLocaleString()
+                            }
+                        </span>
+                        <span className={styles.infoUser}>                            
+                            {
+                                userByID(selectedStat.created_by)?.name || 'пользователь удалён'
+                            }
+                        </span>
+
+
+                        <span className={styles.infoUpdate}>
+                           <span> обновлена :</span>
+                            <span>
+                                {selectedStat.updatedAt?new Date(selectedStat.updatedAt).toLocaleString():'не обновлялась'}
+                            </span>
+                            <span>
+                            {
+                                userByID(selectedStat.updated_by!)?.name || 'не обновлялась'
+                            }
+                            </span>
+                        </span>
+                    </div>
+                    <button onClick={onDeleteRecord} className={styles.deleteBtn} >Удалить запись</button>
                 </div>
             )
         }
+    }
+
+    const onCloseFilter=()=>{
+        setIsFilterBlock(false);
+        setSelectedUserId(0);
+        setSelectedPatternId(0);
     }
 
     //EFFECTS
@@ -208,18 +248,6 @@ export default function StatisticControl() {
             {
                 selectedStat &&
                 <Modal closeModalFunc={() => setSelectedStat(null)} >
-                    {/* <div className={styles.statEditorBlock}>
-                        <input type="date" value={timeNumberToString(selectedStat.dateStart)} />
-                        <input type="date" value={selectedStat.dateEnd} />
-                        <textarea value={selectedStat.descriptions||''}/>
-                        {
-                            selectedStat.fields.map((field:FieldI)=>{
-                                if(field.type=='number'){
-                                    return <input value={field.value}/>
-                                }
-                            })
-                        }
-                    </div> */}
                     {createEditorHtml()}
                 </Modal>
             }
@@ -230,12 +258,15 @@ export default function StatisticControl() {
                     <input type="date" value={timeNumberToString(dateStart)} onChange={event => setDateStart(timeStrToNumber(event.target.value))} />
                     <input type="date" value={timeNumberToString(dateEnd)} onChange={event => setDateEnd(timeStrToNumber(event.target.value))} />
                 </div>
-                <button onClick={onLoadStats}> загрузить все записи за период</button>
+                <button onClick={onLoadStats}> Загрузить все записи за период</button>
             </div>
 
+
             {
-                !!statsArr.length &&
-                <div className={styles.filterBlock}>
+                !!statsArr.length &&<>
+                {
+                    isFilterBlock
+                    ? <div className={styles.filterBlock}>
 
                     <select value={selectedPatternId} onChange={onSelectPatternFilter}>
                         <option value={0}>Выберете шаблон</option>
@@ -259,13 +290,19 @@ export default function StatisticControl() {
                         }
                     </select>
 
+                    <img  src={'/svg/org/close_field_white.svg'} onClick={onCloseFilter}/>
+
 
                 </div>
+                : <img src={'/svg/other/filter_color.svg'} onClick={()=>setIsFilterBlock(true)} className={styles.filterBtn}/>
+                }
+               
+                </>
             }
 
             {
                 !!statsArr.length &&
-                <div className={styles.statisticsBlock}>                    
+                <div className={styles.statisticsBlock}>
                     <table>
                         <thead className={styles.tableHead}>
                             <tr>
@@ -281,9 +318,9 @@ export default function StatisticControl() {
                         <tbody className={styles.tableBody}>
                             {
                                 filteredStatsArr.map((stat, statIndex) =>
-                                    <tr onClick={() => onSelectStat(stat)}>
+                                    <tr onClick={() => onSelectStat(stat)} key={stat.id}>
                                         <td className={styles.createDate}>{new Date(stat.createdAt + '').toLocaleString()}</td>
-                                        <th style={{fontWeight:500,fontSize:10}}>{new Date(+stat.dateStart).toLocaleDateString()} - {new Date(+stat.dateEnd).toLocaleDateString()}</th>
+                                        <th style={{ fontWeight: 500, fontSize: 10 }}>{new Date(+stat.dateStart).toLocaleDateString()} - {new Date(+stat.dateEnd).toLocaleDateString()}</th>
                                         <td>{chartById(allPatterns, stat.chart_id)?.name || 'удалённый шаблон⚠️'}</td>
                                         <td>{userByID(stat.created_by)?.name || 'удалён⚠️'}</td>
                                         <td>{stat.descriptions}</td>

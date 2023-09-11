@@ -12,13 +12,23 @@ const mathArr = [
         value: '@sum'
     },
     {
-        name: 'Просчитать тренд ',
-        value: '@trend'
+        name: 'Среднее значение',
+        value: '@middle'
     },
     {
         name: 'НД ЧП',
-        value: '@ndchp'
-    }
+        value: '@ndchp=0'
+    },
+        
+    {
+        name: 'Статус ',
+        value: '@status'
+    },
+    {
+        name: 'Статус перевернутый',
+        value: '@statusReverse'
+    },
+
 ];
 
 export default function LogicMenu({statisticRowsData, setLogicColumn, logicMenu, setlogicMenu}

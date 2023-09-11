@@ -1,0 +1,38 @@
+.sectionBlock{
+    border: 1px solid pink;
+
+    .sectionName{}
+
+    .sectionCkp{
+        font-size: 0;
+        transition: all 400ms linear;
+    }
+
+    .sectionCkp{
+        font-size: 0;
+        transition: all 400ms linear;
+    }
+
+    .sectionDesciptions{
+        font-size: 0;
+        transition: all 400ms linear;
+    }
+
+    .sectionWorkeersList{}
+
+    &:hover{
+
+        .sectionCkp{
+            font-size: 13px;
+        }
+    
+        .sectionCkp{
+            font-size: 13px;
+        }
+    
+        .sectionDesciptions{
+            font-size: 13px;
+        }
+
+    }
+}

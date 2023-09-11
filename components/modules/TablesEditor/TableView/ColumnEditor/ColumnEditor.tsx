@@ -1,5 +1,5 @@
 import useTable from "@/hooks/useTable";
-import { ChartPatternI, ColumnI, MenuI, StatisticDataRowI, TableI } from "@/types/types";
+import { ChartPatternI, ColumnI, CostumLineI, MenuI, StatisticDataRowI, TableI } from "@/types/types";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import LogicMenu from "../LogicMenu/LogicMenu";
@@ -17,7 +17,8 @@ export function ColumnEditor({ columns,
     columnMenu,
     setColumnMenu,
     selectedTableId,
-    isChangedSelectedTable
+    isChangedSelectedTable,
+    costumLinesArr,
 }
     : {
         columns: ColumnI[],
@@ -31,7 +32,8 @@ export function ColumnEditor({ columns,
         columnMenu:MenuI,
         setColumnMenu :React.Dispatch<React.SetStateAction<MenuI>>,
         selectedTableId:number,
-        isChangedSelectedTable:boolean
+        isChangedSelectedTable:boolean,
+        costumLinesArr:CostumLineI[],
     }
 ) {
     //---STATE
@@ -111,8 +113,8 @@ export function ColumnEditor({ columns,
     const onSaveTable = async () => {
         setIsSaveTableBlock(false);
         setNameTable('');
-        setSelectedColumnIndex(null);
-        const tabelsWithCreated = await createTable(nameTable, currentPattern?.id, columns);
+        setSelectedColumnIndex(null); 
+        const tabelsWithCreated = await createTable(nameTable, currentPattern?.id, columns, costumLinesArr);
         if (tabelsWithCreated.length) {
             setTabels(tabelsWithCreated)
             setSelectedTableId(tabelsWithCreated[tabelsWithCreated.length - 1].id)

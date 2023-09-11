@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,9 +10,14 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { logicMath } from '@/utils/funcs';
+import { getChartImage, logicMath } from '@/utils/funcs';
 import Modal from '../Modal/Modal';
 // import faker from 'faker';
+import chartTrendline from 'chartjs-plugin-trendline';
+
+//import chartTrendline from './trend';
+import { CostumLineI } from '@/types/types';
+import { linearRegression } from '@/utils/trend';
 
 ChartJS.register(
   CategoryScale,
@@ -21,7 +26,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  chartTrendline,
 );
 
 
@@ -30,22 +36,33 @@ ChartJS.register(
 
 
 
-export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[]}:{records:any[], chartSchema:any, clickFunc?:any, costumLines?: any[]}) {
+export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[]}:{records:any[], chartSchema:any, clickFunc?:any, costumLines?: CostumLineI[]}) {
     const [modal,setModal] = useState(false);
     const [reverse,setReverse]=useState(false);
-
-
+    const chartRef=useRef();
+    
     const currentChart=<>
     {
-    !!records.length&&
-        <div
-          className='noselect'
-          onClick={() => setReverse(state => !state)}
-          style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          🔀
+        !!records.length &&
+        <div style={{display:'flex',gap:10}}>
+          <div
+            className='noselect'
+            onClick={() => setReverse(state => !state)}
+            style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            🔀
+          </div>
+          <div
+            className='noselect'
+            onClick={()=>getChartImage(chartSchema.name,true)}
+            style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            🖼️
+          </div>
         </div>
     }
-    <Line options={{
+    <Line 
+    className='myChart'
+    ref={chartRef}
+    options={{
       responsive: true,
       interaction: {
         mode: 'index' as const,
@@ -58,6 +75,7 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
           text: chartSchema.name,
         },
       },
+      
       scales: {
         y: {
           type: 'linear' as const,
@@ -103,6 +121,7 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
               fill: false,
               data: records.map((el, index) => logicMath(line.logicString, el.fields, index)),
               tension: 0.4, //soft angels
+              
           }
       )),
       ...costumLines.map(costumLine=>( 
@@ -114,6 +133,16 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
             fill: false,
             data: costumLine.records,
             tension: 0.4, //soft angels
+           ...costumLine.trend
+           ?{trendlineLinear: {
+              colorMin: "red",
+              colorMax: "green",
+              lineStyle: "solid",
+              width: 3,
+              projection:true,
+            }}
+            :{trendlineLinear:false}        
+
         }
     ))
     ]
@@ -123,7 +152,19 @@ export function MultiLinesChart({ records, chartSchema, clickFunc, costumLines=[
     }}/>
     </>
 
+    useEffect(()=>{
+      if(costumLines.length){
+        const x=costumLines[0].records.map((el,index)=>index+1);
+        const y=costumLines[0].records;
+        
+        const trend=linearRegression(x,y)
+
+        console.log('COSTUM TREND',trend)
+      }
+    },[costumLines])
+
   return <>
+
 
     {
       modal

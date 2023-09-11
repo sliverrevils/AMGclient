@@ -3,6 +3,7 @@ import ChartFillerScreen from "@/components/Screens/ChartFiller/ChartFiller";
 import ControlScreen from "@/components/Screens/ControlScreen/ControlScreen";
 import MainScreen from "@/components/Screens/Main/MainScreen";
 import OrgScreen from "@/components/Screens/Org/OrgScreen";
+import OrgScreen2 from "@/components/Screens/Org/OrgScreen2";
 import ReportsScreen from "@/components/Screens/ReportScreen/ReportsScreen";
 import StatisticScreen from "@/components/Screens/StatisticScreen/StatisticScreen";
 import TablesScreen from "@/components/Screens/Tables/TablesScreen";
@@ -22,6 +23,7 @@ export const accessRoutesArray: Array<{ id: number, title: string, access: Array
     { id: 5, title: "Создание шаблона", access: ['admin'], Component: ChartCreatorScreen  },
     { id: 6, title: "Добавить статистику", access: ['admin', 'user'], Component: ChartFillerScreen },
     { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen },
+   // { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen2 },
     { id: 8, title: "Отчеты", access: ['admin'], Component: ReportsScreen },
     { id: 9, title: "Контроль записей", access: ['admin'], Component: ControlScreen },
 

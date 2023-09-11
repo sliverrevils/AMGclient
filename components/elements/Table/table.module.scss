@@ -1,0 +1,39 @@
+
+
+.tableWrap{
+    border: 1px solid green;
+    width: 100%;
+
+    .tableHead{
+        display: flex;
+        gap:5px;
+
+        .column{
+            //font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .tableBody{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .tableRow{
+           // border: 1px solid red;
+            display: flex;  
+            gap:5px;
+            
+            .tableRowItem{
+                
+                border: 1px solid red;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+}

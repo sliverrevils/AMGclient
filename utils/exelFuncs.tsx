@@ -1,13 +1,16 @@
 import { ColumnI, RowI, UserI } from '@/types/types';
 import * as ExelJs from 'exceljs';
+import { getChartImage } from './funcs';
 
 
-export function createExelFile({columns,rows,fileName,user}
+
+export function createExelFile({columns,rows,fileName,user,columnSizeArr}
 :{
     columns:ColumnI[]
     ,rows:RowI[][],
     fileName:string,
-    user:UserI
+    user:UserI,
+    columnSizeArr:number[]
 }){
 
     console.log('EXEL',columns,rows);
@@ -18,6 +21,10 @@ export function createExelFile({columns,rows,fileName,user}
     //INIT DATA
     workbook.creator=user.email
     workbook.created=new Date();
+    const img=workbook.addImage({
+        base64:getChartImage('',false),      
+        extension:'jpeg'
+    })
 
     
     //STYLING
@@ -34,7 +41,7 @@ export function createExelFile({columns,rows,fileName,user}
     //fill
     sheet.getRow(1).fill={
         type:'pattern',
-        pattern:'darkHorizontal',
+        pattern:'none',
         bgColor:{argb:'FF8056'}
     }
 
@@ -42,20 +49,26 @@ export function createExelFile({columns,rows,fileName,user}
     sheet.getRow(1).font={
         name:'Arial',
         family:4,
-        size:12,
+        size:11,
         bold:false,
-        color:{argb:'FFFFFF'}
+        color:{argb:'FFFFFF'},
+
 
     }
 
+   
 
+    sheet.addImage(img,{
+        tl: columns.length<=7?{ col: columns.length, row: 1}:{col:0,row:rows.length+1},
+        ext: { width: 700, height: 370 },
+
+    })
 
     //SET COLUMNS
     sheet.columns =columns.map((column,indexColumn)=>({
         header:column.name,
         key:indexColumn+'_column',
-        width:10,    
-
+        width:10, //word count
     }));
 
     //SET ROWS

@@ -29,7 +29,8 @@ export interface ChartI{
     "name": string,
     "fields": string,
     "lines": string,
-    "descriptions": null,
+    "access":string,
+    "descriptions": null|string,
     "created_by": number,
     "updated_by": number,
 }
@@ -149,6 +150,7 @@ export interface TableI{
     created_by:number,
     view_pattern_id:number,
     columns:ColumnI[],
+    costumLines:CostumLineI[],
 }
 
 export interface MenuI{
@@ -163,7 +165,8 @@ export interface CostumLineI{
     name:string,
     records:number[],
     color:string,
-    key:number
+    key:number,
+    trend:boolean,
 }
 
 export interface MonthI{

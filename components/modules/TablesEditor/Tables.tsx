@@ -19,14 +19,15 @@ export default function Tables(){
     const [statisticsArr,setStatisticsArr]=useState<StatisticI[]>([]);
     const [costumLinesArr,setCostumLinesArr]=useState<CostumLineI[]>([]);
 
-    useEffect(()=>{
-        console.log('🌍 statisticRowsData :', statisticRowsData);
-    },[statisticRowsData])
+    // useEffect(()=>{
+    //     console.log('🌍 statisticRowsData :', statisticRowsData);
+    //     setCostumLinesArr([]); // clear costum lines on new data
+    // },[statisticRowsData])
 
     return (
         <div className={styles.tablesBlock}>
-            <PatternControl {...{ setStatisticRowsData, setCurrentPattern, setStatisticsArr }} />
-            <TableView  {...{ statisticRowsData, currentPattern, isFullScreenTable, setIsFullScreenTable, setCostumLinesArr }} />
+            <PatternControl {...{ setStatisticRowsData, setCurrentPattern, setStatisticsArr,setCostumLinesArr }} />
+            <TableView  {...{ statisticRowsData, currentPattern, isFullScreenTable, setIsFullScreenTable, setCostumLinesArr, costumLinesArr }} />
             <ChartView {...{ currentPattern, statisticsArr,costumLinesArr,setCostumLinesArr }} />
         </div>
     )

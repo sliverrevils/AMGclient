@@ -9,11 +9,12 @@ import styles from './patternControl.module.scss';
 
 
 
-export default function PatternControl({setStatisticRowsData,setCurrentPattern,setStatisticsArr}
+export default function PatternControl({setStatisticRowsData,setCurrentPattern,setStatisticsArr,setCostumLinesArr}
     :{
         setStatisticRowsData:any,
         setCurrentPattern:any,
-        setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>
+        setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>,
+        setCostumLinesArr:any
     }) {    
 
     //--------------------------------------------------------------------------------------STATES🎪
@@ -121,10 +122,11 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
     //get period statistics
     const getStatistics=async()=>{
+        setCostumLinesArr([]); //CLEAR COSTUM LINES ARRAY (LINEAR TREND BUG!)
         const statsArr= await getPeriodByUserID(isAdmin?selectedUserId:user.userId,selectedPatternId,dateStart,dateEnd); //for admin all stats || user only self
-        console.log('🐣STATISTIC INIT DATA ARRAY',statsArr);
+        // console.log('🐣STATISTIC INIT DATA ARRAY',statsArr);
         const createdDataArr=createInitialDataArray(statsArr)
-        console.log('📰CREATED DATA ARRAY',createdDataArr);
+        // console.log('📰CREATED DATA ARRAY',createdDataArr);
         setStatisticsArr(statsArr);
         setCurrentPattern(currentPattern(selectedPatternId));
     }
@@ -142,17 +144,17 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
 
     //--------------------------TEST⚙️
-    useEffect(()=>{
-        console.log('ALL PATTERNS 📈 ',allPatterns);
-    },[allPatterns]);
+    // useEffect(()=>{
+    //     console.log('ALL PATTERNS 📈 ',allPatterns);
+    // },[allPatterns]);
 
-    useEffect(()=>{
-        console.log(`SELECT: 🧞:${selectedUserId}, 🆔📈 ${selectedPatternId}, 📈`,currentPattern(selectedPatternId))
-    },[selectedUserId,selectedPatternId]);
+    // useEffect(()=>{
+    //     console.log(`SELECT: 🧞:${selectedUserId}, 🆔📈 ${selectedPatternId}, 📈`,currentPattern(selectedPatternId))
+    // },[selectedUserId,selectedPatternId]);
 
-    useEffect(()=>{
-        console.log('Dates 📅',dateStart)
-    },[dateStart]);
+    // useEffect(()=>{
+    //     console.log('Dates 📅',dateStart)
+    // },[dateStart]);
 
 
     return (

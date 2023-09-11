@@ -22,7 +22,7 @@ export default function OrgScreen() {
     const [activeItem,setActiveItem] = useState<number>(0);
 
     const addOfficeToggle = () => setAddOffice(state => !state);
-    const updateOrgScheme = () => getOrgFullScheme(setOrg, setUsers, setCharts);
+    const updateOrgScheme = () => getOrgFullScheme({setOrgScheme:setOrg, setUsers, setCharts});
     const findOffice = (): OfficeI | undefined => org.find(office => office.id == currentOfficeId);
 
     const isAdmin=useSelector((state:any)=>state.main.user.role=='admin');

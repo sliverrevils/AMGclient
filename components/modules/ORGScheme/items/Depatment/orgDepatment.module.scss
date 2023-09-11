@@ -1,0 +1,63 @@
+.departmentBlock {
+    border: 1px solid black;
+    position: relative;
+    min-width: 100px;
+    max-width: 300px;
+    max-height: 500px;
+    border-radius: 10px;    
+    font-size: 13px;
+    transition: all 300ms linear;
+    cursor:pointer;
+    padding: 2px 5px;
+    
+    .close{
+        position: absolute;
+        top:0;
+        right:0;
+
+    }
+
+    .departmentName {
+        font-weight: 600;
+    }
+
+    .departmentCkp {
+        font-size: 0;
+       // transition: all 200ms linear;
+    }
+
+    .departmentLeadership {}
+
+    .departmentDescriptions {
+        font-size: 0;
+        transition: all 200ms linear;
+    }
+    .departmentSectionsList{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    &.min {
+        border: 1px solid rgb(10, 105, 49);
+        background: yellow;
+    }
+
+    &.mouse {
+        background: rgb(94, 171, 223);
+        .departmentDescriptions {
+            font-size: 13px;
+        }
+        .departmentCkp {
+            font-size: 13px;
+        }
+    }
+
+    &.full {
+        max-width: 100%;
+        max-height: 100%;
+        position: absolute;
+        inset: 0 0 0 0;
+        background: rgb(192, 247, 105);
+    }
+}

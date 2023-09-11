@@ -1,18 +1,39 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
+import { setOfficesRedux } from "@/redux/orgSlice";
+import { setPatternsRedux } from "@/redux/patternsSlce";
+import { setUsersRedux } from "@/redux/usersSlice";
+import { ChartI, ChartPatternI, LineI, OfficeI } from "@/types/types";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 export default function useOrg() {
     const dispatch = useDispatch();
 
-    const getOrgFullScheme = (setOrgScheme: any, setUsers: any, setCharts:any) => {
+    const getOrgFullScheme = ({setOrgScheme,setUsers,setCharts}:{setOrgScheme?: any, setUsers?: any, setCharts?:any}) => {
         dispatch(setLoadingRedux(true));
         axiosClient.get('info')
-            .then(({ data: { org, users , charts} }) => {
-                setOrgScheme(org);
-                setUsers(users);
-                setCharts(charts);
+            .then(({ data: { offices, users , patterns} }) => {
+                //set on state
+                setOrgScheme&&setOrgScheme(offices);
+                setOrgScheme&&setUsers(users);
+                setCharts&&setCharts(patterns);
+
+                //REDUX
+                //users
+                if(users)
+                dispatch(setUsersRedux(users))
+                //patterns
+                if(patterns?.length){
+                    const paternsParsed=(patterns as ChartI[]).map(pattern=>({...pattern,lines:(JSON.parse(pattern.lines)),fields:JSON.parse(pattern.fields),access:JSON.parse(pattern.access)}));
+                    console.log('PATTERNS',paternsParsed)
+                    dispatch(setPatternsRedux((paternsParsed as ChartPatternI[])))
+                }
+                //offices
+                if(offices?.length){
+                    dispatch(setOfficesRedux(offices as OfficeI[]))
+                }
+
 
             })
             .catch(axiosError)

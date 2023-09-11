@@ -1,10 +1,11 @@
 import { ColumnI, MenuI } from "@/types/types";
 
 import styles from './tableElements.module.scss';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getTextLength } from "@/utils/funcs";
 
 
-export default function ColumnItem({ column, indexColumn, setSelectedColumnIndex, setColumnMenu,isNumbersOnColumn,columnToLineOnChart, selectedColumnIndex }
+export default function ColumnItem({ column, indexColumn, setSelectedColumnIndex, setColumnMenu,isNumbersOnColumn,columnToLineOnChart, selectedColumnIndex ,sizeBlock}
     :{ 
         column: ColumnI, 
         indexColumn: number, 
@@ -12,9 +13,11 @@ export default function ColumnItem({ column, indexColumn, setSelectedColumnIndex
         setColumnMenu :React.Dispatch<React.SetStateAction<MenuI>>,
         isNumbersOnColumn: (costumSelectColumn?: number) => boolean,
         columnToLineOnChart:(costumSelectColumn: number) => void,
-        selectedColumnIndex:null|number
+        selectedColumnIndex:null|number,
+        sizeBlock:number
     }) {
-
+        console.log(column.name,sizeBlock);
+    const [sizeState,_] = useState(sizeBlock);
     const onPickColumn = () => {
         // setSelectedColumnIndex(state=>null);
         // setSelectedColumnIndex(state=>indexColumn);
@@ -51,10 +54,14 @@ export default function ColumnItem({ column, indexColumn, setSelectedColumnIndex
                {...(column.color
                     ? { background: `linear-gradient(0deg, ${column.color} 0%,  #FF8056 80%)`, color: 'white' }
                     : {background:'#FF8056',color:'white'}),
-                    cursor:'pointer'
+                    cursor:'pointer',
+                    //width:getTextLength(column.name,13)
+                   width:sizeState
                 }
             }>
-            <div >{column.name}</div>
+            <span style={{textAlign:'center'}}>
+                {column.name}
+                </span>
         </th>
     )
 }

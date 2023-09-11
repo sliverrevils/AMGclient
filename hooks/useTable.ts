@@ -15,7 +15,7 @@ export default function useTable(){
             // updateState([]);
             const allTables= await axiosClient.get(`tables/all/${pattern_id}`);          
             if(allTables.data?.length){                
-                const parsedTables = allTables.data.map((table:any)=>({...table,columns:JSON.parse(table.columns)}));
+                const parsedTables = allTables.data.map((table:any)=>({...table,columns:JSON.parse(table.columns),costumLines:JSON.parse(table.costumLines)}));
                 updateState&&updateState(parsedTables);
                // console.log('ALL TABLES 📰',parsedTables);
                 dispatch(setLoadingRedux(false));
@@ -36,13 +36,14 @@ export default function useTable(){
 
     }
 
-    const createTable = async (name,view_pattern_id,columns, updateState?: any):Promise<TableI[]> => {
+    const createTable = async (name,view_pattern_id,columns,costumLines, updateState?: any):Promise<TableI[]> => {
         dispatch(setLoadingRedux(true));
         try {
             const created: any = await axiosClient.post(`tables/create`,{
                 name,
                 view_pattern_id,
-                columns:JSON.stringify(columns)
+                columns:JSON.stringify(columns),
+                costumLines:JSON.stringify(costumLines),
             });           
             dispatch(setLoadingRedux(false));
             let updatedParsed:TableI[]=[];

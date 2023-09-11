@@ -9,7 +9,7 @@
         gap: 5px;
         font-size: 10px;
         align-items: center;
-        border: 2px solid rgb(167, 166, 166);
+        border: 2px solid rgb(207, 207, 207);
         border-radius: 10px;
         padding: 2px 5px;
         cursor: pointer;
@@ -20,14 +20,14 @@
             //display: none;
             width: 15px;
             height: 15px;
-            opacity: .2;
+            opacity: .5;
         }
 
         &:hover{
             
             box-shadow: 3px 3px 8px rgb(48, 122, 190);
             border: 2px solid rgb(48, 122, 190);
-           // transform: scale(105%);
+            transform: scale(105%);
             .delLine{
                 cursor: pointer;
                 //display: block;
@@ -45,9 +45,10 @@
    transition: all 300ms linear;
    display: flex;
    flex-direction: column;
-   gap: 5px;
+   gap: 10px;
    align-items: flex-start;
    box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.582);
+   z-index: 100;
    
    animation: initMenu 100ms linear;
    .close{
@@ -65,13 +66,44 @@
     }
    
    }
+   .lineColor{
+        display: flex;
+        gap: 10px;
+        font-size: 13px;
+        align-items: center;
+        padding:0  10px;
+        input{
+            border: 0;
+            height: 15px;
+            border-radius: 5px;
+        }
+   }
    .createTrend {
-       cursor: pointer;
+       
        background: #FF8056;
        border-radius: 10px;
-       padding: 2px 5px;
+       padding: 2px 15px;
+       margin: 0 5px;
        font-size: 14px;
        color: white;
+       display: flex;
+       gap:5px;
+       align-items: center;
+
+       span{
+        cursor: pointer;
+       }
+
+       input{
+        padding: 0;
+        border-radius: 10px;
+        height: 14px;
+        margin: 0;
+        border: 0;
+        cursor: pointer;
+        outline: 0;
+       }
+
    }
    .middleStart{
     font-size: 13px;

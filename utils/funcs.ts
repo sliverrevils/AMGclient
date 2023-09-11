@@ -138,3 +138,35 @@ export const getMonthInfo=({year,month}:{year:number,month:number})=>{
     }
 }
 
+//UPLOAD CHART IMAGE
+export  const getChartImage=(name:string,upload:boolean=false)=>{
+    const imgLink=document.createElement('a');
+    const canvas:any=document.querySelector('.myChart');
+    if(canvas){
+      imgLink.href=canvas.toDataURL('image/jpg',1);
+      imgLink.download=`${name} ${new Date().toLocaleDateString()}.jpg`;
+      upload&&imgLink.click();
+    }
+
+    // console.log('CHART',imgLink.href)
+
+    return imgLink.href;     
+  }
+
+
+      //calc text size
+  export     const getTextLength=(text:string,charSize:number):number=>{
+        const el=document.createElement('span');
+            el.style.fontSize=(charSize+1)+'px';
+            // el.style.height='auto';
+            // el.style.width='auto';
+            // el.style.position='absolute';
+            // el.style.whiteSpace='no-wrap'
+            el.innerText=text;
+            document.body.append(el);
+            const length=Number(el.offsetWidth);
+            el.remove()
+            return length;
+
+    }
+

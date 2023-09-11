@@ -1,6 +1,8 @@
 .tableViewBlock{
    //background: rgba(0, 0, 255, 0.13);
-   border:1px solid black;
+   background: white;
+   outline:2px solid #ff805681;
+   box-shadow: 3px 3px 5px #FF8056;
    border-radius: 10px;
    padding: 10px 5px;
    display: flex;
@@ -22,8 +24,10 @@
    }
 
    .table{
+    outline:2px solid #63636381;
+    border-radius: 5px;
     border-collapse: separate;
-    background: ghostwhite;
+    background: rgb(238, 238, 238);
     thead {
         background: none;
         
@@ -72,6 +76,7 @@
 
             td{
                 background: white;
+                text-align: center;
             }
             &:hover{
                 background: green;
@@ -89,15 +94,15 @@
     background: rgba(23, 136, 23, 0.849);
     justify-content: center;
     border-radius: 10px;
-    padding: 2px 5px;
+    padding: 1px 5px;
     cursor: pointer;
     img{
-        width: 17px;
-        height: 17px;
+        width: 14px;
+        height: 14px;
     }
     span{
         color: white;
-        font-size: 12px;
+        font-size: 11px;
         
     }
 }
