@@ -6,6 +6,7 @@ import { ChartPatternI, FieldI, StatisticI } from "@/types/types";
 import useUsers from "@/hooks/useUsers";
 import useChart from "@/hooks/useChart";
 import Modal from "@/components/elements/Modal/Modal";
+import useOrg from "@/hooks/useOrg";
 
 
 
@@ -36,6 +37,7 @@ export default function StatisticControl() {
     const { getAllByPeriod, deleteStatById, updateStatistic } = useStatistic();
     const { userByID, users } = useUsers();
     const { getAllPatterns, chartById } = useChart();
+    
 
     //FUNCS
     const onLoadStats = async () => {
@@ -56,8 +58,6 @@ export default function StatisticControl() {
         if (currentPattern) {
             setDateStartEditor(stat.dateStart);
             setDateEndEditor(stat.dateEnd);
-            // setDateStartEditor(stat.dateStart + '');
-            // setDateEndEditor(stat.dateEnd + '');
             setDescriptionsEditor(stat.descriptions || '');
             const stateTemp = currentPattern.fields.map((field, index) => ({ ...field, value: stat.fields[index].value }));
             console.log('STATE TEMP', stateTemp)
@@ -76,25 +76,7 @@ export default function StatisticControl() {
     const onUpdateRecord = () => {
 
         const record = { dateStartEditor, dateEndEditor, fields: [...chartState] };
-
-        // alert(JSON.stringify(record, null, 2));
-        // setRecords(state => ([...state, record]));
-        // console.log('CHART STATE');
-        // if (currentPattern && record)
-        //     createStatistic({
-        //         chart_id: currentPattern.id,
-        //         fields: JSON.stringify(record.fields),
-        //         dateStart: new Date(dateStart).getTime(),
-        //         dateEnd: new Date(dateEnd).getTime(),
-        //         created_by: user.userId,
-        //         descriptions:descriptions||null
-        //     }).then(()=>{
-        //         setChartState((state: any) => state.map(field => ({ ...field, value: '' })))// !!! object update !!!
-        //         setDateStart('');
-        //         setDateEnd('');
-        //         setDescriptions('');
-        //     })
-        console.log('DATE START', dateEndEditor)
+       
         if (selectedStat)
             updateStatistic(selectedStat.id!, {
                 chart_id: selectedStat.chart_id,

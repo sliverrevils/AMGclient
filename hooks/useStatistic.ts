@@ -1,5 +1,7 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
+import { setCreatedRowsRedux, setInitStatsRedux, setPeriodStatsRedux, setSelectedPatternIdRedux } from "@/redux/statsSlice";
+import { StateReduxI } from "@/redux/store";
 import { StatisticI } from "@/types/types";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -8,7 +10,10 @@ import { toast } from "react-toastify";
 export default function useStatistic(){
     const dispatch = useDispatch();
     const setLoading=(bool: boolean)=>dispatch(setLoadingRedux(bool));
-    const {user} = useSelector((state:any)=>state.main)
+    //SELECtORS
+    const isAdmin=useSelector((state:any)=>state.main.user.role==='admin');
+    const {user} = useSelector((state:any)=>state.main);
+    const {stats} =useSelector((state:StateReduxI)=>state);
 
     const getAllByUserID=async (setStatsArr:any,id:number=user.userId)=>{
         setLoading(true);
@@ -28,7 +33,7 @@ export default function useStatistic(){
             return false;
         }
     }
-    const createStatistic=async (body:StatisticI ,id:number=user.userId)=>{
+    const createStatistic=async (body:StatisticI ,update:boolean=false)=>{
         setLoading(true);
         try {
             const created: any = await axiosClient.post(`statistics/create`,body);
@@ -36,8 +41,11 @@ export default function useStatistic(){
 
             if (created.data) {  
                 !created.data.errorMessage&&toast.success(`Добавлена запись "${new Date(+created.data.dateStart).toLocaleDateString()} - ${new Date(+created.data.dateEnd).toLocaleDateString()}"`);              
-                console.log('ALL STATS', created);                
+                              
                 toast.warning(created.data.errorMessage);
+            }
+            if(update){
+                getPeriodByUserID(isAdmin?stats.selectedUserId:user.userId,stats.selectedPatternId,stats.dateStart,stats.dateEnd);
             }
             return true
         } catch (err) {
@@ -52,12 +60,13 @@ export default function useStatistic(){
             const updated: any = await axiosClient.post(`statistics/update/${stat_id}`,body);
             setLoading(false);
 
-            if (updated.data) {  
-                           
+            if (updated.data) {                           
                 console.log('UPDATED', updated);                
                 toast.warning(updated.data.errorMessage);
                 toast.success('Запись обновлена'); 
             }
+            console.log('GET PERIOD',id,stats.selectedPatternId,stats.dateStart,stats.dateEnd);
+            getPeriodByUserID(isAdmin?stats.selectedUserId:user.userId,stats.selectedPatternId,stats.dateStart,stats.dateEnd);
             return true
         } catch (err) {
             setLoading(false);
@@ -99,11 +108,17 @@ export default function useStatistic(){
             });
             setLoading(false);
             const withParsedFields:StatisticI[]=resArr.data.map(stat=>({...stat,fields:JSON.parse(stat.fields)}))
-
+            dispatch(setInitStatsRedux(withParsedFields||[]));
+            dispatch(setPeriodStatsRedux({dateStart,dateEnd}));
+            dispatch(setSelectedPatternIdRedux(pattern));
+            
             if (resArr) {                
                 //console.log('withParsedFields', withParsedFields);    
                 setStatsArr&&setStatsArr(withParsedFields)            
                 toast.warning(resArr.data.errorMessage);
+            }
+            if(!withParsedFields.length){
+                dispatch(setCreatedRowsRedux([]));
             }
            
             return withParsedFields
@@ -149,6 +164,7 @@ export default function useStatistic(){
                 updateFunc&&updateFunc();         
                 toast.warning(res.data.errorMessage);
                 toast.success(res.data.message);  
+                getPeriodByUserID(isAdmin?stats.selectedUserId:user.userId,stats.selectedPatternId,stats.dateStart,stats.dateEnd);
             }
             return true
         } catch (err) {

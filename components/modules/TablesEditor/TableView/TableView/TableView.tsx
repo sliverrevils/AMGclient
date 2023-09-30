@@ -12,47 +12,61 @@ import { toast } from "react-toastify";
 import { createExelFile } from "@/utils/exelFuncs";
 import Table from "@/components/elements/Table/Table";
 import { linearRegression } from "@/utils/trend";
+import { useDispatch } from "react-redux";
+import { clearStatsRedux, setColumnsRedux, setCreatedRowsRedux, setLinesRedux, setSelectedTableIdRedux, setTabelsRedux } from "@/redux/statsSlice";
+import { StateReduxI } from "@/redux/store";
 
 
 
-export default function TableView({ statisticRowsData, currentPattern, setIsFullScreenTable, isFullScreenTable, setCostumLinesArr, costumLinesArr }
+export default function TableView({ 
+    //statisticRowsData, 
+    currentPattern, 
+    setIsFullScreenTable, 
+    isFullScreenTable, 
+    //setCostumLinesArr, 
+    //costumLinesArr 
+}
     : {
-        statisticRowsData: StatisticDataRowI[][],
+        //statisticRowsData: StatisticDataRowI[][],
         currentPattern: ChartPatternI | undefined,
         setIsFullScreenTable: React.Dispatch<React.SetStateAction<boolean>>,
         isFullScreenTable: boolean,
-        setCostumLinesArr: React.Dispatch<React.SetStateAction<CostumLineI[]>>,
-        costumLinesArr:CostumLineI[]
+        //setCostumLinesArr: React.Dispatch<React.SetStateAction<CostumLineI[]>>,
+        //costumLinesArr: CostumLineI[]
 
     }) {
     //---STATE
-    const [columns, setColumns] = useState<Array<ColumnI>>([]);
-    const [rows, setRows] = useState<RowI[][]>([]);
-    const [tables, setTabels] = useState<TableI[]>([]);
-    const [selectedTableId, setSelectedTableId] = useState<number>(0);
+    //const [columns, setColumns] = useState<Array<ColumnI>>([]);
     const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null);
     const [columnMenu, setColumnMenu] = useState<MenuI>({ show: false, position: { x: 0, y: 0 } });
     const [isChangedSelectedTable, setIsChangedSelectedTable] = useState(false);
-    const [columnSizeArr,setColumnSizeArr]=useState<number[]>([]);
-    const [fontSize,setFontSize]=useState(13);
+    const [columnSizeArr, setColumnSizeArr] = useState<number[]>([]);
+    const [fontSize, setFontSize] = useState(13);
 
 
 
 
 
     //---HOOKS
+    const dispatch = useDispatch();
     const { allTablesByPatternId } = useTable();
+
+
 
     //---SELECTORS
 
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
-    const user:UserI=useSelector((state:any)=>state.main.user);
+    const user: UserI = useSelector((state: any) => state.main.user);
+    const { selectedTableId,createdRows, selectedPatternId } = useSelector((state: StateReduxI) => state.stats);
+    const {initStatsRows} = useSelector((state:StateReduxI)=>state.stats);
+    const {tabels} =useSelector((state:StateReduxI)=>state.stats);
+    const {columns,lines} =useSelector((state:StateReduxI)=>state.stats);
+
 
     //---FUNCS
 
     //create start columns with all fields
     const createStartColumnPack = (row: StatisticDataRowI[]) => {
-        
         if (row) {
             const createdColumns = row.map((field, fildIndex) => ({
                 name: field.name,
@@ -61,39 +75,32 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
                 color: '#ff8056',
                 key: Math.random()
             }));
-            setColumns(createdColumns);
+           // setColumns(createdColumns);
+            dispatch(setColumnsRedux(createdColumns))
         }
     }
 
-    //get tables
-    const getTables = () => {
-        if (currentPattern) {
-            allTablesByPatternId(currentPattern.id, setTabels);
-        }
 
-    }
 
     //create table body rows
     const createTableBody = () => {
         let lastRow;
         let lastRowData: any[] = columns.map(column => ({ value: column.initValue || 0 })); // записывает начальное значение по индексу столбца а не поля (сбивается логика при перестановке столбцов)
         let mathTrend: number[] = [];
-        let ndchp:{value:number,columnIndex:number}[]=[];
-        let status:number[]=[];
-        let statusReverse:number[]=[];
-        
-
-        let created: RowI[][] = statisticRowsData.map((rowData, rowIndex) => {
+        let ndchp: { value: number, columnIndex: number }[] = [];
+        let status: number[] = [];
+        let statusReverse: number[] = [];
+        let created: RowI[][] = initStatsRows.map((rowData, rowIndex) => {
 
             const newRow = columns.map((column, columnIndex: number) => {
                 const sum = /@sum/.test(column.logic);
                 //ndchp= /@ndchp/.test(column.logic)?columnIndex:null;
-                
-                if(/@ndchp=-{0,1}\d{1,7}/g.test(column.logic)){
+
+                if (/@ndchp=-{0,1}\d{1,7}/g.test(column.logic)) {
                     //let str=column.logic.match(/@ndchp=\d{1,5}/g)![0]
-                    ndchp=[...ndchp,{
+                    ndchp = [...ndchp, {
                         columnIndex,
-                        value:Number(column.logic.match(/@ndchp=-{0,1}\d{1,5}/g)![0].split('=')[1])
+                        value: Number(column.logic.match(/@ndchp=-{0,1}\d{1,5}/g)![0].split('=')[1])
                     }]
                 }
 
@@ -101,16 +108,16 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
                     mathTrend = [...new Set([...mathTrend, columnIndex])]
                 }
                 if (/@status/.test(column.logic)) {
-                    status = [...new Set([...status,columnIndex])]
+                    status = [...new Set([...status, columnIndex])]
                 }
                 if (/@statReverse/.test(column.logic)) {
-                    statusReverse = [...new Set([...statusReverse,columnIndex])]
+                    statusReverse = [...new Set([...statusReverse, columnIndex])]
                 }
 
                 const mathLogic = column.logic
                     .replaceAll('@sum', '')
                     .replaceAll('@middle', '')
-                    .replaceAll(/@ndchp=-{0,1}\d{1,7}/g,'')
+                    .replaceAll(/@ndchp=-{0,1}\d{1,7}/g, '')
                     .replaceAll('@status', '')
                     .replaceAll('@statReverse', '')
 
@@ -125,7 +132,7 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
 
 
                 return {
-                   // ID !!
+                    // ID !!
                     key: Math.random(),
                     value: resultColumn
                 }
@@ -136,55 +143,52 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
             return newRow;
         });
 
-        if(status.length){
-            let trendArr:{columnIndex:number,slopeArr:number[]}[]=[];
-            console.log('STATUS',status)
-            status.forEach(columnIndex=>{
-               const columnArr = created.map(row=>row[columnIndex].value);
-               const trend=linearRegression(columnArr.map((_,index)=>index+1),columnArr);
-              // console.log('COLUMN TREND',trend)
-                trendArr=[...trendArr,{columnIndex,slopeArr:trend.slopeArr}];
+        if (status.length) {
+            let trendArr: { columnIndex: number, slopeArr: number[] }[] = [];
+            console.log('STATUS', status)
+            status.forEach(columnIndex => {
+                const columnArr = created.map(row => row[columnIndex].value);
+                const trend = linearRegression(columnArr.map((_, index) => index + 1), columnArr);
+                // console.log('COLUMN TREND',trend)
+                trendArr = [...trendArr, { columnIndex, slopeArr: trend.slopeArr }];
             });
 
-            console.log('TREND ARR',trendArr);
-            trendArr.forEach(trend=>{
+            console.log('TREND ARR', trendArr);
+            trendArr.forEach(trend => {
 
                 created = created.map((row, rowIndex) => row.map((column, index) => {
                     if (index == trend.columnIndex) {
-                        const currentSlopeValue=trend.slopeArr[rowIndex]
-                        return { ...column, value: currentSlopeValue<=0?"Падающая🔻":"Ростущая↗️" }
+                        const currentSlopeValue = trend.slopeArr[rowIndex]
+                        return { ...column, value: currentSlopeValue <= 0 ? "Падающая🔻" : "Растущая↗️" }
                     } else {
                         return column
                     }
-                }))
-                
-            })
-
-
+                }));
+            });
         }
 
-        if(statusReverse.length){
-            let trendArr:{columnIndex:number,slopeArr:number[]}[]=[];
-            console.log('STATUS',status)
-            statusReverse.forEach(columnIndex=>{
-               const columnArr = created.map(row=>row[columnIndex].value);
-               const trend=linearRegression(columnArr.map((_,index)=>index+1),columnArr);
-              // console.log('COLUMN TREND',trend)
-                trendArr=[...trendArr,{columnIndex,slopeArr:trend.slopeArr}];
+        if (statusReverse.length) {
+            let trendArr: { columnIndex: number, slopeArr: number[] }[] = [];
+            console.log('STATUS', status)
+            statusReverse.forEach(columnIndex => {
+                const columnArr = created.map(row => row[columnIndex].value);
+                const trend = linearRegression(columnArr.map((_, index) => index + 1), columnArr);
+                // console.log('COLUMN TREND',trend)
+                trendArr = [...trendArr, { columnIndex, slopeArr: trend.slopeArr }];
             });
 
-            console.log('TREND ARR',trendArr);
-            trendArr.forEach(trend=>{
+            console.log('TREND ARR', trendArr);
+            trendArr.forEach(trend => {
 
                 created = created.map((row, rowIndex) => row.map((column, index) => {
                     if (index == trend.columnIndex) {
-                        const currentSlopeValue=trend.slopeArr[rowIndex]
-                        return { ...column, value: currentSlopeValue<0?"Ростущая↗️":"Падающая🔻" }
+                        const currentSlopeValue = trend.slopeArr[rowIndex]
+                        return { ...column, value: currentSlopeValue < 0 ? "Растущая↗️" : "Падающая🔻" }
                     } else {
                         return column
                     }
                 }))
-                
+
             })
 
 
@@ -209,61 +213,65 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
             })
         }
 
-        if(ndchp.length){
-           created = created.map((row,rowIndex)=>{
-               return row.map((column,columnIndex)=>{
-                const currentNdchp=ndchp.find(ndchpItem=>ndchpItem.columnIndex==columnIndex)
-                if(currentNdchp){
-                    console.log('NDCHP ',`${column.value} <= ${currentNdchp.value}`,ndchp)
-                    return {...column,value:Number(column.value)<=currentNdchp.value?"НД 📈":"ЧП 📉"};
-                }
-                return column
-               })
+        if (ndchp.length) {
+            created = created.map((row, rowIndex) => {
+                return row.map((column, columnIndex) => {
+                    const currentNdchp = ndchp.find(ndchpItem => ndchpItem.columnIndex == columnIndex)
+                    if (currentNdchp) {
+                        console.log('NDCHP ', `${column.value} <= ${currentNdchp.value}`, ndchp)
+                        return { ...column, value: Number(column.value) <= currentNdchp.value ? "НД 📈" : "ЧП 📉" };
+                    }
+                    return column
+                })
             })
         }
 
-        setRows(created);
+        //setRows(created);
+        
+        dispatch(setCreatedRowsRedux(created));
     }
 
     //on select table
     const onSelectTable = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedTableId(+event.target.value);
+        //setSelectedTableId(+event.target.value);
+        dispatch(setSelectedTableIdRedux(+event.target.value));
     }
 
     //is numbers column ?
-    const isNumbersOnColumn = (costumSelectColumn?: number) => {
-        if (costumSelectColumn) {
-            return rows.every(row => !isNaN(Number(row[costumSelectColumn].value)));
-        }
-        if (selectedColumnIndex !== null) {
-            return rows.every(row => !isNaN(Number(row[selectedColumnIndex].value)));
-        }
-        return false
-    }
+    // const isNumbersOnColumn = (costumSelectColumn?: number) => {
+    //     if (costumSelectColumn) {
+    //         return createdRows.every(row => !isNaN(Number(row[costumSelectColumn].value)));
+    //     }
+    //     if (selectedColumnIndex !== null) {
+    //         return createdRows.every(row => !isNaN(Number(row[selectedColumnIndex].value)));
+    //     }
+    //     return false
+    // }
 
     //add costum line to array
-    const addCostumLine = (name: string, records: number[], color = '#ff8056') => setCostumLinesArr((state) => [...state, { name, records, color, key: Math.random(),trend:false }]);
+    //const addCostumLine = (name: string, records: number[], color = '#ff8056') => setCostumLinesArr((state) => [...state, { name, records, color, key: Math.random(), trend: false }]);
 
     //show costumLine on chart
-    const columnToLineOnChart = (costumSelectColumn: number) => {
-        if (costumSelectColumn) {
-            if (isNumbersOnColumn(costumSelectColumn)) {
-                toast.success(`Колонка "${columns[costumSelectColumn].name}" выведена на график`)
-                addCostumLine(columns[costumSelectColumn].name, rows.map(column => Number(column[costumSelectColumn].value)), columns[costumSelectColumn].color);
+    // const columnToLineOnChart = (costumSelectColumn: number) => {
+    //     if (costumSelectColumn) {
+    //         if (isNumbersOnColumn(costumSelectColumn)) {
+    //             toast.success(`Колонка "${columns[costumSelectColumn].name}" выведена на график`)
+    //             addCostumLine(columns[costumSelectColumn].name, createdRows.map(column => Number(column[costumSelectColumn].value)), columns[costumSelectColumn].color);
+    //         }
+    //         else
+    //             toast.warning(`Данные колонки не являются числовыми !`);
 
-            }
-            else
-                toast.warning(`Данные колонки не являются числовыми !`);
+    //         return
+    //     }
+    // }
 
-            return
-        }
-    }
     //create exel file
-    const onCreateExelFile=()=>{
+    const onCreateExelFile = () => {
+        if(createdRows.length)
         createExelFile({
             columns,
-            rows,
-            fileName:(tables.find(table=>table.id==selectedTableId)?.name||`все поля шаблона "${currentPattern?.name}" `)+'_'+new Date().toLocaleDateString(),
+            rows:createdRows,
+            fileName: (tabels.find(table => table.id == selectedTableId)?.name || `все поля шаблона "${currentPattern?.name}" `) + '_' + new Date().toLocaleDateString(),
             user,
             columnSizeArr
         })
@@ -273,88 +281,130 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
 
 
     //Table HTML
-    const TableHTML = useMemo(() => (
-        <table className={styles.table}>
-            <thead >
-                <tr className={styles.name}>
-                    {
-                        columns.map((column, indexColumn) =>
-                            <ColumnItem key={column.key} {...{ column, setSelectedColumnIndex, indexColumn, setColumnMenu, isNumbersOnColumn, columnToLineOnChart, selectedColumnIndex , sizeBlock:columnSizeArr[indexColumn]}} />
-                        )
-                    }
-                </tr>
-                <tr className={styles.initValue}>
-                    {columns.map((column, indexColumn) => <th key={indexColumn + 'init_val'}>{column.initValue || ' '}</th>)}
-                </tr>
-            </thead>
+    const TableHTML =
+        useMemo(() => {
+            //console.log('SIZES IN MEMO',columnSizeArr)
+            return (
+                <table className={styles.table}>
+                    <thead >
+                        <tr className={styles.name}>
+                            {
+                                columns.map((column, indexColumn) => {
+                                    return <ColumnItem key={column.key} {...{ column, setSelectedColumnIndex, indexColumn, setColumnMenu,  selectedColumnIndex, sizeBlock: columnSizeArr[indexColumn] }} />
+                                }
+                                )
+                            }
+                        </tr>
+                        <tr className={styles.initValue}>
+                            {columns.map((column, indexColumn) => <th key={indexColumn + 'init_val'}>{column.initValue || ' '}</th>)}
+                        </tr>
+                    </thead>
 
-            <tbody>
-                <TableBody {...{ rows, setIsFullScreenTable }} />
-            </tbody>
+                    <tbody>
+                        <TableBody {...{
+                            setIsFullScreenTable, 
+                            //statisticRowsData 
+                            }} 
+                            />
+                    </tbody>
 
-            <tfoot>
-                <tr>
-                    <td >                        
-                        <div onClick={onCreateExelFile} className={styles.exelFileBtn}>                            
-                            <img src="svg/other/file_white.svg"/>
-                            <span>Exel</span>
-                            </div>
-                        </td>
-                </tr>
-            </tfoot>
 
-        </table>
-    )
-    , [columns, rows, selectedColumnIndex,columnSizeArr]);
+
+                </table>
+            )
+        }, [columns, createdRows, selectedColumnIndex, columnSizeArr]);
 
     //table block HTML
 
-    const TableBlockHTML = useMemo(() => <div className={styles.tableViewBlock}>
+    const TableBlockHTML = useMemo(() =>
+        <div className={styles.tableViewBlock}>
 
-        <select className={styles.selectTables} value={JSON.stringify(selectedTableId)} onChange={onSelectTable} >
-            <option value={0}>все поля записей</option>
+            <select className={styles.selectTables} value={JSON.stringify(selectedTableId)} onChange={onSelectTable} >
+                {
+                    (isAdmin||!tabels.length) && <option value={0}>все поля записей</option>
+                }
+                {
+                    tabels.map((table, indexTable) => <option key={indexTable + '_tableSelect'} value={table.id}>
+                        {table.name}
+                    </option>
+                    )}
+            </select>
+
             {
-                tables.map((table, indexTable) => <option key={indexTable + '_tableSelect'} value={table.id}>
-                    {table.name}
-                </option>
-                )}
-        </select>
+                isAdmin && <ColumnEditor  {...{
+                    columns,
+                    //setColumns,
+                    selectedColumnIndex,
+                    setSelectedColumnIndex,
+                    currentPattern,
+                    columnMenu,
+                    setColumnMenu,
+                    selectedTableId,
+                    isChangedSelectedTable,
+                    //costumLinesArr
+                }} />
+            }
 
-        {isAdmin && <ColumnEditor  {...{ columns, setColumns, selectedColumnIndex, setSelectedColumnIndex, currentPattern, setTabels, setSelectedTableId, statisticRowsData, columnMenu, setColumnMenu, selectedTableId, isChangedSelectedTable, costumLinesArr }} />}
+            <div className={styles.tablesBtns}>
+                <div onClick={() => setIsFullScreenTable(true)}>🪟</div>
+                <div onClick={onCreateExelFile} className={styles.exelFileBtn}>
+                    <img src="svg/other/file_white.svg" />
+                    <span>Exel</span>
+                </div>
+            </div>
 
-        {TableHTML}
+            {TableHTML}
 
-    </div>, [tables, columns, rows, selectedColumnIndex, currentPattern, statisticRowsData, columnMenu, selectedTableId, isChangedSelectedTable]);
+        </div>, [
+            tabels, 
+            columns, 
+            createdRows, 
+            selectedColumnIndex, 
+            currentPattern, 
+            //statisticRowsData, 
+            columnMenu, 
+            selectedTableId, 
+            isChangedSelectedTable, 
+            columnSizeArr
+        ]);
 
 
 
 
-    const calcColumnSize=(charSize:number)=>{
-        let tempColumsSizesArr: number[]=[];
-        columns.forEach((column,columnIndex)=>{
-            tempColumsSizesArr=[...tempColumsSizesArr,getTextLength(column.name,charSize)];                      
+    const calcColumnSize = (charSize: number) => {
+        let tempColumsSizesArr: number[] = [];
+        columns.forEach((column, columnIndex) => {
+            tempColumsSizesArr = [...tempColumsSizesArr, getTextLength(column.name, charSize)];
         });
-        rows.forEach(row=>row.forEach((rowItem,columnIndex)=>{
-            let rowItemLength=getTextLength(rowItem.value+'',charSize);
-            if(tempColumsSizesArr[columnIndex]<rowItemLength){
-                tempColumsSizesArr[columnIndex]=rowItemLength;
+        createdRows.forEach(row => row.forEach((rowItem, columnIndex) => {
+            let rowItemLength = getTextLength(rowItem.value + '', charSize);
+            if (tempColumsSizesArr[columnIndex] < rowItemLength) {
+                tempColumsSizesArr[columnIndex] = rowItemLength;
             }
         }))
         //console.log('CALC size',tempColumsSizesArr);
-        setColumnSizeArr(tempColumsSizesArr);
+        //setColumnSizeArr(tempColumsSizesArr);
+        return tempColumsSizesArr
     }
 
     //----EFFECTS 🎊🎉✨
 
-    useEffect(() => { //CREATE HEAD COLUMNS🤯
-        if (statisticRowsData.length) {
-            createStartColumnPack(statisticRowsData[0]); //create columns by type first row in data            
-            // console.log('ROW', statisticRowsData[0]);
-            setSelectedTableId(0);// drop selected table
+    useEffect(() => { //CREATE HEAD COLUMNS & BODY DATA OR UPDATE BODY DATA 
+        if (initStatsRows.length) {
+            
+            allTablesByPatternId();//load from server data
+
+            if (columns.length) {  // 
+                createTableBody(); // update body data
+            } else {
+                createStartColumnPack(initStatsRows[0]); //create all field column
+            }
+            //createStartColumnPack(initStatsRows[0]); //create columns by type first row in data
+            //dispatch(setSelectedTableIdRedux(0))// ----------------------------------drop selected table ❌📅! ! ! !
             setSelectedColumnIndex(null);// drop selected column
-            getTables();
+            
         }
-    }, [statisticRowsData]);
+    }, [initStatsRows]);
 
     useEffect(() => { //CREATE BODY ROWS 🧥 AFTER CREATING COLUMNS 🤯!
         if (columns.length) {
@@ -363,33 +413,53 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
     }, [columns])
 
 
-    useEffect(() => { //ON SELECT TABLE 👇📰     
-        const table = tables.find(table => table.id == selectedTableId);
+    useEffect(() => { //ON SELECT TABLE 👇📰   
+
+        const table = tabels.find(table => table.id == selectedTableId);
         setSelectedColumnIndex(null);//drop selected column index
-        if (table) {
-            setColumns([...table.columns]);
-            console.log('TABLE',table);
-            setCostumLinesArr(table.costumLines);
+        if (table) {           
+            dispatch(setColumnsRedux(table.columns));
+            dispatch(setLinesRedux(table.costumLines))
+            console.log('TABLE', table);            
         } else {
-            createStartColumnPack(statisticRowsData[0]);
-            setCostumLinesArr([]);
+            if(isAdmin){
+                dispatch(setSelectedTableIdRedux(0))
+                createStartColumnPack(initStatsRows[0]); 
+            }else{
+                if(tabels.at(-1)?.id){
+                    dispatch(setSelectedTableIdRedux(tabels.at(-1)?.id||0));
+                }else{
+                    dispatch(setSelectedTableIdRedux(0))
+                    createStartColumnPack(initStatsRows[0]); 
+
+                }
+                
+            
+            }
+          
         }
-    }, [selectedTableId])
+    }, [selectedTableId,tabels])
 
     useEffect(() => { //on change selected table
-        if (selectedTableId && tables.length) {
-            const isChangedTable = !(JSON.stringify(columns) == JSON.stringify(tables.find(table => table.id == selectedTableId)?.columns))
-            console.log('CHANGE', isChangedTable);
+        if (selectedTableId && tabels.length) {
+            const isChangedTable = 
+            !(JSON.stringify(columns) == JSON.stringify(tabels.find(table => table.id == selectedTableId)?.columns)) 
+            || 
+            !(JSON.stringify(lines) == JSON.stringify(tabels.find(table => table.id == selectedTableId)?.costumLines));
+
+            
+            console.log('CHANGE', {lines:JSON.stringify(lines),tabeLines:JSON.stringify(tabels.find(table => table.id == selectedTableId)?.costumLines)});
             setIsChangedSelectedTable(isChangedTable);
         }
-    }, [columns])
+    }, [columns,lines])
 
-    useEffect(()=>{ //on complete table - calc width of columns
-        if(columns.length&&rows.length){            
-            calcColumnSize(fontSize);   
-           // console.log('CALC TEXT LENGTH NOW 🧮')        
+    useEffect(() => { //on complete table - calc width of columns
+        if (columns.length && createdRows.length) {
+            const tempSizes = calcColumnSize(fontSize);
+            setColumnSizeArr(tempSizes);
+           // console.log('CALC TEXT LENGTH NOW 🧮', tempSizes)
         }
-    },[columns,rows,fontSize])
+    }, [columns, createdRows, fontSize]);
 
     //--test
     // useEffect(() => {
@@ -397,13 +467,19 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
     // }, [tables,columns,rows])
 
 
+    useEffect(()=>{
+        return ()=>{
+            console.log('CLOSE');
+            dispatch(clearStatsRedux());
+        }
+    },[])
 
 
     //---RETURN JSX
-    if (!statisticRowsData.length) {
-        return <h5>нет записей для построения таблицы</h5>
-    }
-
+    // if (selec) {
+    //     return <h5>нет записей для построения таблицы</h5>
+    // }
+    if(selectedPatternId)
     return (
         isFullScreenTable
             ? <Modal fullWidth={true} closeModalFunc={() => setIsFullScreenTable(false)}>
@@ -412,6 +488,10 @@ export default function TableView({ statisticRowsData, currentPattern, setIsFull
             //:<Table {...{columns,rows}}/>
             : TableBlockHTML
     )
+    else
+    return(
+        <></>
+        )
 }
 
 

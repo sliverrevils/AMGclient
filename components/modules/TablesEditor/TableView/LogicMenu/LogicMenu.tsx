@@ -1,6 +1,8 @@
 import { MenuI, StatisticDataRowI } from "@/types/types";
 import React from "react";
 import styles from './logicMenu.module.scss';
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
 
 const mathArr = [
     {
@@ -31,14 +33,21 @@ const mathArr = [
 
 ];
 
-export default function LogicMenu({statisticRowsData, setLogicColumn, logicMenu, setlogicMenu}
+export default function LogicMenu({
+    //statisticRowsData, 
+    setLogicColumn, 
+    logicMenu, 
+    setlogicMenu}
     :{
-        statisticRowsData:StatisticDataRowI[][],
+        //statisticRowsData:StatisticDataRowI[][],
         setLogicColumn:React.Dispatch<React.SetStateAction<string>>,
         logicMenu:MenuI,
         setlogicMenu:React.Dispatch<React.SetStateAction<MenuI>>
     }
     ){
+        //SELECTORS
+        const {initStatsRows} = useSelector((state:StateReduxI)=>state.stats);
+        //FUNCS
         const onSelectDisable=()=>{
             setlogicMenu(state=>({...state,show:false}));
         }
@@ -54,8 +63,8 @@ export default function LogicMenu({statisticRowsData, setLogicColumn, logicMenu,
                     }}>
                         <img src="svg/org/close_field.svg" onClick={onSelectDisable} className={styles.close} />
                     {
-                        !!statisticRowsData.length &&
-                        statisticRowsData[0].map((statRow, statColumnIndex: number) =>
+                        !!initStatsRows.length &&
+                        initStatsRows[0].map((statRow, statColumnIndex: number) =>
                             <div key={statRow.name + statColumnIndex} className={styles.fields} >
                                 <span onClick={() => {
                                     setLogicColumn(state => state + `@@${statColumnIndex + 1}`);

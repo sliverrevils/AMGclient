@@ -21,7 +21,7 @@ export const accessRoutesArray: Array<{ id: number, title: string, access: Array
     //{ id: 3, title: "Таблицы", access: ['admin', 'user'], Component: StatisticScreen },
     { id: 4, title: "Шаблоны", access: ['admin'], Component: AllPatternsScreen  },
     { id: 5, title: "Создание шаблона", access: ['admin'], Component: ChartCreatorScreen  },
-    { id: 6, title: "Добавить статистику", access: ['admin', 'user'], Component: ChartFillerScreen },
+    //{ id: 6, title: "Добавить статистику", access: ['admin', 'user'], Component: ChartFillerScreen },
     { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen },
    // { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen2 },
     { id: 8, title: "Отчеты", access: ['admin'], Component: ReportsScreen },

@@ -143,15 +143,6 @@ export type RowI = {
     value:number|string
 }
 
-export interface TableI{
-    id:number,
-    name:string,
-    createdAt:string,
-    created_by:number,
-    view_pattern_id:number,
-    columns:ColumnI[],
-    costumLines:CostumLineI[],
-}
 
 export interface MenuI{
     show:boolean,
@@ -165,7 +156,7 @@ export interface CostumLineI{
     name:string,
     records:number[],
     color:string,
-    key:number,
+    columnKey:number,
     trend:boolean,
 }
 
@@ -181,6 +172,23 @@ export interface WeekI{
     value: number;
     color: string;
 }
+
+export interface ColumnLineI{
+    columnKey:number,
+    trend:boolean,
+}
+
+export interface TableI{
+    id:number,
+    name:string,
+    createdAt:string,
+    created_by:number,
+    view_pattern_id:number,
+    columns:ColumnI[],
+    costumLines:ColumnLineI[],
+}
+
+
 
 
 

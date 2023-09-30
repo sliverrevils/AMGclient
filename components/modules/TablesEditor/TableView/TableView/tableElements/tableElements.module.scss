@@ -1,3 +1,125 @@
 .selectedColumn{
     outline: 3px solid rgba(11, 150, 57, 0.658);
 }
+
+.lineMenuBlock{
+    z-index: 100;
+    box-shadow: 9px 5px 17px black;
+
+    .statEditorBlock{
+        position: relative;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5px;
+        gap: 2px;
+        margin: 0px;
+        border-radius: 5px;
+        min-width: 150px;
+        outline: 2px solid #ff8056;
+
+        .close {
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            width: 18px;
+            height: 18px;
+            opacity: .3;
+
+            &:hover{
+                opacity: .7;
+                cursor: pointer;
+            }
+        }
+
+        .patternInfo{
+            padding: 4px 4px;
+            border-radius: 3px;
+            color: white;
+            font-size: 14px;
+            background:#ff8056 ;
+        }
+
+        .field{
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            input,textarea,select{
+                border: 1px solid #ff8056;
+                padding: 2px 5px;
+                border-radius: 5px;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            textarea{
+                resize: vertical;
+                
+            }
+
+
+
+            .fieldName{
+                font-size: 11px;
+            }
+        }
+
+        button{
+            font-size: 10px;
+            padding: 4px 7px;
+            border: 0;
+            border-radius: 3px;
+        }
+        .updateBtn{
+            cursor: pointer;
+            color: white;
+            background: rgb(86, 182, 214);
+        }
+
+        .infoBlock{
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-self: flex-end;
+    
+            .infoUser{
+                border: 1px solid rgba(128, 128, 128, 0.349);
+                border-radius: 3px;
+                padding: 2px;
+                background: rgba(144, 238, 144, 0.253);
+            }
+            .infoDate{
+                border: 1px solid rgba(128, 128, 128, 0.349);
+                border-radius: 3px;
+                padding: 2px;
+                background: rgba(255, 255, 0, 0.253);
+            }
+            .infoUpdate{
+                border: 1px solid rgba(128, 128, 128, 0.349);
+                border-radius: 3px;
+                padding: 2px;
+                background: rgba(86, 182, 214, 0.233);
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .deleteBtn{
+            margin-top: 5px;
+            font-size: 9px;
+            padding: 2px 4px;
+            color: white;
+            align-self: flex-end;
+            background: tomato;
+            cursor: pointer;
+        }
+    }
+}
+
+.newLineBtn{
+   border: 2px solid #34aadc;
+   color:#34aadc;
+   cursor: pointer;
+}

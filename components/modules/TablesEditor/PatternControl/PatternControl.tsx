@@ -6,21 +6,29 @@ import { logicMath } from "@/utils/funcs";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from './patternControl.module.scss';
+import { StateReduxI } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { clearStatsRedux, setColumnsRedux, setInitStatsRowsRedux, setSelectedUserIdRedux } from "@/redux/statsSlice";
 
 
 
-export default function PatternControl({setStatisticRowsData,setCurrentPattern,setStatisticsArr,setCostumLinesArr}
+export default function PatternControl({
+    //setStatisticRowsData,
+    setCurrentPattern,
+   // setStatisticsArr,
+    //setCostumLinesArr
+}
     :{
-        setStatisticRowsData:any,
+        //setStatisticRowsData:any,
         setCurrentPattern:any,
-        setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>,
-        setCostumLinesArr:any
+       // setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>,
+       // setCostumLinesArr:any
     }) {    
 
     //--------------------------------------------------------------------------------------STATES🎪
     const [allPatterns, setAllPatterns] = useState<Array<ChartPatternI>>([]); //all accessed patterns (admin:all, user: only accessed)
-    const [selectedPatternId, setSelectedPatternId] = useState(0);// selected pattern ID
-    const [selectedUserId, setSelectedUserId] = useState<number>();// selected user ID
+    const [selectedPatternIdState, setSelectedPatternIdState] = useState(0);// selected pattern ID
+    //const [selectedUserId, setSelectedUserId] = useState<number>();// selected user ID
     const [dateStart,setDateStart]=useState(0);// date start period
     const [dateEnd,setDateEnd]=useState(0);// date end period
     //const [statisticsArr,setStatisticsArr] = useState<StatisticI[]>([]); //originals stats by backend
@@ -29,12 +37,16 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
     const initRef = useRef(true); //first mount this component
 
     //--------------------------------------------------------------------------------------HOOKS🪡
+    const dispatch = useDispatch();
     const { getUserPatterns ,getAllPatterns } = useChart();
     const { getPeriodByUserID } =useStatistic();
     const {users, userByID} = useUsers();
+   
 
     //--------------------------------------------------------------------------------------SELECTORS👇
     const { user }: { user: UserI } = useSelector((state: any) => state.main);
+    const { selectedUserId, selectedPatternId }=useSelector((state:StateReduxI)=>state.stats);
+    const {initStats, initStatsRows} = useSelector((state:StateReduxI)=>state.stats);
 
     //--------------------------------------------------------------------------------------FUNCTIONS⚙️
 
@@ -60,8 +72,9 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
     //on select pattern
     const onSelectPattern=(event:React.ChangeEvent<HTMLSelectElement>)=>{
-        setSelectedUserId(0);//clear selected user
-        setSelectedPatternId(+event.target.value);//set local ID pattern
+        //setSelectedUserId(0);//clear selected user
+        dispatch(setSelectedUserIdRedux(0));
+        setSelectedPatternIdState(+event.target.value);//set local ID pattern
         
     }
 
@@ -114,7 +127,8 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
                 value:stat.id
             },
         ]));
-        setStatisticRowsData(calcedData); //SAVE to GLOBAL
+        //setStatisticRowsData(calcedData); //SAVE to GLOBAL
+        dispatch(setInitStatsRowsRedux(calcedData));        
         return calcedData
     }
 
@@ -122,13 +136,36 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
     //get period statistics
     const getStatistics=async()=>{
-        setCostumLinesArr([]); //CLEAR COSTUM LINES ARRAY (LINEAR TREND BUG!)
-        const statsArr= await getPeriodByUserID(isAdmin?selectedUserId:user.userId,selectedPatternId,dateStart,dateEnd); //for admin all stats || user only self
-        // console.log('🐣STATISTIC INIT DATA ARRAY',statsArr);
-        const createdDataArr=createInitialDataArray(statsArr)
+        //setCostumLinesArr([]); //CLEAR COSTUM LINES ARRAY (LINEAR TREND BUG!)
+        await getPeriodByUserID(isAdmin?selectedUserId:user.userId,selectedPatternIdState,dateStart,dateEnd); 
+
+
+        // if(selectedPatternIdState==selectedPatternId||!initStatsRows.length){
+        //     await getPeriodByUserID(isAdmin?selectedUserId:user.userId,selectedPatternIdState,dateStart,dateEnd); //for admin all stats || user only self
+        // }else{
+        //                                        // ЗАГРУЖАЕТСЯ СО ВТОРОГО РАЗА ПРИ СМЕНЕ ШАБЛОНА
+        //     dispatch(clearStatsRedux());
+        //      //await getPeriodByUserID(isAdmin?selectedUserId:user.userId,selectedPatternIdState,dateStart,dateEnd); //for admin all stats || user only self
+
+        //     // dispatch(setColumnsRedux([]));
+
+
+        //     // createInitialDataArray(initStats)
+        // }
+
+
+        //const createdDataArr=createInitialDataArray(statsArr)
         // console.log('📰CREATED DATA ARRAY',createdDataArr);
-        setStatisticsArr(statsArr);
-        setCurrentPattern(currentPattern(selectedPatternId));
+        //setStatisticsArr(statsArr);
+       
+        setCurrentPattern(currentPattern(selectedPatternIdState));
+    }
+
+    //on Select User
+
+    const onSelectUser=(event:React.ChangeEvent<HTMLSelectElement>)=>{
+        //setSelectedUserId(+event.target.value);
+        dispatch(setSelectedUserIdRedux(+event.target.value));
     }
 
     //--------------------------------------------------------------------------------------EFFECTS🦻
@@ -142,6 +179,10 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
         }
     }, []);
 
+    useEffect(()=>{
+        createInitialDataArray(initStats)
+    },[initStats])
+
 
     //--------------------------TEST⚙️
     // useEffect(()=>{
@@ -149,8 +190,8 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
     // },[allPatterns]);
 
     // useEffect(()=>{
-    //     console.log(`SELECT: 🧞:${selectedUserId}, 🆔📈 ${selectedPatternId}, 📈`,currentPattern(selectedPatternId))
-    // },[selectedUserId,selectedPatternId]);
+    //     console.log(`SELECT: 🧞:${selectedUserId}, 🆔📈 ${selectedPatternIdState}, 📈`,currentPattern(selectedPatternIdState))
+    // },[selectedUserId,selectedPatternIdState]);
 
     // useEffect(()=>{
     //     console.log('Dates 📅',dateStart)
@@ -159,7 +200,7 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
 
     return (
         <div className={styles.patternControlBlock}>
-            <select className={styles.selectPattern} value={selectedPatternId} onChange={onSelectPattern}>
+            <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
                 <option value={0}>Выберете шаблон</option>
                 {
                     allPatterns?.map((pattern, idx: number) =>
@@ -171,11 +212,11 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
             </select>
 
             {
-                isAdmin&&!!selectedPatternId &&
-                <select className={styles.selectUser} value={selectedUserId} onChange={event => setSelectedUserId(+event.target.value)}>
+                isAdmin&&!!selectedPatternIdState &&
+                <select className={styles.selectUser} value={selectedUserId} onChange={onSelectUser}>
                     <option value={0}>Все пользователи</option>
                     {
-                        users.filter(user => currentPattern(selectedPatternId)?.access.includes(user.id))?.map((user, idx: number) =>
+                        users.filter(user => currentPattern(selectedPatternIdState)?.access.includes(user.id))?.map((user, idx: number) =>
                             <option key={user.id + '_patternOptions'} value={user.id}>
                                 {user.name}
                             </option>
@@ -183,12 +224,12 @@ export default function PatternControl({setStatisticRowsData,setCurrentPattern,s
                     }
                 </select>
             }
-            {!!selectedPatternId&&<div className={styles.timePeriodBlock}>               
+            {!!selectedPatternIdState&&<div className={styles.timePeriodBlock}>               
                 <input type="date" value={timeNumberToString(dateStart)} onChange={event=>setDateStart(timeStrToNumber(event.target.value))}  />
                 <input type="date" value={timeNumberToString(dateEnd)} onChange={event=>setDateEnd(timeStrToNumber(event.target.value))}  />
             </div>}
            
-            {!!selectedPatternId&&<div className={styles.getStatBtn} onClick={getStatistics}>загрузить записи</div>}
+            {!!selectedPatternIdState&&<div className={styles.getStatBtn} onClick={getStatistics}>загрузить записи</div>}
             
 
         </div>

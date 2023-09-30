@@ -41,7 +41,7 @@ export function createExelFile({columns,rows,fileName,user,columnSizeArr}
     //fill
     sheet.getRow(1).fill={
         type:'pattern',
-        pattern:'none',
+        pattern:'solid',
         bgColor:{argb:'FF8056'}
     }
 

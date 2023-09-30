@@ -4,36 +4,40 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import LogicMenu from "../LogicMenu/LogicMenu";
 import styles from './columnEditor.module.scss';
+import { useDispatch } from "react-redux";
+import { addColumnLine, addNewColumnRedux, columnMoveNextRedux, columnMovePrevRedux, columnUpdateRedux, deleteColumnByIndex, setSelectedTableIdRedux, setTabelsRedux } from "@/redux/statsSlice";
+import { StateReduxI } from "@/redux/store";
 
 
-export function ColumnEditor({ columns, 
+export function ColumnEditor({ 
+    //columns, 
     selectedColumnIndex, 
     setSelectedColumnIndex, 
-    setColumns, 
+    //setColumns, 
     currentPattern, 
-    setTabels, 
-    setSelectedTableId, 
-    statisticRowsData,
+    //setTabels, 
+   // setSelectedTableId, 
+    //statisticRowsData,
     columnMenu,
     setColumnMenu,
-    selectedTableId,
+    //selectedTableId,
     isChangedSelectedTable,
-    costumLinesArr,
+    //costumLinesArr,
 }
     : {
-        columns: ColumnI[],
+        //columns: ColumnI[],
         selectedColumnIndex: number | null,
         setSelectedColumnIndex: React.Dispatch<React.SetStateAction<number | null>>,
-        setColumns: React.Dispatch<React.SetStateAction<ColumnI[]>>,
+        //setColumns: React.Dispatch<React.SetStateAction<ColumnI[]>>,
         currentPattern:ChartPatternI|undefined,
-        setTabels:React.Dispatch<React.SetStateAction<TableI[]>>,
-        setSelectedTableId:React.Dispatch<React.SetStateAction<number>>,
-        statisticRowsData:StatisticDataRowI[][],
+        //setTabels:React.Dispatch<React.SetStateAction<TableI[]>>,
+        //setSelectedTableId:React.Dispatch<React.SetStateAction<number>>,
+        //statisticRowsData:StatisticDataRowI[][],
         columnMenu:MenuI,
         setColumnMenu :React.Dispatch<React.SetStateAction<MenuI>>,
         selectedTableId:number,
         isChangedSelectedTable:boolean,
-        costumLinesArr:CostumLineI[],
+       // costumLinesArr:CostumLineI[],
     }
 ) {
     //---STATE
@@ -48,22 +52,28 @@ export function ColumnEditor({ columns,
 
     //---SELECTORS
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
+    const {initStatsRows} = useSelector((state:StateReduxI)=>state.stats);
+    const {columns, selectedTableId ,lines} = useSelector((state:StateReduxI)=>state.stats)
 
     //---HOOKS
-    const { createTable, deleteTable } = useTable();
+    const { createTable, deleteTable, updateTable , isNumbersOnColumn} = useTable();
+    const dispatch= useDispatch();
 
     //---FUNCTIONS
     //create new column
     const createNewColumn = () => {
-        setColumns(state => [...state, { name: 'Новая колонка', logic: '', color: 'green', initValue: null, key: Math.random() }]);
+        //setColumns(state => [...state, { name: 'Новая колонка', logic: '', color: 'green', initValue: null, key: Math.random() }]);
+        dispatch(addNewColumnRedux( { name: 'Новая колонка', logic: '', color: 'green', initValue: null, key: Math.random() }))
         setSelectedColumnIndex(columns.length);// set selected column last index
     };
 
     //delete selected column
     const onDeleteColumn = () => {
         if(confirm('Вы точно хотите удалть колонку с таблицы ?')){
+            dispatch(deleteColumnByIndex(selectedColumnIndex!));
             setSelectedColumnIndex(null);
-            setColumns(state => state.filter((columnState, columnIndex: number) => columnIndex !== selectedColumnIndex));
+            //setColumns(state => state.filter((columnState, columnIndex: number) => columnIndex !== selectedColumnIndex));
+            
         }
 
     };
@@ -79,33 +89,39 @@ export function ColumnEditor({ columns,
     //column move next
     const onMoveNext=()=>{        
         if(selectedColumnIndex!==null&&selectedColumnIndex!==columns.length-1){
-            console.log('MOVE NEXT')
-            const tempColumns=[...columns];
-            tempColumns[selectedColumnIndex]=columns[selectedColumnIndex+1];
-            tempColumns[selectedColumnIndex+1]=columns[selectedColumnIndex];
-            setColumns(tempColumns);           
+            //console.log('MOVE NEXT')
+            // const tempColumns=[...columns];
+            // tempColumns[selectedColumnIndex]=columns[selectedColumnIndex+1];
+            // tempColumns[selectedColumnIndex+1]=columns[selectedColumnIndex];
+            // setColumns(tempColumns);  
+            dispatch(columnMoveNextRedux(selectedColumnIndex!));                   
             setSelectedColumnIndex((state:any)=>state+1);
         }
+ 
     }
     //column move prev
     const onMovePrev=()=>{        
         if(selectedColumnIndex!==null&&selectedColumnIndex!==0){
-            console.log('MOVE PREV')
-            const tempColumns=[...columns];
-            tempColumns[selectedColumnIndex]=columns[selectedColumnIndex-1];
-            tempColumns[selectedColumnIndex-1]=columns[selectedColumnIndex];
-            setColumns(tempColumns);            
-            setSelectedColumnIndex((state: any) => state - 1);
+            // console.log('MOVE PREV')
+            // const tempColumns=[...columns];
+            // tempColumns[selectedColumnIndex]=columns[selectedColumnIndex-1];
+            // tempColumns[selectedColumnIndex-1]=columns[selectedColumnIndex];
+            // setColumns(tempColumns);   
+            dispatch(columnMovePrevRedux(selectedColumnIndex!));
+            setSelectedColumnIndex((state: any) => state - 1);         
+           
         }
+
     }
 
     //update selected column
     const onUpdateColumn = () => {
-        setColumns(state => state.map((columnState, columnIndex) =>
-            columnIndex === selectedColumnIndex
-                ? { ...columnState, name: nameColumn, logic: logicColumn, color: colorColumn, initValue: +initValueColumn }
-                : columnState
-        ));
+        // setColumns(state => state.map((columnState, columnIndex) =>
+        //     columnIndex === selectedColumnIndex
+        //         ? { ...columnState, name: nameColumn, logic: logicColumn, color: colorColumn, initValue: +initValueColumn }
+        //         : columnState
+        // ));
+        dispatch(columnUpdateRedux({columnIndex:selectedColumnIndex!,columnData:{name: nameColumn, logic: logicColumn, color: colorColumn, initValue: +initValueColumn,key:Math.random()}}))
         onSelectDisable();
     }
 
@@ -114,10 +130,13 @@ export function ColumnEditor({ columns,
         setIsSaveTableBlock(false);
         setNameTable('');
         setSelectedColumnIndex(null); 
-        const tabelsWithCreated = await createTable(nameTable, currentPattern?.id, columns, costumLinesArr);
+        const tabelsWithCreated = await createTable(nameTable, currentPattern?.id, columns, lines);
         if (tabelsWithCreated.length) {
-            setTabels(tabelsWithCreated)
-            setSelectedTableId(tabelsWithCreated[tabelsWithCreated.length - 1].id)
+            //setTabels(tabelsWithCreated);
+            dispatch(setTabelsRedux(tabelsWithCreated))
+            //setSelectedTableId(tabelsWithCreated[tabelsWithCreated.length - 1].id);
+            dispatch(setSelectedTableIdRedux(tabelsWithCreated[tabelsWithCreated.length - 1].id))
+            
         }
     }
 
@@ -126,12 +145,13 @@ export function ColumnEditor({ columns,
         if(confirm(`Вы точно хотите удалить таблицу "${currentPattern?.name}" ?`)){
             setSelectedColumnIndex(null);
             const resTables=await deleteTable(selectedTableId,currentPattern?.id);
-            if(resTables.length){
-                setTabels(resTables);
-                setSelectedTableId(0);
-            }
         }
 
+    }
+
+    //update table
+    const onUpdateTable=async()=>{
+        updateTable();
     }
 
     //logic context menu   
@@ -148,39 +168,53 @@ export function ColumnEditor({ columns,
         }));       
         
     }
+    const onAddChartLine=()=>{
+        console.log('COLUMN',columns[selectedColumnIndex!].key)
+        if(selectedColumnIndex){
+            dispatch(addColumnLine({columnKey:columns[selectedColumnIndex!].key,trend:false}));
+        }
+        
+    }
 
-    const ColumnMenuHTML=useMemo(()=>(
-        selectedColumnIndex !== null &&columnMenu.show&& <div 
-        className={styles.editColumnBlock}
-        onContextMenu={event=>event.preventDefault()}
-        style={{
-            position:'fixed',
-            top:columnMenu.position.y+'px',
-            left:columnMenu.position.x+'px',
+    const ColumnMenuHTML = useMemo(() => (
+        selectedColumnIndex !== null && columnMenu.show && <div
+            className={styles.editColumnBlock}
+            onContextMenu={event => event.preventDefault()}
+            style={{
+                position: 'fixed',
+                top: columnMenu.position.y + 'px',
+                left: columnMenu.position.x + 'px',
             }}
-          >
-                 <img src="svg/org/close_field.svg" onClick={onSelectDisable} className={styles.close} />
-                <div className={styles.inputsBlock}>
-                {<LogicMenu {...{statisticRowsData,setLogicColumn,logicMenu,setlogicMenu}}/>}
-                    <span className={styles.help}>Название колоки</span>
-                    <input type="text" value={nameColumn} onChange={event => setNameColumn(event.target.value)} />
-                    <span className={styles.help}>Начальное значение</span>
-                    <input type="number" value={initValueColumn} onChange={event => setInitValueColumn(event.target.value)} />
-                    <span className={styles.help}>Логика просчёта</span>
-                    <input type="text" value={logicColumn} onChange={event => setLogicColumn(event.target.value)} onContextMenu={onLogicContext} />
-                    <span className={styles.help}>Цвет</span>
-                    <input type="color" value={colorColumn} onChange={event => setColorColumn(event.target.value)} />
-                </div>
-                <div className={styles.buttonsBlock}>
-                    <div onClick={onMovePrev} className="noselect">⬅️</div>
-                    <div onClick={onMoveNext} className="noselect">➡️</div>
-                    <div onClick={onUpdateColumn} className="noselect">🔁</div>
-                    <div onClick={onDeleteColumn} className="noselect">❌</div>                                        
-                        
-                    
-                </div>
+        >
+            <img src="svg/org/close_field.svg" onClick={onSelectDisable} className={styles.close} />
+            <div className={styles.inputsBlock}>
+                {
+                    <LogicMenu {...{ 
+                        //statisticRowsData, 
+                        setLogicColumn, 
+                        logicMenu, 
+                        setlogicMenu }} />
+                }
+                <span className={styles.help}>Название колоки</span>
+                <input type="text" value={nameColumn} onChange={event => setNameColumn(event.target.value)} />
+                <span className={styles.help}>Начальное значение</span>
+                <input type="number" value={initValueColumn} onChange={event => setInitValueColumn(event.target.value)} />
+                <span className={styles.help}>Логика просчёта</span>
+                <input type="text" value={logicColumn} onChange={event => setLogicColumn(event.target.value)} onContextMenu={onLogicContext} />
+                <span className={styles.help}>Цвет</span>
+                <input type="color" value={colorColumn} onChange={event => setColorColumn(event.target.value)} />
+            </div>
+            <div className={styles.buttonsBlock}>
+                <div onClick={onMovePrev} className="noselect">⬅️</div>
+                <div onClick={onMoveNext} className="noselect">➡️</div>
+                {isNumbersOnColumn(selectedColumnIndex)&&<div onClick={onAddChartLine} className="noselect">📈</div>}
+                <div onClick={onUpdateColumn} className="noselect">🔁</div>
+                <div onClick={onDeleteColumn} className="noselect">❌</div>
+
+
+            </div>
         </div>
-    ),[selectedColumnIndex,columnMenu,nameColumn,initValueColumn,logicColumn,colorColumn, logicMenu]);
+    ), [selectedColumnIndex, columnMenu, nameColumn, initValueColumn, logicColumn, colorColumn, logicMenu]);
 
     //---EFFECTS
     useEffect(() => {// on select column
@@ -220,7 +254,11 @@ export function ColumnEditor({ columns,
                         <button className={styles.confirmSaveTableBtn} onClick={onSaveTable} disabled={nameTable.length<3}>сохраниь таблицу</button>
                         <button className={styles.cancelSaveTableBtn} onClick={()=>setIsSaveTableBlock(false)} >отмена</button>
                     </div>
-                    : (isChangedSelectedTable||!selectedTableId)&&<div className={styles.saveTableBtn} onClick={()=>setIsSaveTableBlock(true)}>Сохранить новую таблицу</div>
+                    : (isChangedSelectedTable||!selectedTableId)&&<div className={styles.saveTableBtn} onClick={()=>setIsSaveTableBlock(true)}>Сохранить как новую таблицу</div>
+            }
+            {
+                isChangedSelectedTable&&!!selectedTableId&&
+                <div className={styles.updateTableBtn} onClick={onUpdateTable}> обновить эту таблицу</div>
             }
             {
                 !isChangedSelectedTable && !isSaveTableBlock && !!selectedTableId &&

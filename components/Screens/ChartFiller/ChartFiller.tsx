@@ -7,7 +7,9 @@ import { useSelector } from "react-redux";
 import styles from './chartFiller.module.scss';
 
 
+
 export default function ChartFillerScreen() {
+    //STATE
     const [patterns, setPatterns] = useState<Array<any>>([]);
     const [selectPatterns, setSelectPatterns] = useState(0);
     const [currentPattern, setCurrentPattern] = useState<ChartPatternI>();
@@ -18,12 +20,12 @@ export default function ChartFillerScreen() {
     const [isValid,setIsValid]=useState(false);
 
     const [chartState, setChartState] = useState<Array<{name:string, value:string, type: string }>>([]); // !!!!-------type!
-
+    //SELECTORS
     const { getUserPatterns } = useChart();
-    const { createStatistic } = useStatistic()
+    const { createStatistic } = useStatistic();
     const { user }: { user: UserI } = useSelector((state: any) => state.main)
     const init = useRef(true);
-
+    //FUNCS
     const changeFieldValue = (elIdx, text) => setChartState(state => state.map((field, idx) => {
         if (idx == elIdx) {
             field.value = text;

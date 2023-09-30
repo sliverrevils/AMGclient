@@ -54,6 +54,22 @@
         }
 
     }
+    .updateTableBtn{
+        background: #1db66f;
+       
+        color: white;
+        font-size: 14px;
+        padding: 3px 7px;
+        border-radius: 3px;
+        box-shadow: 2px 2px 3px black;
+        transition: all 200ms ease-in;
+        &:hover{
+            cursor: pointer;
+            transform: scale(103%);
+            box-shadow: 3px 3px 6px black;
+        }
+
+    }
 
     .saveTableBlock{
         width: 100%;

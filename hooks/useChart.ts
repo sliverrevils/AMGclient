@@ -5,11 +5,15 @@ import { useSelector } from "react-redux";
 
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import useOrg from "./useOrg";
 
 export default function useChart() {
     const dispatch = useDispatch();
     const {users}:{users:UserFullI[]} = useSelector((state:any)=>state.users);
     const userBtId=(id:number):UserFullI|undefined=>users.find(user=>user.id==id);
+
+    //HOOKS
+    const {getOrgFullScheme} = useOrg();
 
     //CREATE PATTERN
     const createChartPattern = async (name: string, fields: FieldI[], lines: LineI[], descriptions:string, created_by: number) => {
@@ -27,6 +31,7 @@ export default function useChart() {
                 console.log('ADD CHART', created);
                 !created.data.errorMessage&&toast.success(`Шаблон "${name}" успешно создан`);
                 toast.warning(created.data.errorMessage);
+                getOrgFullScheme({});
             }
             return true
         } catch (err) {

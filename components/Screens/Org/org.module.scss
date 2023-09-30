@@ -1131,6 +1131,57 @@
     // }
 }
 
+.patternControlBlock{
+    //border: 1px solid black;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    ul{
+        list-style: decimal;
+        padding-left:20px;
+        li{
+            font-size: 13px;  
+            display: flex;
+            align-items: center;         
+        }
+    }
+
+    img{
+        width: 20px;
+        height: 20px;
+    }
+
+    .addPatternBlock{
+        display: flex;
+        
+        width: 100%;
+        border: 1px solid black;
+
+        select{
+            width: 100%;
+        }
+
+
+
+        .addPatternBtns{
+            display: flex;
+            gap:5px;
+            &>div{
+                cursor: pointer;
+            }
+        }
+
+        
+    }
+    .addPatternBtn{
+        font-size: 13px;
+        padding: 3px 5px;
+    }
+
+}
+
 @keyframes open{
     from{
         transform: translateY(-100px) scale(0%);
