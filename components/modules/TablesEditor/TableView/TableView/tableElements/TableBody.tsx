@@ -1,12 +1,13 @@
 import useUI from "@/hooks/useUI";
 import { StateReduxI } from "@/redux/store";
-import { RowI, StatisticI } from "@/types/types";
-import { useState } from "react";
+import { ChartPatternI, RowI, StatisticI } from "@/types/types";
+import { useCallback, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from './tableElements.module.scss';
 import useStatistic from "@/hooks/useStatistic";
 import { timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
+import { nanoid } from "@reduxjs/toolkit";
 
 export default function TableBody({ 
     //rows,
@@ -69,8 +70,9 @@ export default function TableBody({
     }));
 
     const onUpdateRecord = () => {
+        const fields=chartState.map(el=>el.value===''?{...el,value:null}:el); //replase "" o null
 
-        const record = { dateStartEditor, dateEndEditor, fields: [...chartState] };
+        const record = { dateStartEditor, dateEndEditor, fields};
 
         if (currentLine)
             updateStatistic(currentLine.id!, {
@@ -98,10 +100,13 @@ export default function TableBody({
     }
 
     //MENU
-    const [lineMenu, onOpenLineMenu, onCloseLineMenu, lineMenuStyle] = createMenu();
+    
+    
+    const [lineMenu, onOpenLineMenu, onCloseLineMenu, lineMenuStyle] = createMenu(true);
+    
 
-    const editLineMenuHTML = () => currentLine && (
-        <div style={lineMenuStyle} className={styles.lineMenuBlock}>
+    const editLineMenuHTML = (
+        <div style={lineMenuStyle} className={styles.lineMenuBlock}  >
             <div className={styles.statEditorBlock}>
                 <img src={'/svg/org/close_field.svg'} 
                 className={styles.close} 
@@ -118,14 +123,13 @@ export default function TableBody({
                 </div>
 
                 {
-                    chartState.length &&
+                    chartState.length && 
                     currentPatern()?.fields.map((field, idx) => {
                         if (field.type == 'number' || field.type == 'select')
                             return (
                                 <div key={field.name + idx} className={styles.field}>
-                                    <div className={styles.fieldName}>{field.name}</div>
-
-                                    {field.type === 'number' && <input type={'number'} value={chartState[idx].value} onChange={event => changeFieldValue(idx, event.target.value)} />}
+                                    <div className={styles.fieldName}>{field.name}</div>                                    
+                                    {field.type === 'number' && <input type={'number'} value={chartState[idx].value||''} onChange={event => changeFieldValue(idx, event.target.value)} />}
                                     {field.type === 'select' &&
                                         <select value={chartState[idx].value} onChange={event => changeFieldValue(idx, event.target.value)} >
                                             <option value={''}>выбор</option>
@@ -138,7 +142,6 @@ export default function TableBody({
                                             }
                                         </select>
                                     }
-
                                 </div>
                             )
                     }
@@ -150,11 +153,8 @@ export default function TableBody({
                     <textarea placeholder="Описание" value={descriptionsEditor} onChange={event => setDescriptionsEditor(event.target.value)} />
 
                 </div>
-
-                <button onClick={onUpdateRecord} className={styles.updateBtn} >Обновить запись</button>
-         
-                <button onClick={onDeleteRecord} className={styles.deleteBtn} >Удалить запись</button>
-               
+                <button onClick={onUpdateRecord} className={styles.updateBtn} >Обновить запись</button>         
+                <button onClick={onDeleteRecord} className={styles.deleteBtn} >Удалить запись</button>               
             </div>
         </div>
     )
@@ -170,12 +170,12 @@ export default function TableBody({
         const stateTemp = initStats[rowIndex].fields.map((field, index) => ({ ...field, value: initStats[rowIndex].fields[index].value }));
         console.log('STATE TEMP', stateTemp);
         setChartState(stateTemp);
-        onOpenLineMenu(event);
+        onOpenLineMenu(event,styles.lineMenuBlock);
     }
 
     const onAddNewLine = ()=>{        
         const pattern=patterns.find(pattern=>pattern.id==selectedPatternId);
-        const fields=pattern?.fields.map(field => ({ ...field, value:''}));       
+        const fields=pattern?.fields.map(field => ({ ...field, value:null}));       
 
         if (pattern)
             createStatistic({
@@ -191,27 +191,22 @@ export default function TableBody({
     return (
         <>
             {
-                editLineMenuHTML()
+                editLineMenuHTML
             }
-            {/* <tr>
-            <td onClick={onFullScreen} className={styles.newLineBtn}>🪟</td> 
-            </tr> */}
-            {
-                
+
+            {                
                 createdRows.map((row, rowIndex) =>
                     <tr
-                        key={rowIndex + '_rowBody'}
-                        //onContextMenu={onFullScreen}
+                        key={rowIndex + '_rowBody'}                        
                         onContextMenu={(event) => onEditLine(event, rowIndex)}
-                        onClick={() => onSelectRow(row)}
-                        
+                        onClick={() => onSelectRow(row)}    
+                        style={row.some(field=>field.value==='')?{outline:'2px solid rgba(40, 177, 22, 0.2)'}:{}}                   
                     >
 
                         {
                             row.map((item, itemIndex) =>
-                                <td key={item.key} style={selectedLineIndex===rowIndex?{outline:'2px solid #ff8056'}:{}}>
-                                    {item.value}
-                                    
+                                <td key={item.key+"_td"} >
+                                    {item.value}                                    
                                 </td>
                             )
                         }

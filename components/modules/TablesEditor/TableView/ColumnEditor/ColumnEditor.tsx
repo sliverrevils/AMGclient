@@ -9,35 +9,23 @@ import { addColumnLine, addNewColumnRedux, columnMoveNextRedux, columnMovePrevRe
 import { StateReduxI } from "@/redux/store";
 
 
-export function ColumnEditor({ 
-    //columns, 
+export function ColumnEditor({   
     selectedColumnIndex, 
     setSelectedColumnIndex, 
-    //setColumns, 
     currentPattern, 
-    //setTabels, 
-   // setSelectedTableId, 
-    //statisticRowsData,
     columnMenu,
-    setColumnMenu,
-    //selectedTableId,
-    isChangedSelectedTable,
-    //costumLinesArr,
+    setColumnMenu,  
+    isChangedSelectedTable, 
 }
     : {
         //columns: ColumnI[],
         selectedColumnIndex: number | null,
-        setSelectedColumnIndex: React.Dispatch<React.SetStateAction<number | null>>,
-        //setColumns: React.Dispatch<React.SetStateAction<ColumnI[]>>,
+        setSelectedColumnIndex: React.Dispatch<React.SetStateAction<number | null>>,        
         currentPattern:ChartPatternI|undefined,
-        //setTabels:React.Dispatch<React.SetStateAction<TableI[]>>,
-        //setSelectedTableId:React.Dispatch<React.SetStateAction<number>>,
-        //statisticRowsData:StatisticDataRowI[][],
         columnMenu:MenuI,
         setColumnMenu :React.Dispatch<React.SetStateAction<MenuI>>,
         selectedTableId:number,
-        isChangedSelectedTable:boolean,
-       // costumLinesArr:CostumLineI[],
+        isChangedSelectedTable:boolean,     
     }
 ) {
     //---STATE
@@ -62,7 +50,6 @@ export function ColumnEditor({
     //---FUNCTIONS
     //create new column
     const createNewColumn = () => {
-        //setColumns(state => [...state, { name: 'Новая колонка', logic: '', color: 'green', initValue: null, key: Math.random() }]);
         dispatch(addNewColumnRedux( { name: 'Новая колонка', logic: '', color: 'green', initValue: null, key: Math.random() }))
         setSelectedColumnIndex(columns.length);// set selected column last index
     };
@@ -71,9 +58,7 @@ export function ColumnEditor({
     const onDeleteColumn = () => {
         if(confirm('Вы точно хотите удалть колонку с таблицы ?')){
             dispatch(deleteColumnByIndex(selectedColumnIndex!));
-            setSelectedColumnIndex(null);
-            //setColumns(state => state.filter((columnState, columnIndex: number) => columnIndex !== selectedColumnIndex));
-            
+            setSelectedColumnIndex(null);            
         }
 
     };
@@ -89,11 +74,6 @@ export function ColumnEditor({
     //column move next
     const onMoveNext=()=>{        
         if(selectedColumnIndex!==null&&selectedColumnIndex!==columns.length-1){
-            //console.log('MOVE NEXT')
-            // const tempColumns=[...columns];
-            // tempColumns[selectedColumnIndex]=columns[selectedColumnIndex+1];
-            // tempColumns[selectedColumnIndex+1]=columns[selectedColumnIndex];
-            // setColumns(tempColumns);  
             dispatch(columnMoveNextRedux(selectedColumnIndex!));                   
             setSelectedColumnIndex((state:any)=>state+1);
         }
@@ -102,11 +82,6 @@ export function ColumnEditor({
     //column move prev
     const onMovePrev=()=>{        
         if(selectedColumnIndex!==null&&selectedColumnIndex!==0){
-            // console.log('MOVE PREV')
-            // const tempColumns=[...columns];
-            // tempColumns[selectedColumnIndex]=columns[selectedColumnIndex-1];
-            // tempColumns[selectedColumnIndex-1]=columns[selectedColumnIndex];
-            // setColumns(tempColumns);   
             dispatch(columnMovePrevRedux(selectedColumnIndex!));
             setSelectedColumnIndex((state: any) => state - 1);         
            
@@ -116,11 +91,6 @@ export function ColumnEditor({
 
     //update selected column
     const onUpdateColumn = () => {
-        // setColumns(state => state.map((columnState, columnIndex) =>
-        //     columnIndex === selectedColumnIndex
-        //         ? { ...columnState, name: nameColumn, logic: logicColumn, color: colorColumn, initValue: +initValueColumn }
-        //         : columnState
-        // ));
         dispatch(columnUpdateRedux({columnIndex:selectedColumnIndex!,columnData:{name: nameColumn, logic: logicColumn, color: colorColumn, initValue: +initValueColumn,key:Math.random()}}))
         onSelectDisable();
     }
@@ -131,10 +101,8 @@ export function ColumnEditor({
         setNameTable('');
         setSelectedColumnIndex(null); 
         const tabelsWithCreated = await createTable(nameTable, currentPattern?.id, columns, lines);
-        if (tabelsWithCreated.length) {
-            //setTabels(tabelsWithCreated);
-            dispatch(setTabelsRedux(tabelsWithCreated))
-            //setSelectedTableId(tabelsWithCreated[tabelsWithCreated.length - 1].id);
+        if (tabelsWithCreated.length) {   
+            dispatch(setTabelsRedux(tabelsWithCreated))           
             dispatch(setSelectedTableIdRedux(tabelsWithCreated[tabelsWithCreated.length - 1].id))
             
         }
@@ -231,14 +199,6 @@ export function ColumnEditor({
     },[selectedTableId]);
 
    
-
-    // useEffect(()=>{// on select pattern
-    //     if(currentPattern){           
-    //         setNameTable(currentPattern.name)
-    //     }
-
-    // },[currentPattern])
-
     return (
         <div className={styles.columnEditorBlock}>  
  

@@ -13,12 +13,10 @@ import { StateReduxI } from "@/redux/store";
 //Tables updates only after update statisticRowsData
 
 export default function Tables() {
-    //массив массивов всех выбранных статистик с заполнеными полями [[{name,value}]]
-    //const [statisticRowsData, setStatisticRowsData] = useState<Array<StatisticDataRowI[]>>([]);
+
     const [currentPattern, setCurrentPattern] = useState<ChartPatternI | undefined>();
     const [isFullScreenTable, setIsFullScreenTable] = useState(false);
-    //const [statisticsArr, setStatisticsArr] = useState<StatisticI[]>([]);
-    //const [costumLinesArr, setCostumLinesArr] = useState<CostumLineI[]>([]);
+
 
     //SELECORS
     const {lines,selectedPatternId} = useSelector((state:StateReduxI)=>state.stats)
@@ -32,29 +30,20 @@ export default function Tables() {
     return (
         <div className={styles.tablesBlock}>
             <PatternControl {...{
-                //setStatisticRowsData, 
                 setCurrentPattern,
-                //setStatisticsArr,
-               // setCostumLinesArr
             }}
             />
 
             <TableView  {...{
-                //statisticRowsData, 
                 currentPattern,
                 isFullScreenTable,
                 setIsFullScreenTable,
-                //setCostumLinesArr,
-                //costumLinesArr
             }}
             />
 
             {
             !!lines.length&&<ChartView {...{
                 currentPattern,
-                //statisticsArr,
-               // costumLinesArr,
-                //setCostumLinesArr
             }}
             />}
         </div>

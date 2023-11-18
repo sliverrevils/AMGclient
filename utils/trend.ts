@@ -11,6 +11,7 @@ function linearRegression(x, y) {
   
     //console.log('🧮 arr values',x)
     for (var i = 0; i < N; i++) {
+    
       sum_x += x[i];
       sum_y += y[i];
       sum_xy += x[i] * y[i];

@@ -3,6 +3,9 @@ import styles from '../../Screens/Org/org.module.scss';
 import Section from "../Section/Section";
 import { useEffect, useState } from "react";
 import useOrg from "@/hooks/useOrg";
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
+import usePatterns from "@/hooks/usePatterns";
 
 
 export default function Depatment({ departmentItem, users, userById, updateOrgScheme, office_id, charts, indexDep, isAdmin }: { departmentItem: DepartmentI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, charts: any[], indexDep: number, isAdmin: boolean }) {
@@ -65,6 +68,19 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
 
     //update/
 
+        //PATTERNS
+        const { patterns } = useSelector((state: StateReduxI) => state.patterns);
+        const { addDepartmentPattern, setDepartmentMainPattern,delDepartmentPattern} = usePatterns();
+        const [patternSelect, setPatternSelect] = useState(departmentItem.mainPattern || 0);
+        const [addPatternSelect, setAddPatternSelect]=useState(0);
+    
+        const onSelectPattern = (event) => {
+            setPatternSelect(+event.target.value);
+            setDepartmentMainPattern(departmentItem.id, +event.target.value);
+        }
+    
+        const onAddPattern=()=>addDepartmentPattern(departmentItem.id,addPatternSelect);
+
     return (
         <div className={styles.department}>
             <div className={styles.departmentItem}>
@@ -93,16 +109,55 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                         </select>
                     </div>
                     <div className={styles.propLine}>
-                        <img src="svg/org/ckp.svg" />
-                        <textarea value={departmentCkp} spellCheck="false" onChange={event => setDepartmentCkp(event.target.value)} disabled={!isAdmin} />
-                    </div>
-                    <div className={styles.propLine}>
                         <img src="svg/org/code.svg" />
                         <input value={departmentCode} spellCheck="false" onChange={event => setDepartmentCode(event.target.value)} disabled={!isAdmin} />
                     </div>
                     <div className={styles.propLine}>
+                        <img src="svg/org/ckp.svg" />
+                        <textarea value={departmentCkp} spellCheck="false" onChange={event => setDepartmentCkp(event.target.value)} disabled={!isAdmin} />
+                    </div>
+                    <div className={`${styles.propLine} ${styles.hideFieldFlex}`}>
                         <img src="svg/org/description.svg" />
-                        <input type="text" value={departmentDescriptions} spellCheck="false" onChange={event => setDepartmentDescriptions(event.target.value)} disabled={!isAdmin} />
+                        <textarea  value={departmentDescriptions} spellCheck="false" onChange={event => setDepartmentDescriptions(event.target.value)} disabled={!isAdmin} />
+                    </div>
+                    
+                    <div className={`${styles.patternsBlock} ${styles.hideField}`}>
+                        <div className={styles.textInfo}>Главная статистика</div>
+                        <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
+                            <option value={0}>Выберите главный шаблон</option>
+                            {
+                                patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                            }
+                        </select>
+
+                        <div>
+                            <span className={styles.textInfo} >Дополнительные статистики</span>
+                            {isAdmin&&<div>
+                                <span className={styles.textInfo}> Добавление дополнительной статистики</span>
+                                <div style={{ display: "flex" }}>
+                                    <select value={addPatternSelect} onChange={event=>setAddPatternSelect(+event.target.value)}>
+                                        <option value={0}>Выберите главный шаблон</option>
+                                        {
+                                            patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
+                                        }
+                                    </select>
+                                    <span onClick={onAddPattern} style={{cursor:'pointer'}}>➕</span>
+                                </div>
+                            </div>}
+
+                            <div className={styles.patternsList}>
+                                {
+                                    departmentItem.patterns.map(id => {
+                                        const pattern = patterns.find(pattern => pattern.id == id);
+                                        return <div>
+                                            📉
+                                            {pattern?.name || 'шаблон удалён'}
+                                            {isAdmin&&<span style={{cursor:'pointer'}} onClick={() => delDepartmentPattern(departmentItem.id, id)}>❌</span>}
+                                        </div>
+                                    })
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     {isAdmin && <div className={styles.addItemBtn} onClick={addSectionToggle} style={{ background: '#2a9955d7' }}>

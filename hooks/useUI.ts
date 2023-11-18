@@ -1,12 +1,12 @@
 import { MenuI } from "@/types/types";
-import React, { useState } from "react";
+import React, { MouseEvent, useEffect, useState } from "react";
 
 export default function useUI() {
 
     //create State for menu & funcs
 
     //ChartView.tsx - 149
-    
+
     //context menu costum line
     // const [lineMenu,onOpenLineMenu,onCloseLineMenu,lineMenuStyle] = createMenu();
     // const [selectedLine,setSelectedLine]=useState(0);
@@ -16,41 +16,64 @@ export default function useUI() {
     //     setSelectedLine(state=>costumLine.key);
 
     // }
-    
-    const createMenu = () => {
-        const initMenuValue = { show: false, position: { x: 10, y: 10 } }
-        const [menuState, setMenuState] = useState<MenuI>(initMenuValue);
-        const closeMenuFunc = () => setMenuState(state => initMenuValue)
 
-        const onMenuFunc = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const createMenu = (onWindow=false) => {
+        const initMenuValue = { show: false, position: { x: 100, y: -1000 } }
+        const [menuState, setMenuState] = useState<MenuI>(initMenuValue);
+        const closeMenuFunc = () => setMenuState(state => initMenuValue);
+
+        let styleForMenu: React.CSSProperties = {
+            display: onWindow?'flex':menuState.show?'flex':'none',
+            position: 'fixed',
+            top: menuState.position.y,
+            left: menuState.position.x,
+        }
+
+
+        const onMenuFunc = (event: React.MouseEvent<HTMLDivElement, any>, selector: string) => { // selector is for calc position on window
             if (event) {
                 event.preventDefault();
-                //alert('MENU');   
+                let spaceY = 0;
+
+
+                if (selector) {
+                    const menuElement = document.querySelector('.' + selector);
+                    let menuSizes = menuElement!.getBoundingClientRect();
+                    spaceY = (window.innerHeight - event.clientY) - menuSizes.height < 0
+                        ? Math.abs((window.innerHeight - event.clientY) - menuSizes.height) + 10
+                        : 0
+                }
+
                 setMenuState({
                     show: true,
                     position: {
-                        x: event.clientX,
-                        y: event.clientY
+                        x: event.clientX + 10,
+                        y: event.clientY-10 - spaceY
                     }
                 })
+
+
             }
 
         }
-        const styleForMenu: React.CSSProperties = {
-            display: menuState.show ? `flex` : `none`,
-            position: 'fixed',
-            top: menuState.position.y,
-            left: menuState.position.x + 10,
-        }
+
+        // const styleForMenu: React.CSSProperties = {
+        //     display: menuState.show ? `flex` : `none`,
+        //     position: 'fixed',
+        //     top: menuState.position.y,
+        //     left: menuState.position.x,
+        // }
 
 
 
         const res: [
             menuState: MenuI,
-            onMenuFunc: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+            onMenuFunc: (event: React.MouseEvent<HTMLDivElement, any>, any) => void,
             closeMenuFunc: () => void,
             styleForMenu: React.CSSProperties
         ] = [menuState, onMenuFunc, closeMenuFunc, styleForMenu]
+
+
 
 
         return res;

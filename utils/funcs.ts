@@ -1,44 +1,38 @@
 export const logicMath = (logic, fields, index, lastFields?) => { //logic- string(ИНДЕКС ПОЛЯ @ С 1)  fields []
-    //const logic="@1+2/@3";
-    //logic.match(/@\d/g) //['@1', '@3']
-    //logic.replaceAll(/@\d/g,(x,y,z)=>{console.log(x,y,z)})
-    // @1 0 @1+2/@3
-    // @3 5 @1+2/@3
+    let clearData = false; 
 
-    //console.log('-------LOGIC------',{logic,fields,index,lastFields})
-    if (logic) {
-        const logicWithValue = logic
-            .replaceAll('@index', index + 1)
-            .replaceAll(/@@\d{1,3}/g, (x, y, z) => {
-                // if(lastFields){
-                //     console.log('INDEX--',x.replace('@@',''));
-                //     return lastFields[x.replace('@@','')-1]?.value;
-                // }else{
-                //     return rowInitialValues[x.replace('@@','')-1];
-                // }     
-                return lastFields[x.replace('@@', '') - 1]?.value;
+    const logicWithValue = logic
+        .replaceAll('@index', index + 1)
+        .replaceAll(/@@\d{1,3}/g, (x, y, z) => {
+            return lastFields[x.replace('@@', '') - 1]?.value;
+        })
+        .replaceAll(/@\d{1,3}/g, (x, y, z) => {
+            const field = x.replace('@', '') - 1;
 
-            })
-            .replaceAll(/@\d{1,3}/g, (x, y, z) => {
-                return fields[x.replace('@', '') - 1]?.value;
-            })
+            if (fields[field]?.value as any === null) {
+                clearData = true;
+            }
 
-        // console.log('LOGIC/VALUES ', logicWithValue);
-        let res: any=null;
-        try {
-            // console.log('MATH STRING ',logicWithValue)
-            res = +eval(logicWithValue)
-            // console.log('MATH res ',res)
+            return fields[field]?.value;
+        })
+    
+    let res: any = null;
 
-        } catch {
-            // console.log('MATH ERROR')
-        }
-        //console.log('MATH RES ',logicWithValue)
-        //return res || logicWithValue.replaceAll(/[-|+|*|/]/g, '');
-        return res!==null?res:logicWithValue.replaceAll(/[-|+|*|/]/g, '');
 
-    } else
-        return 0;
+    if (clearData) { //blank data tetected ! 
+        return '#clear#'
+    }
+
+    try {
+        res = +eval(logicWithValue)
+
+    } catch {
+        // console.log('MATH ERROR')
+    }
+
+   
+    return res !== null ? res : logicWithValue.replaceAll(/[-|+|*|/]/g, '');
+
 
 
 }
@@ -117,20 +111,20 @@ export const timeNumberToString = (timeNumber: number): string => {
 }
 
 //get month info
-export const getMonthInfo=({year,month}:{year:number,month:number})=>{
+export const getMonthInfo = ({ year, month }: { year: number, month: number }) => {
     //console.log(`DATE ${year} ${month} :`,new Date(year,month,0))
 
-    const daysCount=32-new Date(year,month,32).getDate();
-    let firstDayOnWeek=new Date(year,month,1).getDay();
-    if(!firstDayOnWeek){
-        firstDayOnWeek=7
+    const daysCount = 32 - new Date(year, month, 32).getDate();
+    let firstDayOnWeek = new Date(year, month, 1).getDay();
+    if (!firstDayOnWeek) {
+        firstDayOnWeek = 7
     }
-    let lastDayOnWeek=new Date(year,month,daysCount).getDay();
-    if(!lastDayOnWeek){
-        lastDayOnWeek=7
+    let lastDayOnWeek = new Date(year, month, daysCount).getDay();
+    if (!lastDayOnWeek) {
+        lastDayOnWeek = 7
     }
-   // console.log({daysCount,firstDayOnWeek,lastDayOnWeek})
-    
+    // console.log({daysCount,firstDayOnWeek,lastDayOnWeek})
+
     return {
         daysCount,
         firstDayOnWeek,
@@ -139,34 +133,34 @@ export const getMonthInfo=({year,month}:{year:number,month:number})=>{
 }
 
 //UPLOAD CHART IMAGE
-export  const getChartImage=(name:string,upload:boolean=false)=>{
-    const imgLink=document.createElement('a');
-    const canvas:any=document.querySelector('.myChart');
-    if(canvas){
-      imgLink.href=canvas.toDataURL('image/jpg',1);
-      imgLink.download=`${name} ${new Date().toLocaleDateString()}.jpg`;
-      upload&&imgLink.click();
+export const getChartImage = (name: string, upload: boolean = false) => {
+    const imgLink = document.createElement('a');
+    const canvas: any = document.querySelector('.myChart');
+    if (canvas) {
+        imgLink.href = canvas.toDataURL('image/jpg', 1);
+        imgLink.download = `${name} ${new Date().toLocaleDateString()}.jpg`;
+        upload && imgLink.click();
     }
 
     // console.log('CHART',imgLink.href)
 
-    return imgLink.href;     
-  }
+    return imgLink.href;
+}
 
 
-      //calc text size
-  export     const getTextLength=(text:string,charSize:number):number=>{
-        const el=document.createElement('span');
-            el.style.fontSize=(charSize+1)+'px';
-            // el.style.height='auto';
-            // el.style.width='auto';
-            // el.style.position='absolute';
-            // el.style.whiteSpace='no-wrap'
-            el.innerText=text;
-            document.body.append(el);
-            const length=Number(el.offsetWidth);
-            el.remove()
-            return length;
+//calc text size
+export const getTextLength = (text: string, charSize: number): number => {
+    const el = document.createElement('span');
+    el.style.fontSize = (charSize + 1) + 'px';
+    // el.style.height='auto';
+    // el.style.width='auto';
+    // el.style.position='absolute';
+    // el.style.whiteSpace='no-wrap'
+    el.innerText = text;
+    document.body.append(el);
+    const length = Number(el.offsetWidth);
+    el.remove()
+    return length;
 
-    }
+}
 

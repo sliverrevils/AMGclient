@@ -1,10 +1,15 @@
 import useChart from "@/hooks/useChart"
 import { ChartPatternI, FieldI, LineI, UserFullI, UserI } from "@/types/types";
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useSelector } from "react-redux";
 import styles from './allPatterns.module.scss';
 import useUsers from "@/hooks/useUsers";
 import useStatistic from "@/hooks/useStatistic";
+import useOrg from "@/hooks/useOrg";
+import { StateReduxI } from "@/redux/store";
+import dynamic from 'next/dynamic';
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
 
 
@@ -14,16 +19,20 @@ export default function AllPatternsScreen() {
     const { user }: { user: UserI } = useSelector((state: any) => state.main);
     const { users }: { users: UserFullI[] } = useSelector((state: any) => state.users);
     const { getAllPatterns, addAccessToChart, removeAccessToChart } = useChart();
+    const {getOrgFullScheme} = useOrg();
     const [selectedPattern, setSelectedPattern] = useState<number | null>(null);
 
     const [addAccessField, setAddAccessField] = useState(false);
     const [addAccessUserSelect, setAddAccessUserSelect] = useState('');
+    const [descriptions,setDescriptions]=useState('');
 
     const { userByID } = useUsers();
-    const { deleteChartPattern } = useChart();
+    const { deleteChartPattern,updatePatternInfo } = useChart();
 
 
-    const {deleteAllByChartID}= useStatistic()
+    const {deleteAllByChartID}= useStatistic();
+
+    const {patterns} = useSelector((state:StateReduxI)=>state.patterns);
 
     //init
     useEffect(() => {
@@ -80,6 +89,26 @@ export default function AllPatternsScreen() {
         confirm('Удалить все записи статистик по этому шаблону?')&&deleteAllByChartID(chart_id);
     }
 
+    const onUpdateDescriptions=()=>{
+        if(selectedPattern){
+            updatePatternInfo(allPaterns[selectedPattern].id,descriptions,getOrgFullScheme)
+        }
+        
+    }
+
+
+
+    useEffect(()=>{
+        if(selectedPattern){
+            setDescriptions(patterns[selectedPattern].descriptions||'');
+        }else{
+            setDescriptions('');
+        }
+    },[selectedPattern]);
+
+    
+
+
     return (
         <div className={styles.allPatternsWrapper}>
             {selectedPattern === null
@@ -88,11 +117,11 @@ export default function AllPatternsScreen() {
                         <h3 className={styles.title}> Все шаблоны</h3>
                         <ul>
                             {
-                                allPaterns.map((pattern, idx: number) =>
+                                patterns.map((pattern, idx: number) =>
                                     <li key={pattern.id + 'patItem'} onClick={(event: any) => event.target.tagName !== 'IMG' && setSelectedPattern(idx)}>
                                         <img className={styles.close} onClick={() =>onDeletePattern(pattern) } src="svg/org/close_field_white.svg" />
                                         <div className={styles.patternName}>{pattern.name}</div>
-                                        <div className={styles.patternDescriptions}>{pattern.descriptions || 'без описания'}</div>
+                                        {/* <div className={styles.patternDescriptions}>{pattern.descriptions || 'без описания'}</div> */}
                                         <div className={styles.patternCreate}>
                                             <img src={'svg/org/user_white.svg'} />
                                             <span>{userByID(pattern.created_by)?.name || 'пользователь удалён'}</span>
@@ -110,12 +139,24 @@ export default function AllPatternsScreen() {
                     <div className={styles.namePattern}>{allPaterns[selectedPattern].name}</div>
                     <div className={styles.propsWrap}>
                         <div className={styles.prop}><span>ID </span><span> {allPaterns[selectedPattern].id}</span></div>
-                        <div className={styles.prop}><span>Описание </span><span>  {allPaterns[selectedPattern].descriptions || 'без описания'}</span></div>
+                        {/* <div className={styles.prop}><span>Описание </span><span>  {allPaterns[selectedPattern].descriptions || 'без описания'}</span></div> */}
                         <div className={styles.prop}><span>Автор </span><span>  {userByID(allPaterns[selectedPattern].created_by)?.name || "пользователь удалён"} </span></div>
                         <div className={styles.prop}><span>Создан </span><span>  {new Date(allPaterns[selectedPattern].createdAt + '').toLocaleString()}</span></div>
                         <div className={styles.prop}><span>Изменён </span><span>  {allPaterns[selectedPattern].updated_by ? "🆔" + allPaterns[selectedPattern].updated_by + "⌚" + new Date(allPaterns[selectedPattern].updatedAt + '').toLocaleString() : "не изменялся"}</span></div>
                     </div>
-                    <div className={styles.accessWrap}>
+                    {/* <textarea className={styles.descriptions} value={descriptions} onChange={event=>setDescriptions(event.target.value)} placeholder="укажите описание шаблона"/>  */}
+                    <div> 
+                        <ReactQuill theme="snow" value={descriptions} onChange={setDescriptions} />                    
+                    </div>
+                    {
+                        patterns[selectedPattern].descriptions!=descriptions
+                        &&
+                        <div className={styles.updateDescriptions} onClick={onUpdateDescriptions}>
+                            Обновить описание 
+                        </div>
+                    }
+
+                    {/* <div className={styles.accessWrap}>
                         <span className={styles.title}>Доступ к использованию шаблону</span>
 
                         {
@@ -152,17 +193,17 @@ export default function AllPatternsScreen() {
                         </ul>
 
 
-                    </div>
+                    </div> */}
                     <div>Поля</div>
                     <ul>
                         {allPaterns[selectedPattern].fields.map((field: FieldI, index: number) => <Field key={'_field_'+field.id} field={field} index={index}/>)}
                     </ul>
 
-
+{/* 
                     <div>Линии</div>
                     <ul>
                         {allPaterns[selectedPattern].lines.map((line: LineI,index:number) => <Line key={'_line_'+line.id} line={line} index={index} />)}
-                    </ul>
+                    </ul> */}
 
                     <button onClick={()=>onDeleteAllStatistics(allPaterns[selectedPattern].id)} style={{background:'tomato',color:'white',width:400,alignSelf:'flex-end',border:0,borderRadius:5,padding:'5px'}}>Удалить все записи статистик в этом шаблоне</button>
 

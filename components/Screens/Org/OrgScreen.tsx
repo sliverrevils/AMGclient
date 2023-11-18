@@ -5,13 +5,14 @@ import styles from './org.module.scss';
 import Office from "@/components/modules/Office/Office";
 import Modal from "@/components/elements/Modal/Modal";
 import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
 
 
 export default function OrgScreen() {
     let { current: init } = useRef(true);
     const [org, setOrg] = useState<Array<OfficeI>>([]);
-    const [users, setUsers] = useState<Array<UserFullI>>([]);
-    const [charts, setCharts] = useState([]);
+    //const [users, setUsers] = useState<Array<UserFullI>>([]);
+    //const [charts, setCharts] = useState([]);
     const { getOrgFullScheme, createOffice } = useOrg();
     const [inputOfficeName, setinputOfficeName] = useState('');
     const [inputCkp, setInputCkp] = useState('');
@@ -22,17 +23,23 @@ export default function OrgScreen() {
     const [activeItem,setActiveItem] = useState<number>(0);
 
     const addOfficeToggle = () => setAddOffice(state => !state);
-    const updateOrgScheme = () => getOrgFullScheme({setOrgScheme:setOrg, setUsers, setCharts});
-    const findOffice = (): OfficeI | undefined => org.find(office => office.id == currentOfficeId);
+    //const updateOrgScheme = () => getOrgFullScheme({setOrgScheme:setOrg, setUsers, setCharts});
+    const updateOrgScheme = () => getOrgFullScheme({})
+    const findOffice = (): OfficeI | undefined => offices.find(office => office.id == currentOfficeId);
 
+    //selectors
     const isAdmin=useSelector((state:any)=>state.main.user.role=='admin');
+    const {offices}=useSelector((state:StateReduxI)=>state.org);
+    const users: UserFullI[]=useSelector((state:StateReduxI)=>state.users.users);
+    const charts=useSelector((state:StateReduxI)=>state.patterns.patterns);
 
     const userById = (id: number) => users.find(el => el.id === id);
     const creaetOfficeHandle = () => {
         createOffice(inputOfficeName, +inputLeadership || null, inputDescriptions, inputCkp)
             .then(data => {
                 if (data) {
-                    updateOrgScheme();
+                    //updateOrgScheme();
+                    getOrgFullScheme({});
                     setinputOfficeName('');
                     setAddOffice(false);
                     setInputCkp('');
@@ -42,12 +49,12 @@ export default function OrgScreen() {
             });
     }
 
-    useEffect(() => {
-        if (init) {
-            init = false;
-            updateOrgScheme();
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (init) {
+    //         init = false;
+    //         updateOrgScheme();
+    //     }
+    // }, []);
 
     useEffect(() => {
         console.log('Leader ', inputLeadership)
@@ -94,7 +101,7 @@ export default function OrgScreen() {
             {/* <pre>{JSON.stringify(org, null, 2)}</pre> */}
             <div className={`${styles.officeList} ${!!activeItem&&styles.ac}`}>
                 {
-                    org.map((office, idx: number) => {
+                    offices.map((office, idx: number) => {
 
                         return <div className={`${styles.tableItem} ${office.id==activeItem-1&&styles.activeItem}`} 
                         key={office.id + '_officeItem'} 

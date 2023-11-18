@@ -1,7 +1,7 @@
 import useChart from "@/hooks/useChart";
 import useStatistic from "@/hooks/useStatistic";
 import useUsers from "@/hooks/useUsers";
-import { ChartPatternI, FieldI, StatisticI, UserFullI, UserI ,StatisticDataRowI} from "@/types/types";
+import { ChartPatternI, FieldI, StatisticI, UserFullI, UserI ,StatisticDataRowI, UserAllPatternsI} from "@/types/types";
 import { logicMath } from "@/utils/funcs";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -24,10 +24,18 @@ export default function PatternControl({
        // setStatisticsArr:React.Dispatch<React.SetStateAction<StatisticI[]>>,
        // setCostumLinesArr:any
     }) {    
+    //--------------------------------------------------------------------------------------VARS
+    const groupNames={
+        mains:'⭐Главные шаблоны - заполняемые',
+        additionals:'✨Дополнительные шаблоны - заполняемые',
+        viewMains:'🛂Главные шаблоны - контролируемые',
+        viewAdditionals:'🛂Дополнительные шаблоны - контролируемые',
+    }
 
     //--------------------------------------------------------------------------------------STATES🎪
-    const [allPatterns, setAllPatterns] = useState<Array<ChartPatternI>>([]); //all accessed patterns (admin:all, user: only accessed)
+    const [allPatterns, setAllPatterns] = useState<UserAllPatternsI>({additionals:[],mains:[],viewAdditionals:[],viewMains:[],patternsFrom:[]}); //all accessed patterns (admin:all, user: only accessed)
     const [selectedPatternIdState, setSelectedPatternIdState] = useState(0);// selected pattern ID
+    const [selectedPatternGroupState, setSelectedPatternGroupState] = useState('');// selected pattern ID
     //const [selectedUserId, setSelectedUserId] = useState<number>();// selected user ID
     const [dateStart,setDateStart]=useState(0);// date start period
     const [dateEnd,setDateEnd]=useState(0);// date end period
@@ -40,18 +48,19 @@ export default function PatternControl({
     const dispatch = useDispatch();
     const { getUserPatterns ,getAllPatterns } = useChart();
     const { getPeriodByUserID } =useStatistic();
-    const {users, userByID} = useUsers();
+    const {users, userByID,userPatterns} = useUsers();
    
 
     //--------------------------------------------------------------------------------------SELECTORS👇
     const { user }: { user: UserI } = useSelector((state: any) => state.main);
     const { selectedUserId, selectedPatternId }=useSelector((state:StateReduxI)=>state.stats);
     const {initStats, initStatsRows} = useSelector((state:StateReduxI)=>state.stats);
+    const {patterns,access} = useSelector((state:StateReduxI)=>state.patterns);
 
     //--------------------------------------------------------------------------------------FUNCTIONS⚙️
 
     //find selected pattern by id 
-    const currentPattern=(id:number):ChartPatternI|undefined=>allPatterns.find(pattern=>pattern.id===id);
+    const currentPattern=(id:number):ChartPatternI|undefined=>patterns.find(pattern=>pattern.id===id);
 
     //time string to number
     const timeStrToNumber=(timeString:string):number=>timeString?new Date(timeString).getTime():0;
@@ -90,7 +99,7 @@ export default function PatternControl({
                 value: new Date(+stat.dateStart).toLocaleDateString() + '\n' + new Date(+stat.dateEnd).toLocaleDateString()
             },
             ...stat.fields.map((field: FieldI) => {
-                if (field.type === 'select')
+                if (field.type === 'select'){
                     return [
                         {
                             name: field.name + `(текст)`,
@@ -100,11 +109,29 @@ export default function PatternControl({
                             value: field.value
                         }
                     ];
-
-                return {
-                    name: field.name,
-                    value: (field.type === 'number' && field.value) || (field.type === 'view' && +logicMath(field.fieldLogic, stat.fields, idxStat))
                 }
+
+                if(field.type === 'number'){
+                    return {
+                        name: field.name,
+                        value:field.value
+                    }
+                }
+
+                if(field.type === 'view' ){
+                    let withEmptyData=(stat.fields as any).some((field: any) => (field.value === null&&!field.fieldLogic));
+                    return {
+                        name: field.name,
+                        value:withEmptyData?'#clear#':+logicMath(field.fieldLogic, stat.fields, idxStat),
+                       
+                    }
+                }
+
+
+                // return {
+                //     name: field.name,
+                //     value: (field.type === 'number' && field.value) || (field.type === 'view' && +logicMath(field.fieldLogic, stat.fields, idxStat)) 
+                // }
             }).flat(),
             {
                 name: 'Примечание',
@@ -175,7 +202,11 @@ export default function PatternControl({
         if (initRef.current) {
             initRef.current = false;
             //get all patterns for admin || only accessed for user
-            isAdmin?getAllPatterns(setAllPatterns):getUserPatterns(user.userId, setAllPatterns);
+            // isAdmin?getAllPatterns(setAllPatterns):getUserPatterns(user.userId, setAllPatterns);
+           
+
+            setAllPatterns(userPatterns(user.userId));
+          //  setAllPatterns(isAdmin?patterns:userPatterns(user.userId))
         }
     }, []);
 
@@ -200,16 +231,72 @@ export default function PatternControl({
 
     return (
         <div className={styles.patternControlBlock}>
-            <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
-                <option value={0}>Выберете шаблон</option>
-                {
-                    allPatterns?.map((pattern, idx: number) =>
-                        <option key={pattern.id + '_patternOptions'} value={pattern.id}>
-                            {pattern.name}
-                        </option>
-                    )
-                }
-            </select>
+            {
+                isAdmin
+                    ?
+                    <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
+                        <option value={0}>Выберете шаблон</option>
+                        {
+                            patterns?.map((pattern, idx: number) =>
+                                <option key={pattern.id + '_patternOptions'} value={pattern.id}>
+                                    {pattern.name}
+                                </option>
+                            )
+                        }
+                    </select>
+                    :
+                    <>
+                        <select className={styles.selectPattern} 
+                        value={selectedPatternGroupState}                        
+                        onChange={event=>{
+                            setSelectedPatternIdState(0);
+                            setSelectedPatternGroupState(event.target.value);
+                        }
+                        }>
+                            <option value={''}>Выберете группу шаблонов</option>
+                            {
+                                Object.keys(allPatterns).map((field, idx: number) =>
+                                    <option key={idx + '_patternGroup'} value={field}>
+                                        {groupNames[field]}
+                                    </option>
+                                )
+                            }
+                        </select>
+                        {
+                            !!selectedPatternGroupState
+                            &&
+                            <>
+                                <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
+                                    <option value={0}>Выберете шаблон</option>
+                                    {
+                                        allPatterns[selectedPatternGroupState].map((pattern, idx: number) =>
+                                            <option key={pattern.id + '_patternOptions'} 
+                                            value={pattern.id} 
+                                            data-from={`Заполняется в : ${allPatterns.patternsFrom?.[pattern.id]?.join(', ')}`}
+                                             title={`Заполняется в : ${allPatterns.patternsFrom?.[pattern.id]?.join(', ')}`}
+                                            >
+                                                {pattern.name}               
+                                            </option>
+                                        )
+                                    }
+                                </select>
+                                {
+                                    !!selectedPatternIdState
+                                    &&
+                                    <div className={styles.patternInfo}>
+                                        <span>Шаблон заполняется в :</span>
+                                        <ul >
+                                            {
+                                                allPatterns.patternsFrom?.[selectedPatternIdState]?.
+                                                map((title)=><li>{title}</li>)
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </>
+                        }
+                    </>
+            }
 
             {
                 isAdmin&&!!selectedPatternIdState &&
@@ -229,7 +316,7 @@ export default function PatternControl({
                 <input type="date" value={timeNumberToString(dateEnd)} onChange={event=>setDateEnd(timeStrToNumber(event.target.value))}  />
             </div>}
            
-            {!!selectedPatternIdState&&<div className={styles.getStatBtn} onClick={getStatistics}>загрузить записи</div>}
+            {!!selectedPatternIdState&&<div className={`${styles.getStatBtn} noselect`} onClick={getStatistics}>загрузить записи</div>}
             
 
         </div>

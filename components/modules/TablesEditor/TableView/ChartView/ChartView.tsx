@@ -152,8 +152,8 @@ export default function ChartView({
 
                     if(line.trend){
                                                     console.log('CALC TREND')
-                            const x = createdRows.map(row => row[columnIndex].value).map((el, index) => index + 1);
-                            const y = createdRows.map(row => row[columnIndex].value);
+                            const x = createdRows.map(row => {if(row[columnIndex].value!=='')return row[columnIndex].value}).filter(el=>el!==undefined).map((el, index) => index + 1);
+                            const y = createdRows.map(row => {if(row[columnIndex].value!=='')return row[columnIndex].value}).filter(el=>el!==undefined);
 
                             const trend = linearRegression(x, y)
 
@@ -173,7 +173,7 @@ export default function ChartView({
                     return {
                         name: columns[columnIndex].name,
                         color: columns[columnIndex].color,
-                        records: createdRows.map(row => row[columnIndex].value),
+                        records: createdRows.map(row => {if(row[columnIndex].value!=='')return row[columnIndex].value}).filter(el=>el!==undefined),
                         columnKey: line.columnKey,
                         trend: false,
                     }

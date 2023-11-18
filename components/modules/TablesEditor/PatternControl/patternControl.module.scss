@@ -18,8 +18,11 @@
         border: 3px solid #FF8056;
 
         option{
+            font-size: 17px;          
 
         }
+
+
 
     }
 
@@ -48,4 +51,48 @@
         border-radius: 5px;
         box-shadow: 3px 2px 5px black;
     }
+
+    .patternInfo{
+        border: 2px dotted #FF8056;
+        border-radius: 10px;
+        
+        background-color: #ff805644;        
+        padding: 3px 5px 5px 10px;
+        font-size: 12px;
+        span{
+            color: rgba(121, 120, 120, 0.906);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        ul{
+            margin-left: 20px;
+
+            li{
+                font-size: 12px;
+                font-weight: 600;
+                color: rgba(0, 0, 0, 0.655);
+            }
+        }
+    }
+
+    [data-from]{
+        cursor: pointer;
+        
+        &::after{
+            content: 'fdfdf';
+            transition: 0.2s;
+        }
+
+        &:hover::after{
+            width: 500px;
+            display: block;
+            content: attr(data-from);
+            z-index: 1000;
+        }
+    }
+    
+
+
+
 }

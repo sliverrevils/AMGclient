@@ -1,6 +1,15 @@
 .usersWrapper{
     padding: 30px 10px 10px 10px;
+
+    thead{
+        border-radius: 5px;
+    }
     
+    th{
+        font-size: 13px;
+        padding: 3px 5px;
+      
+    }
 
     td{
         cursor: pointer;
@@ -29,6 +38,7 @@
 
         .controlBtns{
             display: flex;
+            outline:2px solid rgba(40, 177, 22, 0.297);
         }
 
     }

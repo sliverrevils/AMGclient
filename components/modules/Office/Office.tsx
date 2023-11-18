@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import useOrg from "@/hooks/useOrg";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
+import usePatterns from "@/hooks/usePatterns";
 
 
 export default function Office({ officeItem, updateOrgScheme, users, userById, charts, isAdmin }: { officeItem: OfficeI | undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[], isAdmin: boolean }) {
@@ -29,7 +30,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
     const [additionalPatterns, setAdditionalPatterns] = useState<Array<number>>([]);
 
     //SELECTORS
-    const { patterns } = useSelector((state: StateReduxI) => state.patterns);
+    //const { patterns } = useSelector((state: StateReduxI) => state.patterns);
 
     //HOOKS
 
@@ -76,6 +77,22 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
             });
     }
 
+    //PATTERNS
+    const { patterns } = useSelector((state: StateReduxI) => state.patterns);
+    const { addOfficePattern, delOfficePattern, setOfficeMainPattern } = usePatterns();
+    const [patternSelect, setPatternSelect] = useState(officeItem.mainPattern || 0);
+    const [addPatternSelect, setAddPatternSelect] = useState(0);
+
+    const onSelectPattern = (event) => {
+        setPatternSelect(+event.target.value);
+        setOfficeMainPattern(officeItem.id, +event.target.value);
+    }
+
+    const onAddPattern = () => {
+        addOfficePattern(officeItem.id, addPatternSelect);
+        setAddPatternSelect(0);
+    };
+
 
     return (
         <>
@@ -113,68 +130,53 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                             <img src="svg/org/ckp.svg" />
                             <textarea value={officeCkp} spellCheck="false" onChange={event => setOfficeCkp(event.target.value)} disabled={!isAdmin} />
                         </div>
-                        <div className={styles.propLine}>
+                        <div className={`${styles.propLine} ${styles.hideFieldFlex}`}>
                             <img src="svg/org/description.svg" />
                             <textarea value={officeDescriptions} spellCheck="false" onChange={event => setOfficeDescriptions(event.target.value)} disabled={!isAdmin} />
                         </div>
-                        {
-                            isAdmin &&
-                            <>
-                                <div className={styles.patternControlBlock}>
-                                    <div className={styles.propLine}>
-                                        <img src="svg/org/chart.svg" />
-                                        <select value={mainPattern || ''} onChange={event => setMainPattern(+event.target.value)} disabled={!isAdmin}>
-                                            <option value={''}>выбор главного шаблона</option>
+
+                        <div className={`${styles.patternsBlock} ${styles.hideField}`}>
+                            <div className={styles.textInfo}>Главная статистика</div>
+                            <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
+                                <option value={0}>Выберите главный шаблон</option>
+                                {
+                                    patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                                }
+                            </select>
+
+                            <div>
+                                <span className={styles.textInfo} >Дополнительные статистики</span>
+                                {isAdmin && <div>
+                                    {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
+                                    <div style={{ display: "flex" }}>
+                                        <select value={addPatternSelect} onChange={event => setAddPatternSelect(+event.target.value)}>
+                                            <option value={0}>Выберите дополнительный шаблон</option>
                                             {
-                                                patterns.map(pattern => <option key={pattern.id + pattern.name} value={pattern.id}>{pattern.name}</option>)
+                                                patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
                                             }
                                         </select>
+                                        <span onClick={onAddPattern} style={{ cursor: 'pointer' }}>➕</span>
                                     </div>
+                                </div>}
 
+                                <div className={styles.patternsList}>
                                     {
-                                        // PATTERNS BLOCK
-                                        isAddAdditionalPatternBlock
-                                            ?
-                                            <div className={styles.addPatternBlock}>
-                                                <select value={additionalPatternsSelect || ''} onChange={event => setAdditionalPatternsSelect(+event.target.value)} disabled={!isAdmin}>
-                                                    <option value={''}>выбор дополнительного шаблона</option>
-                                                    {
-                                                        patterns.map(pattern => <option key={pattern.id + pattern.name} value={pattern.id}>{pattern.name}</option>)
-                                                    }
-                                                </select>
-                                                <div className={styles.addPatternBtns}>
-                                                    <div onClick={()=>setAdditionalPatterns(state=>[...new Set([...state,additionalPatternsSelect])])}>➕</div>
-                                                    <div onClick={()=>setAdditionalPatterns(state=>state.filter(patternId=>patternId!==additionalPatternsSelect))}>➖</div>
-                                                    <div onClick={() => setIsAddAdditionalPatternBlock(false)}>✖️</div>
-                                                </div>
+                                        officeItem.patterns.map(id => {
+                                            const pattern = patterns.find(pattern => pattern.id == id);
+                                            return <div>
+                                                📉
+                                                {pattern?.name || 'шаблон удалён'}
+                                                {isAdmin && <span style={{ cursor: 'pointer' }} onClick={() => delOfficePattern(officeItem.id, id)}>❌</span>}
                                             </div>
-                                            : <div className={styles.addPatternBtn} onClick={()=>setIsAddAdditionalPatternBlock(true)}>
-                                                <img src="svg/org/chart_add.svg" />
-                                            </div>
-                                    }
-                                    <ul className={styles.additionalPatternsList}>
-                                    {
-
-                                        additionalPatterns.map(patternID=>{
-                                            const pattern=patterns.find(pattern=>pattern.id==patternID);
-                                            if(pattern){
-                                                return <li>
-                                                    <img src="svg/org/chart.svg" />
-                                                    <span>{pattern.name}</span></li>
-                                            }
                                         })
                                     }
-                                    </ul>
                                 </div>
-
-
-                                <div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{ background: 'steelblue' }}>
+                            </div>
+                        </div>
+                        <div className={styles.addItemBtn} onClick={addDepartmentToggle} style={{ background: 'steelblue' }}>
                                     Добавить отдел
                                     <img src="svg/org/add_white.svg" />
                                 </div>
-
-                            </>
-                        }
                     </div>
 
                 </div>

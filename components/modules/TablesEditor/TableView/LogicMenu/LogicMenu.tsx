@@ -28,7 +28,7 @@ const mathArr = [
     },
     {
         name: 'Статус перевернутый',
-        value: '@statusReverse'
+        value: '@statReverse'
     },
 
 ];

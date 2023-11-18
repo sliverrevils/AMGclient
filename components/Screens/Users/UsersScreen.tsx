@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserFullI } from "@/types/types"
 import { useEffect, useRef, useState } from "react";
 import styles from './usersScreen.module.scss';
+import useOrg from "@/hooks/useOrg";
 
 export default function UsersScreen() {
     const [users, setUsers] = useState<UserFullI[]>([]);
@@ -11,6 +12,7 @@ export default function UsersScreen() {
     const [addUserField,setAddUserField] = useState(false);
 
     const {createUser} = useAuth();
+   
     const [newUserName,setNewUserName]=useState('');
     const [newUserSurname,setNewUserSurname]=useState('');
     const [newUserPatronymic,setNewUserPatronymic]=useState('');
@@ -20,7 +22,7 @@ export default function UsersScreen() {
     // const [newUser,setNewUser]=useState('');
 
     const singInHandle=()=>{
-        createUser(`${newUserName} ${newUserSurname} ${newUserPatronymic}`,'',newUserEmail,newUserPassword,()=>allUsers(setUsers))
+        createUser(`${newUserName} ${newUserPatronymic} ${newUserSurname}`,'',newUserEmail,newUserPassword,()=>allUsers(setUsers))
     }
 
 
@@ -85,8 +87,8 @@ export default function UsersScreen() {
                             <tr>
                                 <th>🆔</th>
                                 <th>Имя</th>
-                                <th>Пост</th>
-                                <th>Структура</th>
+                                <th>Логин</th>
+                               
                                 <th>Права</th>
                                 <th>Регистрация</th>
                                 <th>Верификация</th>
@@ -98,8 +100,7 @@ export default function UsersScreen() {
                                 <tr key={user.id + 'users_list'} onClick={()=>setCurrentUser(user)}>
                                     <td>{user.id}</td>
                                     <td>{user.name}</td>
-                                    <td>{user.post}</td>
-                                    <td>{user.structure}</td>
+                                    <td>{user.email}</td>                                    
                                     <td>{user.role}</td>
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                     <td>{user.is_verificated ? '✅' : '🆕'}</td>

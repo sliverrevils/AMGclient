@@ -4,7 +4,7 @@ import {toast} from 'react-toastify'
 const axiosClient = axios.create({
     withCredentials:true,
     headers:{"secret-key":'any_secret_string'},
-    baseURL:`${process.env.NEXT_PUBLIC_SERVER_URL_DEV0}`,   
+    baseURL:`${process.env.NEXT_PUBLIC_SERVER_URL_DEV1}`,   
 })
 
 export const axiosError=(err)=>{

@@ -56,6 +56,8 @@ export interface SectionI{
     "createdAt": string,
     "updatedAt": string,
     "ckp":string,
+    "mainPattern":number,
+    "patterns":number[],
 }
 
 export interface DepartmentI{
@@ -67,6 +69,8 @@ export interface DepartmentI{
     "descriptions": string,
     "sections": Array<SectionI>,
     "ckp":string,
+    "mainPattern":number,
+    "patterns":number[],
 }
 
 export interface OfficeI{
@@ -76,6 +80,8 @@ export interface OfficeI{
     "descriptions": string,
     "departments": Array<DepartmentI>,
     "ckp":string,
+    "mainPattern":number,
+    "patterns":number[],
 }
 //CHART PATTERN
 export interface FieldI{
@@ -105,6 +111,7 @@ export interface ChartPatternI{
     "updated_by": number,
     "createdAt"?:string,
     "updatedAt"?:string,
+    
 
 }
 
@@ -186,6 +193,23 @@ export interface TableI{
     view_pattern_id:number,
     columns:ColumnI[],
     costumLines:ColumnLineI[],
+}
+
+export interface UserAllPatternsIdsI{
+    mains: number[],
+    additionals: number[],
+    viewMains: number[],
+    viewAdditionals:number[],
+}
+export interface PatternsFromI{
+    [key:number]:string[],
+}
+export interface UserAllPatternsI{
+    mains: ChartPatternI[],
+    additionals: ChartPatternI[],
+    viewMains: ChartPatternI[],
+    viewAdditionals:ChartPatternI[],
+    patternsFrom:PatternsFromI,
 }
 
 

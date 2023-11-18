@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import useOrg from "./useOrg";
+import { setOfficesRedux } from "@/redux/orgSlice";
+import { setPatternsRedux } from "@/redux/patternsSlce";
 
 export default function useChart() {
     const dispatch = useDispatch();
@@ -52,6 +54,30 @@ export default function useChart() {
                 !deleted.data.errorMessage&&toast.success(deleted.data.message);
                 toast.warning(deleted.data.errorMessage);
             }
+            return true
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    }
+
+    const updatePatternInfo =async (id: number,info: string, updaterFunc?:any)=>{
+        dispatch(setLoadingRedux(true));
+        try {
+            const updated: any = await axiosClient.post(`charts/updateInfo/${id}`,
+            {
+                info
+            }
+            );
+            dispatch(setLoadingRedux(false));
+                         
+                //console.log('UPDATED', updated);
+               // updaterFunc&&updaterFunc();
+                !updated.data.errorMessage&&toast.success('Описание шаблона обновлено');
+                toast.warning(updated.data.errorMessage);
+                updated?.data?.length&&dispatch(setPatternsRedux(updated.data.map(pattern=>({...pattern,fields:JSON.parse(pattern.fields)}))))
+           
             return true
         } catch (err) {
             dispatch(setLoadingRedux(false));
@@ -147,5 +173,5 @@ export default function useChart() {
         }
     }
 
-    return {createChartPattern, getUserPatterns, getAllPatterns, addAccessToChart, removeAccessToChart, deleteChartPattern, chartById}
+    return {createChartPattern, getUserPatterns, getAllPatterns, addAccessToChart, removeAccessToChart, deleteChartPattern, chartById, updatePatternInfo}
 }

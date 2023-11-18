@@ -4,6 +4,9 @@ import useOrg from "@/hooks/useOrg";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import AdministratorsList from "../AdministratorsList/AdministratorsList";
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
+import usePatterns from "@/hooks/usePatterns";
 
 export default function Section({ sectionItem, users, userById, updateOrgScheme, office_id, department_id, charts, index, isAdmin }: { sectionItem: SectionI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, department_id: number, charts: Array<ChartI>, index: number, isAdmin: boolean }) {
 
@@ -14,6 +17,7 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState('');
     const [selectAddChart, setSelectAddChart] = useState(1);
     const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } = useOrg();
+
 
     const adminsListToggle = () => setAdminsListOpen(state => !state);
     const addAdminFieldToggle = () => setAddAdminField(state => !state);
@@ -56,6 +60,19 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
 
     //update/
 
+    //PATTERNS
+    const { patterns } = useSelector((state: StateReduxI) => state.patterns);
+    const { setSectionMainPatter, addSectionPatter, delSectionPatter } = usePatterns();
+    const [patternSelect, setPatternSelect] = useState(sectionItem.mainPattern || 0);
+    const [addPatternSelect, setAddPatternSelect]=useState(0);
+
+    const onSelectPattern = (event) => {
+        setPatternSelect(+event.target.value);
+        setSectionMainPatter(sectionItem.id, +event.target.value);
+    }
+
+    const onAddPattern=()=>addSectionPatter(sectionItem.id,addPatternSelect);
+
 
     useEffect(() => { console.log('ADMIN SELECT', inputAddAdmin) }, [inputAddAdmin])
     return (
@@ -76,25 +93,66 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                         <input value={sectionName} onChange={event => setSectionName(event.target.value)} disabled={!isAdmin} />
 
                     </div>
-                    {isAdmin &&<img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />}
+                    {isAdmin && <img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />}
                 </div>
                 <div className={styles.sectionBody}>
                     <div className={styles.propLine}>
                         <img src="svg/org/leadership.svg" />
                         <select value={sectionLeadership || ''} onChange={event => setSectionLeadership(+event.target.value)} disabled={!isAdmin}>
-                                <option value={''}>администратор не назначен</option>
-                                {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
-                            </select>
+                            <option value={''}>администратор не назначен</option>
+                            {users.map(user => <option key={user.id + user.name} value={user.id}>id:{user.id} {user.name}</option>)}
+                        </select>
                     </div>
                     <div className={styles.propLine}>
                         <img src="svg/org/ckp.svg" />
                         <textarea value={sectionCkp} spellCheck="false" onChange={event => setSectionCkp(event.target.value)} disabled={!isAdmin} />
                     </div>
-                    <div className={styles.propLine}>
+                    <div className={`${styles.propLine} ${styles.hideFieldFlex}`}>
                         <img src="svg/org/description.svg" />
                         <textarea value={sectionDescriptions} spellCheck="false" onChange={event => setSectionDescriptions(event.target.value)} disabled={!isAdmin} />
                     </div>
-                    <div className={`${styles.administratorsList}`}>
+
+                    <div className={`${styles.patternsBlock} ${styles.hideField}`}>
+                        <div className={styles.textInfo}>Главная статистика</div>
+                        <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
+                            <option value={0}>Выберите главный шаблон</option>
+                            {
+                                patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                            }
+                        </select>
+
+                        <div>
+                            <span className={styles.textInfo} >Дополнительные статистики</span>
+                            {isAdmin&&<div>
+                                {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
+                                <div style={{ display: "flex" }}>
+                                    <select value={addPatternSelect} onChange={event=>setAddPatternSelect(+event.target.value)}>
+                                        <option value={0}>Выберите главный шаблон</option>
+                                        {
+                                            patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
+                                        }
+                                    </select>
+                                    <span onClick={onAddPattern} style={{cursor:'pointer'}}>➕</span>
+                                </div>
+                            </div>}
+
+                            <div className={styles.patternsList}>
+                                {
+                                    sectionItem.patterns.map(id => {
+                                        const pattern = patterns.find(pattern => pattern.id == id);
+                                        return <div>
+                                            📉
+                                            {pattern?.name || 'шаблон удалён'}
+                                            {isAdmin&&<span style={{cursor:'pointer'}} onClick={() => delSectionPatter(sectionItem.id, id)}>❌</span>}
+                                        </div>
+                                    })
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div className={`${styles.administratorsList} `}>
                         <div className={styles.propLine} onClick={adminsListToggle} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <img src="svg/org/admins.svg" />

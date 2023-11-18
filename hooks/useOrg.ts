@@ -1,7 +1,7 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
 import { setOfficesRedux } from "@/redux/orgSlice";
-import { setPatternsRedux } from "@/redux/patternsSlce";
+import { setAccessPatternsRedux, setPatternsRedux } from "@/redux/patternsSlce";
 import { setUsersRedux } from "@/redux/usersSlice";
 import { ChartI, ChartPatternI, LineI, OfficeI } from "@/types/types";
 import { useDispatch } from "react-redux";
@@ -13,7 +13,7 @@ export default function useOrg() {
     const getOrgFullScheme = ({setOrgScheme,setUsers,setCharts}:{setOrgScheme?: any, setUsers?: any, setCharts?:any}) => {
         dispatch(setLoadingRedux(true));
         axiosClient.get('info')
-            .then(({ data: { offices, users , patterns} }) => {
+            .then(({ data: { offices, users , patterns,patternAccesses} }) => {
                 //set on state
                 setOrgScheme&&setOrgScheme(offices);
                 setOrgScheme&&setUsers(users);
@@ -33,6 +33,9 @@ export default function useOrg() {
                 if(offices?.length){
                     dispatch(setOfficesRedux(offices as OfficeI[]))
                 }
+                //ACCESS
+                dispatch(setAccessPatternsRedux(patternAccesses))
+
 
 
             })
@@ -277,6 +280,7 @@ const deleteChartFromAdministrator = async (administrator_id: number,chart_id: n
         return false;
     }
 }
+
 
     
 
