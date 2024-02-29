@@ -1,5 +1,5 @@
 //USERS
-export interface UserI{
+export interface UserI {
     "userId": number,
     "email": string,
     "post": string,
@@ -9,7 +9,7 @@ export interface UserI{
     "is_blocked": boolean
 }
 
-export interface UserFullI{
+export interface UserFullI {
     "id": number,
     "email": string,
     "password": string,
@@ -24,18 +24,18 @@ export interface UserFullI{
 }
 
 //ORG
-export interface ChartI{
+export interface ChartI {
     "id": number,
     "name": string,
     "fields": string,
     "lines": string,
-    "access":string,
-    "descriptions": null|string,
+    "access": string,
+    "descriptions": null | string,
     "created_by": number,
     "updated_by": number,
 }
 
-export interface AdministratorI{
+export interface AdministratorI {
     "id": number,
     "office_id": number,
     "department_id": number,
@@ -45,7 +45,7 @@ export interface AdministratorI{
     "charts": string,
 }
 
-export interface SectionI{
+export interface SectionI {
     "id": number,
     "office_id": number,
     "department_id": number,
@@ -55,12 +55,12 @@ export interface SectionI{
     "descriptions": string,
     "createdAt": string,
     "updatedAt": string,
-    "ckp":string,
-    "mainPattern":number,
-    "patterns":number[],
+    "ckp": string,
+    "mainPattern": number,
+    "patterns": number[],
 }
 
-export interface DepartmentI{
+export interface DepartmentI {
     "id": number,
     "office_id": number,
     "name": string,
@@ -68,54 +68,54 @@ export interface DepartmentI{
     "leadership": number,
     "descriptions": string,
     "sections": Array<SectionI>,
-    "ckp":string,
-    "mainPattern":number,
-    "patterns":number[],
+    "ckp": string,
+    "mainPattern": number,
+    "patterns": number[],
 }
 
-export interface OfficeI{
+export interface OfficeI {
     "id": number,
     "name": string,
     "leadership": number,
     "descriptions": string,
     "departments": Array<DepartmentI>,
-    "ckp":string,
-    "mainPattern":number,
-    "patterns":number[],
+    "ckp": string,
+    "mainPattern": number,
+    "patterns": number[],
 }
 //CHART PATTERN
-export interface FieldI{
+export interface FieldI {
     "id": number,
     "name": string,
-    "type":string,
-    "fieldOptions":object
-    "value"?:string|number
-    "fieldLogic"?:string
+    "type": string,
+    "fieldOptions": object
+    "value"?: string | number
+    "fieldLogic"?: string
 }
 
-export interface LineI{
-    "id":number,
+export interface LineI {
+    "id": number,
     "name": string,
     "logicString": string,
     "lineColor": string,
 }
 
-export interface ChartPatternI{
-    "id":number,
-    "name":string,
+export interface ChartPatternI {
+    "id": number,
+    "name": string,
     "fields": Array<FieldI>,
     "lines": Array<LineI>,
-    "access":number[],
+    "access": number[],
     "descriptions": string,
     "created_by": number,
     "updated_by": number,
-    "createdAt"?:string,
-    "updatedAt"?:string,
-    
+    "createdAt"?: string,
+    "updatedAt"?: string,
+
 
 }
 
-export interface StatisticI{
+export interface StatisticI {
     "id"?: number,
     "dateStart": number,
     "dateEnd": number,
@@ -123,7 +123,7 @@ export interface StatisticI{
     "created_by": number,
     "updated_by"?: number,
     "chart_id": number,
-    "descriptions"?: string|null,
+    "descriptions"?: string | null,
     "createdAt"?: string,
     "updatedAt"?: string,
 }
@@ -133,8 +133,8 @@ export interface StatisticDataRowI {
     value: number | string
 }
 
-export interface StatisticWithFieldValuesI extends StatisticI{
-    fields:Array<{name:string, value:number|string}>
+export interface StatisticWithFieldValuesI extends StatisticI {
+    fields: Array<{ name: string, value: number | string }>
 }
 
 export interface ColumnI {
@@ -142,79 +142,191 @@ export interface ColumnI {
     logic: string,
     initValue: number | null,
     color: string,
-    key:number
+    key: number
 }
 
-export type RowI = {   
-    key:number,
-    value:number|string
+export type RowI = {
+    key: number,
+    value: number | string
 }
 
 
-export interface MenuI{
-    show:boolean,
-    position:{
-        x:number,
-        y:number
+export interface MenuI {
+    show: boolean,
+    position: {
+        x: number,
+        y: number
     }
 }
 
-export interface CostumLineI{
-    name:string,
-    records:number[],
-    color:string,
-    columnKey:number,
-    trend:boolean,
+export interface CostumLineI {
+    name: string,
+    records: number[],
+    color: string,
+    columnKey: number,
+    trend: boolean,
 }
 
-export interface MonthI{
+export interface MonthI {
     title: string;
     value: number;
     color: string;
 }
 
-export interface WeekI{
+export interface WeekI {
     title: string;
     titleShort: string;
     value: number;
     color: string;
 }
 
-export interface ColumnLineI{
-    columnKey:number,
-    trend:boolean,
+export interface ColumnLineI {
+    columnKey: number,
+    trend: boolean,
 }
 
-export interface TableI{
-    id:number,
-    name:string,
-    createdAt:string,
-    created_by:number,
-    view_pattern_id:number,
-    columns:ColumnI[],
-    costumLines:ColumnLineI[],
+export interface TableI {
+    id: number,
+    name: string,
+    createdAt: string,
+    created_by: number,
+    view_pattern_id: number,
+    columns: ColumnI[],
+    costumLines: ColumnLineI[],
 }
 
-export interface UserAllPatternsIdsI{
+export interface UserAllPatternsIdsI {
     mains: number[],
     additionals: number[],
     viewMains: number[],
-    viewAdditionals:number[],
+    viewAdditionals: number[],
 }
-export interface PatternsFromI{
-    [key:number]:string[],
+export interface PatternsFromI {
+    [key: number]: string[],
 }
-export interface UserAllPatternsI{
+export interface UserAllPatternsI {
     mains: ChartPatternI[],
     additionals: ChartPatternI[],
     viewMains: ChartPatternI[],
-    viewAdditionals:ChartPatternI[],
-    patternsFrom:PatternsFromI,
+    viewAdditionals: ChartPatternI[],
+    patternsFrom: PatternsFromI,
 }
 
+export interface DatesI {
+    start: number,
+    end: number,
+    warning: boolean,
+    description:string,
+    
+}
 
+export interface DateColumnI {
+    dateStart:number,
+    dateEnd:number,
+    firstWeekDay: number,
+    periodDayCount: number,
+    datesArr: DatesI[],
+    lastDayOfDatesArr: number,
+    type:"2 года плюс текущий" | "Месячный" | "13ти недельный",
+    autoRenewal:boolean,
+    selectedPattern,
+    raportInfo?:RaportTableInfoI,
+    isFullPeriod?:boolean
+    
+}
 
+export interface StatRowI {
+    id: string;
+    descriptions?:string,
+    values: {
+        id: string;
+        value: number | string;
+        expression: string;
+        editable:boolean,
+        message:string,
+        descriptions:string,
+    }[];
+}
 
+export interface StatHeaderI {
+    name: string,
+    id: string,
+    logicStr: string,
+    initValue: number,
+    showControl: boolean,
+    onChart:boolean
+}
+
+export interface TablePatternI{
+    id:number,
+    name:string,
+    headers:StatHeaderI[],
+}
+
+export interface TableStatisticNotParsedI{
+    tableName: string;
+    dateStart: number;
+    dateEnd: number;
+    headers: string;
+    rows: string;
+    tableDescriptions: string;
+    tableDescriptionsName: string;
+    columnsWidth: string;
+    dateColumn: string;
+    about: string;
+}
+export interface TableStatisticI{
+    id?:number;
+    tableName: string;
+    dateStart: number;
+    dateEnd: number;
+    headers: StatHeaderI[];
+    rows: StatRowI[];
+    tableDescriptions: string;
+    tableDescriptionsName: string;
+    columnsWidth: number[];
+    dateColumn: DateColumnI | undefined; // TABLE INFO
+    about: string;
+}
+
+export interface TableStatisticListItemI{
+    id:number,
+    name:string,
+    dateColumn:DateColumnI
+}
+
+export interface UserPostsI{
+    userOffices: OfficeI[];
+    userDepartments: DepartmentI[];
+    userSections: SectionI[];
+}
+
+export interface RaportTableInfoI{
+    statFilled:'full'|'notFull'|'clean';
+    lastFilledPeriod: DatesI;
+    statLastRowValues?:string[];
+    statHeaders?:string[];    
+    trendType: string;
+    trendStatus: string;
+    trendColumnName: string;
+    lastRowIndex: number | null;
+    chartProps?:{
+        costumsLines: CostumLineI[];
+        dates: DatesI[];
+        clickFunc: () => void;
+        reverseTrend: boolean;
+    }
+}
+
+//CHART LIST
+export interface ChartItemI {
+    id: number;
+    type: 'office' | 'dep' | 'sec';
+    itemName: string;
+    statType: 'main' | 'additional';
+    leadership: number;
+    isClose: boolean;
+}
 
 
 

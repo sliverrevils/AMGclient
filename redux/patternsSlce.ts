@@ -1,9 +1,10 @@
-import { ChartPatternI } from "@/types/types";
+import { ChartPatternI, StatHeaderI, TablePatternI } from "@/types/types";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState:{patterns:ChartPatternI[],access:any}={
+const initialState:{patterns:ChartPatternI[],access:any,tablePatterns:TablePatternI[]}={
     patterns:[],
-    access:[]
+    access:[],
+    tablePatterns:[],
 }
 
 export const patternsSlice = createSlice({
@@ -15,6 +16,9 @@ export const patternsSlice = createSlice({
         },
         setAccessPatternsRedux:(state,{payload}:{payload:any})=>{
             state.access=payload;
+        },
+        setTableHeadersRedux:(state,{payload}:{payload:TablePatternI[]})=>{
+            state.tablePatterns=payload;
         }
     }
 
@@ -22,4 +26,4 @@ export const patternsSlice = createSlice({
 
 
 
-export const {reducer:patternReducer, actions:{setPatternsRedux,setAccessPatternsRedux}} =patternsSlice;
+export const {reducer:patternReducer, actions:{setPatternsRedux,setAccessPatternsRedux,setTableHeadersRedux}} =patternsSlice;

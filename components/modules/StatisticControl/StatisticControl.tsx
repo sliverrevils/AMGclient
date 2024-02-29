@@ -42,7 +42,7 @@ export default function StatisticControl() {
     //FUNCS
     const onLoadStats = async () => {
         const statsTemp = await getAllByPeriod(dateStart, dateEnd, setStatsArr);
-        console.log('LEADED STATS', statsTemp);
+        //console.log('LEADED STATS', statsTemp);
 
     }
     const onSelectPatternFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,7 +52,7 @@ export default function StatisticControl() {
         setSelectedUserId(+event.target.value);
     }
     const onSelectStat = (stat: StatisticI) => {
-        console.log("SELECT STAT", stat)
+        //console.log("SELECT STAT", stat)
         setSelectedStat(stat);
         const currentPattern = allPatterns.find(pattern => pattern.id == stat.chart_id);
         if (currentPattern) {
@@ -251,7 +251,7 @@ export default function StatisticControl() {
                     ? <div className={styles.filterBlock}>
 
                     <select value={selectedPatternId} onChange={onSelectPatternFilter}>
-                        <option value={0}>Выберете шаблон</option>
+                        <option value={0}>Выберете статистику</option>
                         {
                             allPatterns?.map((pattern, idx: number) =>
                                 <option key={pattern.id + '_patternOptions'} value={pattern.id}>

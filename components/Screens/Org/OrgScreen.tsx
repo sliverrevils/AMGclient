@@ -76,7 +76,7 @@ export default function OrgScreen() {
                         ? <Modal closeModalFunc={() => setAddOffice(false)} >
                             <div className={styles.addForm}>
                                 <h3>создание нового отделения</h3>
-                                <span className={styles.addHelp}>Название отделения</span>
+                                <span className={styles.addHelp}>Название отделения (в начале укажите порядковое число)</span>
                                 <input type="text" value={inputOfficeName} onChange={event => setinputOfficeName(event.target.value)} placeholder="Назавние отделения" />
                                 <span className={styles.addHelp}>КПЦ</span>
                                 <textarea value={inputCkp} onChange={event => setInputCkp(event.target.value)} placeholder="ЦКП" />
@@ -101,7 +101,9 @@ export default function OrgScreen() {
             {/* <pre>{JSON.stringify(org, null, 2)}</pre> */}
             <div className={`${styles.officeList} ${!!activeItem&&styles.ac}`}>
                 {
-                    offices.map((office, idx: number) => {
+                    offices
+                    .toSorted((off1,off2)=>parseInt(off1.name)-parseInt(off2.name))
+                    .map((office, idx: number) => {
 
                         return <div className={`${styles.tableItem} ${office.id==activeItem-1&&styles.activeItem}`} 
                         key={office.id + '_officeItem'} 
@@ -109,15 +111,14 @@ export default function OrgScreen() {
 
                         onMouseLeave={()=>setActiveItem(0)}>
                             <div className={styles.officeHead}>
-                                <div className={styles.officeNumber}>
-                                    <span>{idx + 1}</span>
+                                <div className={styles.officeNumber}>                                    
                                     <img src="svg/org/vaadin_office.svg" />
                                 </div>
                                 <div className={styles.officeName} > {office.name}</div>
                             </div>
 
                             <div className={styles.leadership}>
-                                {userById(office.leadership)?.name}
+                                {userById(office.leadership)?.name} 
                             </div>
                             <div className={styles.help} >Руководитель отделения</div>
 

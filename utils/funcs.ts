@@ -1,3 +1,5 @@
+import { TableStatisticListItemI } from "@/types/types";
+
 export const logicMath = (logic, fields, index, lastFields?) => { //logic- string(ИНДЕКС ПОЛЯ @ С 1)  fields []
     let clearData = false; 
 
@@ -150,7 +152,11 @@ export const getChartImage = (name: string, upload: boolean = false) => {
 
 //calc text size
 export const getTextLength = (text: string, charSize: number): number => {
+    if(text.length==0){
+        return 0
+    }
     const el = document.createElement('span');
+    el.style.whiteSpace='nowrap';
     el.style.fontSize = (charSize + 1) + 'px';
     // el.style.height='auto';
     // el.style.width='auto';
@@ -163,4 +169,38 @@ export const getTextLength = (text: string, charSize: number): number => {
     return length;
 
 }
+//DATES
+export const getDayOfWeek=(date)=>Number(String(new Date(date).getUTCDay()).replace('0','7'));
+export const getMonthStr=(date)=>new Intl.DateTimeFormat("ru",{month:"long"}).format(new Date(date))
 
+//CLEAR PERIOD STATS
+export function celarPeriodStats(initStatsArr:TableStatisticListItemI[]):TableStatisticListItemI[]{
+    const namesStat=new Set<string>(initStatsArr.map(stat=>stat.name.split('@')[0].trim()));
+    return initStatsArr.filter(stat=>{
+        const statName=stat.name.split('@')[0].trim();
+        const inArr=namesStat.has(statName);
+        namesStat.delete(statName);
+        return inArr;
+
+    })
+
+}
+
+//CLEAR PERIOD FROM NAME
+export function clearStatName(statName:string){
+    const isPeriodStat=/@/g.test(statName);
+    return `${statName.split('@')[0].trim()}${isPeriodStat?'📅':''}`;
+}
+
+//REPLASE FIO
+export const replaceFio=(nameStr:string):string=>{
+if(nameStr=='admin@admin.com') return nameStr;
+if(nameStr.length){
+  const names=nameStr.split(' ').filter(str=>!!str);
+  const newName= `${names[2]} ${names[0]} ${names[1]}`;
+  //console.log(names, newName);
+  return newName;
+}else{
+    return 'unnamed'
+}
+}

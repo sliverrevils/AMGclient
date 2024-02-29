@@ -6,6 +6,7 @@ import useOrg from "@/hooks/useOrg";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import usePatterns from "@/hooks/usePatterns";
+import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 
 
 export default function Office({ officeItem, updateOrgScheme, users, userById, charts, isAdmin }: { officeItem: OfficeI | undefined, updateOrgScheme: any, users: Array<UserFullI>, userById: any, charts: any[], isAdmin: boolean }) {
@@ -31,6 +32,7 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
 
     //SELECTORS
     //const { patterns } = useSelector((state: StateReduxI) => state.patterns);
+    const {tableStatisticsList}=useSelector((state:StateReduxI)=>state.stats);
 
     //HOOKS
 
@@ -138,34 +140,36 @@ export default function Office({ officeItem, updateOrgScheme, users, userById, c
                         <div className={`${styles.patternsBlock} ${styles.hideField}`}>
                             <div className={styles.textInfo}>Главная статистика</div>
                             <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
-                                <option value={0}>Выберите главный шаблон</option>
+                                <option value={0}>Выберите главную статистику</option>
                                 {
-                                    patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                                    celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
                                 }
                             </select>
 
                             <div>
                                 <span className={styles.textInfo} >Дополнительные статистики</span>
-                                {isAdmin && <div>
-                                    {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
-                                    <div style={{ display: "flex" }}>
-                                        <select value={addPatternSelect} onChange={event => setAddPatternSelect(+event.target.value)}>
-                                            <option value={0}>Выберите дополнительный шаблон</option>
-                                            {
-                                                patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
-                                            }
-                                        </select>
-                                        <span onClick={onAddPattern} style={{ cursor: 'pointer' }}>➕</span>
+                                {
+                                    isAdmin && <div>
+                                        {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
+                                        <div style={{ display: "flex" }}>
+                                            <select value={addPatternSelect} onChange={event => setAddPatternSelect(+event.target.value)}>
+                                                <option value={0}>Выберите дополнительные статистики</option>
+                                                {
+                                                    celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
+                                                }
+                                            </select>
+                                            <span onClick={onAddPattern} style={{ cursor: 'pointer' }}>➕</span>
+                                        </div>
                                     </div>
-                                </div>}
+                                }
 
                                 <div className={styles.patternsList}>
                                     {
                                         officeItem.patterns.map(id => {
-                                            const pattern = patterns.find(pattern => pattern.id == id);
+                                            const pattern = tableStatisticsList.find(pattern => pattern.id == id);
                                             return <div>
                                                 📉
-                                                {pattern?.name || 'шаблон удалён'}
+                                                {clearStatName(pattern?.name|| 'статистика удалена') }
                                                 {isAdmin && <span style={{ cursor: 'pointer' }} onClick={() => delOfficePattern(officeItem.id, id)}>❌</span>}
                                             </div>
                                         })

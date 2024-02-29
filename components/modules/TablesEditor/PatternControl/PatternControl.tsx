@@ -26,10 +26,10 @@ export default function PatternControl({
     }) {    
     //--------------------------------------------------------------------------------------VARS
     const groupNames={
-        mains:'⭐Главные шаблоны - заполняемые',
-        additionals:'✨Дополнительные шаблоны - заполняемые',
-        viewMains:'🛂Главные шаблоны - контролируемые',
-        viewAdditionals:'🛂Дополнительные шаблоны - контролируемые',
+        mains:'⭐Главные - заполняемые',
+        additionals:'✨Дополнительные - заполняемые',
+        viewMains:'🛂Главные - контролируемые',
+        viewAdditionals:'🛂Дополнительные - контролируемые',
     }
 
     //--------------------------------------------------------------------------------------STATES🎪
@@ -235,7 +235,7 @@ export default function PatternControl({
                 isAdmin
                     ?
                     <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
-                        <option value={0}>Выберете шаблон</option>
+                        <option value={0}>Выберете статистику</option>
                         {
                             patterns?.map((pattern, idx: number) =>
                                 <option key={pattern.id + '_patternOptions'} value={pattern.id}>
@@ -253,7 +253,7 @@ export default function PatternControl({
                             setSelectedPatternGroupState(event.target.value);
                         }
                         }>
-                            <option value={''}>Выберете группу шаблонов</option>
+                            <option value={''}>Выберете группу статистик</option>
                             {
                                 Object.keys(allPatterns).map((field, idx: number) =>
                                     <option key={idx + '_patternGroup'} value={field}>
@@ -267,7 +267,7 @@ export default function PatternControl({
                             &&
                             <>
                                 <select className={styles.selectPattern} value={selectedPatternIdState} onChange={onSelectPattern}>
-                                    <option value={0}>Выберете шаблон</option>
+                                    <option value={0}>Выберете статистику</option>
                                     {
                                         allPatterns[selectedPatternGroupState].map((pattern, idx: number) =>
                                             <option key={pattern.id + '_patternOptions'} 

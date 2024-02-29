@@ -7,16 +7,20 @@ import AdministratorsList from "../AdministratorsList/AdministratorsList";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import usePatterns from "@/hooks/usePatterns";
+import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 
 export default function Section({ sectionItem, users, userById, updateOrgScheme, office_id, department_id, charts, index, isAdmin }: { sectionItem: SectionI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, department_id: number, charts: Array<ChartI>, index: number, isAdmin: boolean }) {
-
-    // const administrators: Array<number> = JSON.parse(sectionItem.administrators);
+    //state
     const [inputAddAdmin, setInputAddAdmin] = useState('');
     const [addAdminField, setAddAdminField] = useState(false);
     const [adminsListOpen, setAdminsListOpen] = useState(!!!sectionItem.administrators.length);
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState('');
     const [selectAddChart, setSelectAddChart] = useState(1);
+    //hooks
     const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } = useOrg();
+
+    //selectors
+    const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
 
 
     const adminsListToggle = () => setAdminsListOpen(state => !state);
@@ -64,14 +68,14 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     const { patterns } = useSelector((state: StateReduxI) => state.patterns);
     const { setSectionMainPatter, addSectionPatter, delSectionPatter } = usePatterns();
     const [patternSelect, setPatternSelect] = useState(sectionItem.mainPattern || 0);
-    const [addPatternSelect, setAddPatternSelect]=useState(0);
+    const [addPatternSelect, setAddPatternSelect] = useState(0);
 
     const onSelectPattern = (event) => {
         setPatternSelect(+event.target.value);
         setSectionMainPatter(sectionItem.id, +event.target.value);
     }
 
-    const onAddPattern=()=>addSectionPatter(sectionItem.id,addPatternSelect);
+    const onAddPattern = () => addSectionPatter(sectionItem.id, addPatternSelect);
 
 
     useEffect(() => { console.log('ADMIN SELECT', inputAddAdmin) }, [inputAddAdmin])
@@ -115,35 +119,35 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                     <div className={`${styles.patternsBlock} ${styles.hideField}`}>
                         <div className={styles.textInfo}>Главная статистика</div>
                         <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
-                            <option value={0}>Выберите главный шаблон</option>
+                            <option value={0}>Выберите главную статистику</option>
                             {
-                                patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                                celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
                             }
                         </select>
 
                         <div>
                             <span className={styles.textInfo} >Дополнительные статистики</span>
-                            {isAdmin&&<div>
+                            {isAdmin && <div>
                                 {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
                                 <div style={{ display: "flex" }}>
-                                    <select value={addPatternSelect} onChange={event=>setAddPatternSelect(+event.target.value)}>
+                                    <select value={addPatternSelect} onChange={event => setAddPatternSelect(+event.target.value)}>
                                         <option value={0}>Выберите главный шаблон</option>
                                         {
-                                            patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
+                                            celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
                                         }
                                     </select>
-                                    <span onClick={onAddPattern} style={{cursor:'pointer'}}>➕</span>
+                                    <span onClick={onAddPattern} style={{ cursor: 'pointer' }}>➕</span>
                                 </div>
                             </div>}
 
                             <div className={styles.patternsList}>
                                 {
                                     sectionItem.patterns.map(id => {
-                                        const pattern = patterns.find(pattern => pattern.id == id);
+                                        const pattern = tableStatisticsList.find(pattern => pattern.id == id);
                                         return <div>
                                             📉
-                                            {pattern?.name || 'шаблон удалён'}
-                                            {isAdmin&&<span style={{cursor:'pointer'}} onClick={() => delSectionPatter(sectionItem.id, id)}>❌</span>}
+                                            {clearStatName(pattern?.name || 'статистика удалена')}
+                                            {isAdmin && <span style={{ cursor: 'pointer' }} onClick={() => delSectionPatter(sectionItem.id, id)}>❌</span>}
                                         </div>
                                     })
                                 }

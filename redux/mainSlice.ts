@@ -1,7 +1,28 @@
 import {createSlice, nanoid} from '@reduxjs/toolkit';
 
-const initialState={
-    user:false,
+interface UserI{
+    email:string,
+    is_blocked:boolean,
+    is_verificated:boolean,
+    name:string,
+    post:string,
+    role:"user"|"admin",
+    structure:null,
+    userId:number,
+}
+
+const initialState:{user:UserI|boolean}={
+    user:false
+    // {
+    //     email:'',
+    //     is_blocked:true,
+    //     is_verificated:false,
+    //     name:'',
+    //     post:'',
+    //     role:"user",
+    //     structure:null,
+    //     userId:0,
+    // },
 }
 
 export const mainSlice=createSlice({

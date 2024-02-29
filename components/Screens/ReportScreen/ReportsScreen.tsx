@@ -1,13 +1,14 @@
 import Report from "@/components/modules/ReportEditor/Report";
+import ReportTables from "@/components/modules/ReportTables/ReportTables";
 
 
 
 export default function ReportsScreen(){
 
     return (
-        <div>
-            <h6>Reports screen</h6>
-            <Report/>
-        </div>
+        <>
+
+            <ReportTables/>
+        </>
     )
 }

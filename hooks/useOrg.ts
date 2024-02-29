@@ -1,19 +1,22 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
 import { setOfficesRedux } from "@/redux/orgSlice";
-import { setAccessPatternsRedux, setPatternsRedux } from "@/redux/patternsSlce";
+import { setAccessPatternsRedux, setPatternsRedux, setTableHeadersRedux } from "@/redux/patternsSlce";
+import { setTableStatisticsListRedux } from "@/redux/statsSlice";
 import { setUsersRedux } from "@/redux/usersSlice";
 import { ChartI, ChartPatternI, LineI, OfficeI } from "@/types/types";
+import { replaceFio } from "@/utils/funcs";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 export default function useOrg() {
     const dispatch = useDispatch();
 
+    // GET FULL ORG
     const getOrgFullScheme = ({setOrgScheme,setUsers,setCharts}:{setOrgScheme?: any, setUsers?: any, setCharts?:any}) => {
         dispatch(setLoadingRedux(true));
         axiosClient.get('info')
-            .then(({ data: { offices, users , patterns,patternAccesses} }) => {
+            .then(({ data: { offices, users , patterns,patternAccesses, tablePatterns, tableStatistics} }) => {
                 //set on state
                 setOrgScheme&&setOrgScheme(offices);
                 setOrgScheme&&setUsers(users);
@@ -21,26 +24,56 @@ export default function useOrg() {
 
                 //REDUX
                 //users
-                if(users)
-                dispatch(setUsersRedux(users))
+                if(users){
+                    
+                    dispatch(setUsersRedux(users.map(user=>({...user,name:replaceFio(user.name)}))))
+                }
+                
                 //patterns
                 if(patterns?.length){
                     const paternsParsed=(patterns as ChartI[]).map(pattern=>({...pattern,lines:(JSON.parse(pattern.lines)),fields:JSON.parse(pattern.fields),access:JSON.parse(pattern.access)}));
-                    console.log('PATTERNS',paternsParsed)
+                    //console.log('PATTERNS',paternsParsed)
                     dispatch(setPatternsRedux((paternsParsed as ChartPatternI[])))
                 }
                 //offices
                 if(offices?.length){
-                    dispatch(setOfficesRedux(offices as OfficeI[]))
+                    dispatch(setOfficesRedux(offices as OfficeI[]));
                 }
                 //ACCESS
-                dispatch(setAccessPatternsRedux(patternAccesses))
+                dispatch(setAccessPatternsRedux(patternAccesses));
+
+                if(tablePatterns?.length){
+                    const tablePatternsParsed=tablePatterns.map(pattern=>({...pattern,headers:JSON.parse(pattern.headers)}));
+                   // console.log('TABLE PATTERNS 📌📌📌📌',tablePatternsParsed);
+                    dispatch(setTableHeadersRedux(tablePatternsParsed));
+                }else{
+                    dispatch(setTableHeadersRedux([]));
+                }
+
+                if(tableStatistics){
+                    dispatch(setTableStatisticsListRedux(tableStatistics));
+                }
+
 
 
 
             })
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
+    }
+    //GET REPORTS LIST
+    const getReportList=(statIdArr:number[],setReportList:any)=>{
+        dispatch(setLoadingRedux(true))
+        axiosClient.post(`info/raport-list`,{
+            statIdArr
+        }).then(({data})=>{
+            if(data.length){
+                setReportList(data);
+            }
+
+        })
+        .catch(axiosError)
+        .finally(() => dispatch(setLoadingRedux(false)));
     }
 
     //--------------------------Oficces
@@ -285,5 +318,5 @@ const deleteChartFromAdministrator = async (administrator_id: number,chart_id: n
     
 
 
-    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator, updateOffice , updateDepatment, updateSection}
+    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator, updateOffice , updateDepatment, updateSection, getReportList}
 }

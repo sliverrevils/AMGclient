@@ -17,20 +17,20 @@ export default function useUI() {
 
     // }
 
-    const createMenu = (onWindow=false) => {
+    const createMenu = ({onWindow=false,position='fixed'}:{onWindow?:boolean,position?:'fixed'|'absolute'}) => {
         const initMenuValue = { show: false, position: { x: 100, y: -1000 } }
         const [menuState, setMenuState] = useState<MenuI>(initMenuValue);
         const closeMenuFunc = () => setMenuState(state => initMenuValue);
-
+        
         let styleForMenu: React.CSSProperties = {
             display: onWindow?'flex':menuState.show?'flex':'none',
-            position: 'fixed',
+            position,
             top: menuState.position.y,
             left: menuState.position.x,
         }
 
 
-        const onMenuFunc = (event: React.MouseEvent<HTMLDivElement, any>, selector: string) => { // selector is for calc position on window
+        const onMenuFunc = (event: React.MouseEvent, selector: string='') => { // selector is for calc position on window
             if (event) {
                 event.preventDefault();
                 let spaceY = 0;
@@ -68,7 +68,7 @@ export default function useUI() {
 
         const res: [
             menuState: MenuI,
-            onMenuFunc: (event: React.MouseEvent<HTMLDivElement, any>, any) => void,
+            onMenuFunc: (event: React.MouseEvent,selector?:string) => void,
             closeMenuFunc: () => void,
             styleForMenu: React.CSSProperties
         ] = [menuState, onMenuFunc, closeMenuFunc, styleForMenu]

@@ -1,4 +1,4 @@
-import { ChartPatternI, ColumnI, ColumnLineI, RowI, StatisticDataRowI, StatisticI, TableI } from "@/types/types";
+import { ChartPatternI, ColumnI, ColumnLineI, RowI, StatisticDataRowI, StatisticI, TableI, TableStatisticListItemI } from "@/types/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 
@@ -17,6 +17,7 @@ const initialState
         tabels:TableI[],
         columns:ColumnI[],
         lines:ColumnLineI[],
+        tableStatisticsList:TableStatisticListItemI[]
 
     }
     = {
@@ -31,6 +32,7 @@ const initialState
         tabels:[],
         lines:[],
         columns:[],
+        tableStatisticsList:[]
 }
 
 export const statsSlice = createSlice({
@@ -111,6 +113,9 @@ export const statsSlice = createSlice({
             if(currentLine){
                 currentLine.trend=true;
             }
+        },
+        setTableStatisticsListRedux:(state,{payload}:{payload:TableStatisticListItemI[]})=>{
+            state.tableStatisticsList=payload;
         }
     }
 });
@@ -138,5 +143,6 @@ export const {
         columnUpdateRedux,
         setLinesRedux,
         setLineTrendRedux,
+        setTableStatisticsListRedux
 
     }} =statsSlice;

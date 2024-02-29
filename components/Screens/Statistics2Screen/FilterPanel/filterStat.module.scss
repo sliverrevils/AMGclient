@@ -1,0 +1,237 @@
+.mainFilterWrap {
+    padding: 10px;
+    //border: 1px solid black;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    .filterBlock {
+        //border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .filterItem {
+            display: flex;
+            gap: 5px;
+
+            .depSelect {
+                border: 2px solid steelblue;
+                background: rgba(70, 131, 180, 0.204);
+                border-radius: 5px;
+                color: rgb(0, 0, 0);
+                font-weight: 600;
+                font-size: 13px;
+                padding: 2px 10px;
+            }
+
+            .secSelect {
+                border: 2px solid rgba(42, 153, 85, 0.551);
+                background: rgba(42, 153, 85, 0.122);
+                border-radius: 5px;
+                color: rgb(0, 0, 0);
+                font-weight: 600;
+                font-size: 13px;
+                padding: 2px 10px;
+            }
+
+            .close {
+                cursor: pointer;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .targetWrap {
+        border: 2px solid rgb(209, 208, 208);
+        display: flex;
+        flex-direction: column;
+        align-items:flex-start;
+        padding: 10px 20px;
+        position: relative;
+        margin-top: 20px;
+        border-radius:5px 20px 5px 5px;
+        min-width: 600px;
+        background: rgba(128, 128, 128, 0.071);
+        transition: all 500ms linear;
+
+
+
+        .statStatus {
+            border: 2px solid rgb(209, 208, 208);
+            //padding: 1px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 1;
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            background: white;
+            box-shadow: 5px 3px 5px rgba(0, 0, 0, 0.64);
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(87, 87, 87, 0.59);
+            letter-spacing: 1.5px;
+            
+            
+
+            .fill {
+                border-radius: 5px;
+                background: #ffffff;
+                padding: 2px 20px;
+                color: #b95432;
+
+            }
+
+            .control {
+                border-radius: 5px;
+                background: #ffffff;
+                padding: 2px 20px;
+                color: rgb(0, 0, 0);
+            }
+        }
+
+        .targetName {
+            margin: 10px;
+            align-self:center;
+            font-weight: 600;
+        }
+        .leadershipBlock{
+            background: rgba(255, 255, 255, 0.725);
+            font-size: 13px;
+            display: flex;
+            gap: 10px;
+            align-self: flex-end;
+            border: 1px solid gray;
+            padding: 1px 10px;
+            border-radius: 3px;
+            div{
+                font-weight: 600;
+
+            }
+        }
+
+        .statsBlock {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+            margin-top: 13px;
+            outline: 2px solid rgba(255, 255, 255, 0.373);
+            padding: 10px 10px 10px 5px;
+            border-radius: 5px 20px 5px 5px;
+            
+            
+            
+
+            .mainStat {
+                padding: 2px 15px;
+                display: flex;
+                border: 2px solid #FF8056;
+                background: #ff805628;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 14px;
+                background: white;
+                box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.64);
+                outline: 1px solid rgba(0, 0, 0, 0.216);
+                position: relative;
+                min-width: 162px;
+
+                span {
+                    position: absolute;
+                    //border: 2px solid gray;
+                    top: -12px;
+                    left: 9px;
+                    font-size: 12px;
+                    background: #FF8056;
+                    color: white;
+                    padding: 1px 15px;
+                    border-radius: 10px;
+                    text-wrap: nowrap;
+
+
+                }
+
+
+            }
+
+            .addStat {
+                
+                position: relative;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.64);
+                outline: 1px solid rgba(0, 0, 0, 0.216);
+                min-width: 182px;
+                
+
+                span {
+                    position: absolute;
+                    //border: 2px solid gray;
+                    top: -10px;
+                    left: 10px;
+                    font-size: 12px;
+                    background: #828282;
+                    color: white;
+                    padding: 1px 15px;
+                    border-radius: 10px;
+
+
+                }
+
+                select,
+                div {
+                    border: 2px solid #828282;
+                    background: #82828225;
+                    padding: 2px 15px;
+                    font-size: 14px;
+                    border-radius: 10px;
+                }
+
+
+            }
+        }
+    }
+
+    .office{
+        background: linear-gradient(#ff80562c,#FF8056) ;
+        border: 2px solid #FF8056;
+        box-shadow: 5px 5px 7px gray;
+        outline: 1px solid #88412ab0;
+        .statStatus{
+            border: 2px solid #FF8056;
+            background: #ff805661;
+        }
+    }
+
+    .department{
+        background: linear-gradient(rgba(70, 131, 180, 0.201) ,steelblue) ;
+        border: 2px solid steelblue;
+        box-shadow: 5px 5px 7px gray;
+        outline: 1px solid rgb(42, 93, 135);
+        
+        .statStatus{
+            border: 2px solid steelblue;
+            background:rgba(70, 131, 180, 0.521);
+        }
+    }
+
+    .section{
+       
+        background: linear-gradient(rgba(1, 113, 44, 0.163),rgba(34, 122, 68, 0.667))  ;
+        border: 2px solid rgba(42, 153, 85, 0.551);
+        box-shadow: 5px 5px 7px gray;
+        outline: 1px solid rgba(9, 102, 2, 0.703);
+        .statStatus{
+            border: 2px solid rgba(42, 153, 85, 0.551);
+            background: linear-gradient(rgba(42, 153, 85, 0.722),rgba(42, 153, 85, 0.551))  ;
+
+            
+        }
+    }
+
+
+}

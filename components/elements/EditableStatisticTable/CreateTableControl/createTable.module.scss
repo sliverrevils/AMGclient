@@ -1,0 +1,53 @@
+.tableControlWrap{
+    border: 2px solid #56b9ff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap:5px;
+
+    input,select{
+        border: 2px solid #56b9ff; 
+        border-radius: 5px;
+        padding: 1px 3px;
+        font-size: 15px;
+    }
+
+    .dateBlock{
+        display: flex;
+        gap: 20px;
+    }
+
+
+    .createTableBtn{
+        background: #56b9ff ;
+        font-size: 14px;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 3px;
+        cursor:pointer;
+
+    }
+    .createTableCancelBtn{
+        align-self: flex-end;
+        background: tomato ;
+        font-size: 14px;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 3px;
+        cursor:pointer;
+
+    }
+    .fullPeriod{
+        display: flex;
+       gap:10px;
+        align-items: center;
+        border: 2px solid #56b9ff; 
+        border-radius: 5px;
+        padding: 2px 5px;
+        font-size: 12px;
+
+    }
+}

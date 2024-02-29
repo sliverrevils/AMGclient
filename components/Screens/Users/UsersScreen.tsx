@@ -3,6 +3,7 @@ import { UserFullI } from "@/types/types"
 import { useEffect, useRef, useState } from "react";
 import styles from './usersScreen.module.scss';
 import useOrg from "@/hooks/useOrg";
+import { replaceFio } from "@/utils/funcs";
 
 export default function UsersScreen() {
     const [users, setUsers] = useState<UserFullI[]>([]);
@@ -99,7 +100,7 @@ export default function UsersScreen() {
                             {users.map(user => (
                                 <tr key={user.id + 'users_list'} onClick={()=>setCurrentUser(user)}>
                                     <td>{user.id}</td>
-                                    <td>{user.name}</td>
+                                    <td>{replaceFio(user.name)}</td>
                                     <td>{user.email}</td>                                    
                                     <td>{user.role}</td>
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>

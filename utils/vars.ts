@@ -107,3 +107,5 @@ export const week:WeekI[]=[
         color:'lightgray'
     },
 ]
+
+export const daySec=86400000;

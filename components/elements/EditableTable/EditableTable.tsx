@@ -71,12 +71,18 @@ export default function EditableTable({ saveFunc, descriptionsStr }: { saveFunc:
         saveFunc(JSON.stringify(tableObj));
     }
 
+
+
     //effects
 
-    //test
-    useEffect(() => {
-        console.log('ROWS', rows);
-    }, [rows])
+    useEffect(()=>{
+        onSaveTable()
+    },[headers,rows,about])
+
+    // //test
+    // useEffect(() => {
+    //     console.log('ROWS', rows);
+    // }, [rows])
 
     return (
         <div className={styles.blokWrap}>
@@ -115,7 +121,7 @@ export default function EditableTable({ saveFunc, descriptionsStr }: { saveFunc:
                         }
                         {
                             isAdmin &&
-                            <th onClick={onAddHeader} className={styles.itemBtn} style={{ background: 'lightgreen' }}>➕</th>
+                            <th onClick={onAddHeader} className={`${styles.itemBtn}`} style={{ background: 'lightgreen' }}><div className={styles.rowBtn}>➕</div></th>
                         }
 
                     </thead>
@@ -154,9 +160,9 @@ export default function EditableTable({ saveFunc, descriptionsStr }: { saveFunc:
                                         <td onClick={onAddRow} className={styles.itemBtn} style={{ background: 'lightgreen' }}>➕</td>
                                     </tr>
                                 }
-                                <tr >
+                                {/* <tr >
                                     <td onClick={onSaveTable} className={styles.itemBtn} style={{ background: 'lightblue' }}>сохранить</td>
-                                </tr>
+                                </tr> */}
                             </>
                         }
 

@@ -1,18 +1,18 @@
 import { StateReduxI } from "@/redux/store";
-import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI } from "@/types/types";
+import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from "@/types/types";
 import { useSelector } from "react-redux"
 
 
-export default function useUsers(){
-    const {offices}=useSelector((state:StateReduxI)=>state.org);
-    const user:UserI=useSelector((state:any)=>state.main.user);
-    const {patterns,access} = useSelector((state:StateReduxI)=>state.patterns)
-    
-    const { users }:{users:UserFullI[]} =useSelector((state:any)=> state.users);
+export default function useUsers() {
+    const { offices } = useSelector((state: StateReduxI) => state.org);
+    const user: UserI = useSelector((state: any) => state.main.user);
+    const { patterns, access } = useSelector((state: StateReduxI) => state.patterns)
 
-    const userByID=(id:number):UserFullI| undefined=>users.find(user=>user.id==id);
+    const { users }: { users: UserFullI[] } = useSelector((state: any) => state.users);
 
-    const userPatterns=(id:number):UserAllPatternsI=>{
+    const userByID = (userId: number): UserFullI | undefined => users.find(user => user.id == userId);
+
+    const userPatterns = (userId: number): UserAllPatternsI => {
 
         const accessPatternsIds: UserAllPatternsIdsI =
         {
@@ -22,82 +22,83 @@ export default function useUsers(){
             viewAdditionals: []
         }
 
-        const patternsFrom:PatternsFromI={};
+        const patternsFrom: PatternsFromI = {};
 
-        const addPatternFrom=(pattern_id:number, from:string)=>{
-            if(patternsFrom?.[pattern_id]){
-                patternsFrom[pattern_id]=[...new Set([...patternsFrom[pattern_id],from])];
-            }else{
-                patternsFrom[pattern_id]=[from]
+        const addPatternFrom = (pattern_id: number, from: string) => {
+            if (patternsFrom?.[pattern_id]) {
+                patternsFrom[pattern_id] = [...new Set([...patternsFrom[pattern_id], from])];
+            } else {
+                patternsFrom[pattern_id] = [from]
             }
         }
 
-        const addSelfPatterns=({mainPattern,patterns,name}:{mainPattern:number,patterns:number[],name:string})=>{
-            if(mainPattern){
-                accessPatternsIds.mains=[...new Set([...accessPatternsIds.mains,mainPattern])];
-                addPatternFrom(mainPattern,name);
+        const addSelfPatterns = ({ mainPattern, patterns, name }: { mainPattern: number, patterns: number[], name: string }) => {
+
+            if (mainPattern) {
+                accessPatternsIds.mains = [...new Set([...accessPatternsIds.mains, mainPattern])];
+                addPatternFrom(mainPattern, name);
             }
-            if(patterns.length){
-                accessPatternsIds.additionals=[...new Set([...accessPatternsIds.additionals,...patterns])];
-                patterns.forEach((pattern_id)=>addPatternFrom(pattern_id,name))
+            if (patterns.length) {
+                accessPatternsIds.additionals = [...new Set([...accessPatternsIds.additionals, ...patterns])];
+                patterns.forEach((pattern_id) => addPatternFrom(pattern_id, name))
             }
         }
 
-        const addViewPatterns=({mainPattern,patterns,name}:{mainPattern:number,patterns:number[],name:string})=>{
-            if(mainPattern){
-                accessPatternsIds.viewMains=[...new Set([...accessPatternsIds.viewMains,mainPattern])];
-                addPatternFrom(mainPattern,name);
+        const addViewPatterns = ({ mainPattern, patterns, name }: { mainPattern: number, patterns: number[], name: string }) => {
+            if (mainPattern) {
+                accessPatternsIds.viewMains = [...new Set([...accessPatternsIds.viewMains, mainPattern])];
+                addPatternFrom(mainPattern, name);
             }
-            if(patterns.length){
-                accessPatternsIds.viewAdditionals=[...new Set([...accessPatternsIds.viewAdditionals,...patterns])];
-                addPatternFrom(mainPattern,name);
+            if (patterns.length) {
+                accessPatternsIds.viewAdditionals = [...new Set([...accessPatternsIds.viewAdditionals, ...patterns])];
+                addPatternFrom(mainPattern, name);
             }
         }
 
-        offices.forEach((office)=>{
-            let officeLeader=false;
+        offices.forEach((office) => {
+            let officeLeader = false;
 
-            if(office.leadership==id){
-                officeLeader=true;
+            if (office.leadership == userId) {
+                officeLeader = true;
                 addSelfPatterns(office);
             }
 
-            office.departments.forEach((department)=>{
-                let departmentLeader=false;
+            office.departments.forEach((department) => {
+                let departmentLeader = false;
 
-                if(department.leadership==id){
-                    departmentLeader=true;
+                if (department.leadership == userId) {
+                    departmentLeader = true;
                     addSelfPatterns(department);
                 }
-                if(officeLeader){
+                if (officeLeader) {
                     addViewPatterns(department);
                 }
 
-                department.sections.forEach((section)=>{
-                    let sectionLeader=false;
+                department.sections.forEach((section) => {
+                    let sectionLeader = false;
 
-                    if(section.leadership==id){
-                        sectionLeader=true;
+                    if (section.leadership == userId) {
+                        sectionLeader = true;
                         addSelfPatterns(section);
                     }
 
-                    if(officeLeader || departmentLeader){
-                        addViewPatterns( section);
+                    if (officeLeader || departmentLeader) {
+                        addViewPatterns(section);
                     }
                 })
-            })            
+            })
         });
 
-        const accessPatterns:UserAllPatternsI={
-            mains:[],
-            additionals:[],            
-            viewAdditionals:[],
-            viewMains:[],
+        const accessPatterns: UserAllPatternsI = {
+            mains: [],
+            additionals: [],
+            viewAdditionals: [],
+            viewMains: [],
             patternsFrom
         };
 
-        Object.keys(accessPatternsIds).forEach((field)=>{
-            accessPatterns[field]=patterns.filter(pattern=>accessPatternsIds[field].includes(pattern.id))
+        Object.keys(accessPatternsIds).forEach((field) => {
+            accessPatterns[field] = patterns.filter(pattern => accessPatternsIds[field].includes(pattern.id))
         })
 
         console.log('ACCESS 🔐\n', accessPatterns);
@@ -113,5 +114,30 @@ export default function useUsers(){
 
     }
 
-    return { users,userByID ,userPatterns}
+    const getUserPosts = (userId: number):UserPostsI => {
+        // OFFICES SERACH
+        const userOffices = offices.filter((office) => office.leadership == userId); 
+
+        // DEPATMENTS SEARCH
+        let userDepartments: DepartmentI[] = [];
+        offices.forEach(office => {
+            userDepartments = [...userDepartments, ...office.departments.filter(department => department.leadership == userId)];
+        });
+
+        // SECTION SERCH
+        let userSections: SectionI[] = []; 
+        offices.forEach(office => office.departments.forEach(department => {
+            userSections = [...userSections, ...department.sections.filter(section => section.leadership == userId)]
+        }));
+
+        const result =
+        {
+            userOffices,
+            userDepartments,
+            userSections
+        }
+        return result
+    }
+
+    return { users, userByID, userPatterns, getUserPosts }
 }

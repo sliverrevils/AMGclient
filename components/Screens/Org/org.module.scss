@@ -81,12 +81,12 @@
     }
 }
 
-//HIDE FIELD
+//----------------------------------- HIDE FIELDS 
 .hideField {
-    display: none;
+    display: block;
 }
 .hideFieldFlex {
-    display: none;
+    display: flex;
 }
 
 // ADD ITEM 
@@ -314,6 +314,7 @@
                 width: 100%;
                 text-align: center;
                 letter-spacing: .8px;
+                font-size: 13px;
 
 
             }
@@ -325,6 +326,7 @@
             font-size: 16px;
             background: white;
             padding: 3px 5px;
+            font-size: 12px;
         }
 
         .ckp {
@@ -332,6 +334,7 @@
             font-size: 13px;
             background: white;
             padding: 3px 5px;
+            font-size: 12px;
         }
 
     }
@@ -802,7 +805,7 @@
                 input {
                     border: 0;
                     background: transparent;
-                    font-size: 17px;
+                    font-size: 13px;
                     text-shadow: 2px 2px 2px black;
                     font-weight: 500;
                     color: white;
@@ -1002,16 +1005,18 @@
         width: 100%;
         font-size: 12px;
         border-radius: 5px;
+        padding: 2px 5px;
     }
 
     .textInfo {
         font-size: 12px;
         opacity: .8;
         margin-left: 10px;
+        
     }
 
     .patternsList {
-        background-color: rgba(128, 128, 128, 0.301);
+       
         font-size: 12px;
         display: flex;
         flex-direction: column;
@@ -1020,9 +1025,15 @@
         border-radius: 5px;
 
         &>div {
+           // background-color: rgba(128, 128, 128, 0.301);
+            border: 1px solid rgba(128, 128, 128, 0.301);
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 2px 5px;
+            box-shadow: 1px 1px 2px black;
+            background: white;
         }
     }
 }
@@ -1285,26 +1296,26 @@
 
 }
 
-@keyframes open {
-    from {
-        transform: translateY(-100px) scale(0%);
-        opacity: 0;
-    }
+// @keyframes open {
+//     from {
+//         transform: translateY(-100px) scale(0%);
+//         opacity: 0;
+//     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0px) scale(100%);
-    }
-}
+//     to {
+//         opacity: 1;
+//         transform: translateY(0px) scale(100%);
+//     }
+// }
 
-@keyframes fildsOpen {
-    from {
-        opacity: 0;
+// @keyframes fildsOpen {
+//     from {
+//         opacity: 0;
 
-    }
+//     }
 
-    to {
-        opacity: 1;
+//     to {
+//         opacity: 1;
 
-    }
-}
+//     }
+// }

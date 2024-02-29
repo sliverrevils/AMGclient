@@ -3,6 +3,7 @@
     max-height: 95vh;
     overflow: auto;
     textarea {
+        
         width: 100%;
         padding: 5px 10px;
         resize: vertical;
@@ -30,7 +31,7 @@
         .tableMain {
             background: white;
             //height: 100px;
-
+            border-collapse: separate;
 
 
 
@@ -47,6 +48,7 @@
 
             thead {
                 background: transparent;
+                position: relative;
             }
 
             tbody {
@@ -58,7 +60,13 @@
                 border-radius: 5px;
                 position: relative;
                 font-size: 13px;
-                padding: 0;
+                padding: 0px;
+                vertical-align: top;
+                min-width: 70px;
+               
+                
+                
+                
 
                 div {
                     font-size: 11px;
@@ -67,14 +75,15 @@
 
                 input,
                 textarea {
+                    
                     font-size: 11px;
                     font-weight: 600;
-                    height: 100%;
+                    
                     resize: both;
                     text-align: center;
                     box-sizing: border-box;
-
-                    //height: 100%;
+                    // background: green;
+                     height: 100%;              
                     &:focus {
                         border: 0;
                         outline: 2px solid rgba(76, 0, 255, 0.541);
@@ -86,9 +95,9 @@
                 span {
                     display: none;
                     position: absolute;
-                    top: -21px;
+                    top: 0px;
                     right: 0;
-                    font-size: 10px;
+                    font-size: 8px;
                     cursor: pointer;
                     border: 2px solid rgba(15, 116, 199, 0.272);
                     border-radius: 5px;
@@ -109,10 +118,13 @@
             }
 
             td {
+            
                 padding: 0;
                 border: 1px solid rgba(0, 0, 0, 0.228);
                 font-size: 10px;
                 max-width: 200px;
+                height: 100%;
+                vertical-align: top;
 
                 div{
                     padding: 3px;
@@ -123,12 +135,13 @@
                     font-weight: 500;
                     padding: 2px;
                     //margin: 2px;
-                    resize: vertical;
-                    height: 100%;
+                    resize: vertical;                    
                     width: 100%;
                     text-align: center;
-                    vertical-align: middle;
+                   
                     //outline: 1px solid blue;
+                    height: 100%;
+
 
                     &::selection {
                         border: 0;
@@ -151,10 +164,18 @@
                 font-size: 12px;
                 padding: 3px;
                 cursor: pointer;
-                
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                // /width: 100%;  
+            
             }
 
+
             tr {
+                
+                
                 .rowDel {
                     opacity: .2;
                 }

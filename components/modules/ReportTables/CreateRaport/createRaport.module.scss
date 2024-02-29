@@ -1,0 +1,58 @@
+.createRapWrap{
+    background: rgb(255, 255, 255);
+    
+    .filterWrap{
+
+        .targetToggle{
+            display: flex;
+            gap: 20px;
+
+            .item{
+                background: rgb(221, 221, 221);
+                padding: 0px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                margin: 5px;
+
+            }
+            .item_active{
+                font-size: 14px;
+                background: rgb(148, 139, 137);
+                padding: 0px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                background: tomato;
+                color: white;
+                margin: 5px;
+            }
+        }
+
+        select{
+            border-radius: 5px;
+
+        }
+    }
+
+th,td{
+    font-size: 12px;
+    border: 1px solid black;
+}
+
+.columnMenu{
+    padding: 5px;
+    background: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    span{
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        font-size: 10px;
+    }
+    
+}
+
+
+}

@@ -6,10 +6,12 @@ import useOrg from "@/hooks/useOrg";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import usePatterns from "@/hooks/usePatterns";
+import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 
 
 export default function Depatment({ departmentItem, users, userById, updateOrgScheme, office_id, charts, indexDep, isAdmin }: { departmentItem: DepartmentI, users: Array<UserFullI>, userById: any, updateOrgScheme: any, office_id: number, charts: any[], indexDep: number, isAdmin: boolean }) {
 
+    //state
     const [sectionsOpen, setSectionsOpen] = useState(false);
     const sectionsOpenToggle = () => setSectionsOpen(state => !state);
     const { deleteDepartment } = useOrg();
@@ -19,7 +21,11 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
     const [inputCkp, setInputCkp] = useState('');
     const [inputLeadership, setInputLeadership] = useState('');
 
+    //hooks
     const { createSection, updateDepatment } = useOrg();
+
+    //selectors
+    const {tableStatisticsList}=useSelector((state:StateReduxI)=>state.stats);
 
     const addSectionToggle = () => setAddSection(state => {
         if (state) {
@@ -124,9 +130,9 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                     <div className={`${styles.patternsBlock} ${styles.hideField}`}>
                         <div className={styles.textInfo}>Главная статистика</div>
                         <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
-                            <option value={0}>Выберите главный шаблон</option>
+                            <option value={0}>Выберите главную статистику</option>
                             {
-                                patterns.map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{pattern.name}</option>)
+                                celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_patternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
                             }
                         </select>
 
@@ -136,9 +142,9 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                                 <span className={styles.textInfo}> Добавление дополнительной статистики</span>
                                 <div style={{ display: "flex" }}>
                                     <select value={addPatternSelect} onChange={event=>setAddPatternSelect(+event.target.value)}>
-                                        <option value={0}>Выберите главный шаблон</option>
+                                        <option value={0}>Выберите дополнительную статистику</option>
                                         {
-                                            patterns.map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{pattern.name}</option>)
+                                            celarPeriodStats(tableStatisticsList).map(pattern => <option key={pattern.id + '_addpatternItem'} value={pattern.id}>{clearStatName(pattern.name)}</option>)
                                         }
                                     </select>
                                     <span onClick={onAddPattern} style={{cursor:'pointer'}}>➕</span>
@@ -148,10 +154,10 @@ export default function Depatment({ departmentItem, users, userById, updateOrgSc
                             <div className={styles.patternsList}>
                                 {
                                     departmentItem.patterns.map(id => {
-                                        const pattern = patterns.find(pattern => pattern.id == id);
+                                        const pattern = tableStatisticsList.find(pattern => pattern.id == id);
                                         return <div>
                                             📉
-                                            {pattern?.name || 'шаблон удалён'}
+                                            {clearStatName(pattern?.name || 'статистика удалена')}
                                             {isAdmin&&<span style={{cursor:'pointer'}} onClick={() => delDepartmentPattern(departmentItem.id, id)}>❌</span>}
                                         </div>
                                     })

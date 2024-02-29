@@ -1,6 +1,6 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
-import { ChartI, ChartPatternI, FieldI, LineI, UserFullI } from "@/types/types";
+import { ChartI, ChartPatternI, FieldI, LineI, TablePatternI, UserFullI } from "@/types/types";
 import { useSelector } from "react-redux";
 
 import { useDispatch } from "react-redux";
@@ -42,6 +42,28 @@ export default function useChart() {
             return false;
         }
     }
+
+    // //CREATE TABLE PATTERN
+    // const createTablePattern = async (pattern:TablePatternI) => {
+    //     dispatch(setLoadingRedux(true));
+    //     try {
+    //         const created: any = await axiosClient.post(`patterns/create`, { 
+    //             name:pattern.name,
+    //             headers:JSON.stringify(pattern.headers),
+    //         });
+    //         dispatch(setLoadingRedux(false));
+    //         if (created) {              
+    //             !created.data.errorMessage&&toast.success(`Шаблон "${pattern.name}" успешно создан`);
+    //             toast.warning(created.data.errorMessage);
+    //             getOrgFullScheme({});
+    //         }
+    //         return true
+    //     } catch (err) {
+    //         dispatch(setLoadingRedux(false));
+    //         axiosError(err);
+    //         return false;
+    //     }
+    // }
     //DELETE PATTER
     const deleteChartPattern = async (id: number,updaterFunc:any) => {
         dispatch(setLoadingRedux(true));

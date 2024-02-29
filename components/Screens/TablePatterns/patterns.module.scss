@@ -1,0 +1,177 @@
+.patternsMainWrap{
+    width: 100%;
+
+    .patternsList{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+
+        .patternsItem{
+            border: 1px solid rgba(0, 0, 0, 0.241);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.373);
+            padding: 2px 5px;
+            border-radius: 10px ;
+
+            .patternName{
+               // border: 2px solid #FF8056;
+                padding: 2px 10px;
+                //background: #ff80562a; 
+                //padding: 2px 10px;
+                color: rgb(0, 0, 0);
+                border-radius: 5px ;
+                font-size: 13px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: 600;
+                margin-left: 20px;
+                color:#FF8056 ;
+                text-shadow: 1px 1px 1px black;
+                letter-spacing: 1px;
+
+                &>:nth-child(2){
+                    cursor: pointer;
+                }
+            }
+
+            .patternColumns{
+                display: flex;
+                flex-direction: column;
+               align-items: flex-start;
+                gap: 5px;
+                //padding: 0 5px;
+                font-size: 10px;
+
+                .column{
+                   // border: 1px solid #FF8056;
+                    border-radius: 10px;
+                    display: flex;                    
+                    //flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                    padding: 3px;
+                    position: relative;
+                    background-color: #d6d6d636;
+
+                    .columnName{            
+                    
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 2px  solid #FF8056;
+                        border-radius: 5px;
+                        padding: 2px 10px;
+                        background: #ffffff;
+                        //position: absolute;
+                        // top: -10px;
+                        // font-size: 17px;
+                        font-weight: 600;
+                        //color: white;
+                        color: #272727;
+                        position: relative;
+                        width: 100%;
+                        background: #ff805636;
+                        
+                        .name{
+                            font-size: 12px;
+                            letter-spacing: 1.1px;
+                        }
+                    }
+
+                    .content{
+                        
+                        .logic{
+                            display: flex;
+                          //  flex-direction: column;
+                            align-items: flex-start;
+                            gap: 5px;
+                            .logicText{
+                                border: 1px  solid #FF8056;
+                                border-radius: 5px;
+                                color:rgb(192, 23, 122);
+                                letter-spacing: 1.1px;
+                                text-align: center;
+                                font-weight: 600;
+                                font-size: 11px;
+                                padding: 3px 5px;
+                                background: white;
+                                text-wrap: nowrap;
+                                
+                            }
+                            .logicOptionsList{
+                                //align-self: flex-end;
+                                display: flex;
+                               // flex-direction: column;
+                               // //justify-content: space-between;
+                                gap: 5px;
+                                .sum{
+                                    border: 1px solid rgba(0, 128, 0, 0.608);
+                                    background: rgba(0, 128, 0, 0.141);
+                                    border-radius: 5px;
+                                    padding: 1px 10px;
+                                    //background: white;
+                                    text-align: center;
+                                    text-wrap: nowrap;
+                                }
+                                .trend{
+                                    border: 1px solid rgba(142, 142, 142, 0.748);
+                                    background: rgba(142, 142, 142, 0.207);
+                                    border-radius: 5px;
+                                    padding: 1px 10px;
+                                    //background: white;
+                                    text-align: center;
+                                    text-wrap: nowrap;
+                                }
+                                .revtrend{
+                                    border: 1px solid rgba(94, 94, 94, 0.748);
+                                    border-radius: 5px;
+                                    padding: 1px 10px;
+                                    background: rgba(142, 142, 142, 0.207);
+                                    text-align: center;
+                                    text-wrap: nowrap;
+                                }
+                            }
+                        }
+                        .forInput{
+                            background:rgba(13, 119, 78, 0.537);
+                            text-align: center;
+                            font-weight: 500;
+                            font-size: 13px;
+                            padding: 3px 10px;
+                            //border: 2px  solid #FF8056;
+                            border-radius: 5px;
+                            color: white;
+                            
+
+                        }
+                    }
+                }
+
+                .columnForInput{                    
+                   // background: rgb(135, 179, 161);
+                   //border: 2px  solid #119d30;
+                   
+                }
+            }
+        }
+    }
+
+}
+
+.help{
+    border: 2px  solid #FF8056;
+    padding: 0px 4px;
+    border-radius: 5px;
+    background: white;
+    color: #cf562d;
+    position: absolute;
+    top: -12px;
+    left: -25px;
+    font-size: 10px;
+    opacity: .0;
+}
