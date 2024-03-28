@@ -88,6 +88,8 @@ export default function ReportTables() {
 
     const [itemFilter, setItemFilter] = useState(['off', 'sec', 'dep']);
 
+    const [officeIdFilter, setOfficeIdFilter] = useState(0);
+
     // const [isCreateCharts, setIsCreateCharts] = useState(false);
     //filters counts
     const [filledStatIdArr, setfilledStatIdArr] = useState<number[]>([]);
@@ -341,32 +343,59 @@ export default function ReportTables() {
         if (infoFilter && filledFilter == 'none') {
             setfilledStatIdArr([]);
             setNotFilledStatIdArr([]);
-            setNotFilledStatIdArr(()=>[]);
+            setNotFilledStatIdArr(() => []);
         }
 
         if (filledFilter !== 'none' && !infoFilter) {
             setGrowingStatIdArr(() => []);
             setNotGrowingStatIdArr(() => []);
-            setNotFilledStatIdArr(()=>[]);
+            setNotFilledStatIdArr(() => []);
         }
 
         if (statTypeFilter !== 'all') {
             setGrowingStatIdArr(() => []);
             setNotGrowingStatIdArr(() => []);
-            setNotFilledStatIdArr(()=>[]);
+            setNotFilledStatIdArr(() => []);
         }
 
         if (itemFilter.length !== 3) {
             setGrowingStatIdArr(() => []);
             setNotGrowingStatIdArr(() => []);
-            setNotFilledStatIdArr(()=>[]);
+            setNotFilledStatIdArr(() => []);
+        }
+
+        if (officeIdFilter !== 0) {
+            setGrowingStatIdArr(() => []);
+            setNotGrowingStatIdArr(() => []);
+            setNotFilledStatIdArr(() => []);
         }
 
         if (currentTargets.length) {
             return (
                 <div className={styles.reportsListBlock}>
-                    {statTypeSelect !== 'allOrg' &&
+                    {statTypeSelect == 'allOrg' &&
+                        (officesWithLatestPeriodStats as OfficeI[]).map((office) => {
+                            if (officeIdFilter && officeIdFilter != office.id) {
+                                return;
+                            }
+                            return (
+                                <>
+                                    {itemFilter.includes('off') && <OrgItem item={office} color="" />}
+
+                                    {office.departments.map((dep) => (
+                                        <>
+                                            {itemFilter.includes('dep') && <OrgItem item={dep} color="steelblue" />}
+
+                                            {itemFilter.includes('sec') && dep.sections.map((sec) => <OrgItem item={sec} color="#2a9955d7" />)}
+                                        </>
+                                    ))}
+                                </>
+                            );
+                        })}
+
+                    {/* {statTypeSelect !== 'allOrg' &&
                         currentTargets.map((item: OfficeI | DepartmentI) => {
+                            // return false;
                             return (
                                 <div key={nanoid()} className={styles.reportItem}>
                                     <div className={styles.itemName}>{item.name}</div>
@@ -388,26 +417,11 @@ export default function ReportTables() {
                                     )}
                                 </div>
                             );
-                        })}
-
-                    {statTypeSelect == 'allOrg' &&
-                        (officesWithLatestPeriodStats as OfficeI[]).map((office) => (
-                            <>
-                                {itemFilter.includes('off') && <OrgItem item={office} color="" />}
-
-                                {office.departments.map((dep) => (
-                                    <>
-                                        {itemFilter.includes('dep') && <OrgItem item={dep} color="steelblue" />}
-
-                                        {itemFilter.includes('sec') && dep.sections.map((sec) => <OrgItem item={sec} color="#2a9955d7" />)}
-                                    </>
-                                ))}
-                            </>
-                        ))}
+                        })} */}
                 </div>
             );
         }
-    }, [currentTargets, reportsList, statTypeSelect, infoFilter, filledFilter, statTypeFilter, itemFilter]);
+    }, [currentTargets, reportsList, statTypeSelect, infoFilter, filledFilter, statTypeFilter, itemFilter, officeIdFilter]);
 
     // INFO BLOCK
     const getReportsInfoStat = useMemo(() => {
@@ -464,7 +478,7 @@ export default function ReportTables() {
                     </div>
                 </div>
             );
-    }, [reportsList, statTypeSelect, infoFilter, filledFilter, filledStatIdArr, notFilledStatIdArr, growingStatIdArr, notGrowingStatIdArr, statTypeFilter, itemFilter]);
+    }, [reportsList, statTypeSelect, infoFilter, filledFilter, filledStatIdArr, notFilledStatIdArr, growingStatIdArr, notGrowingStatIdArr, statTypeFilter, itemFilter, officeIdFilter]);
 
     //test
     useEffect(() => {
@@ -506,26 +520,44 @@ export default function ReportTables() {
                     </Modal>
                 )
             }
+            <div className={styles.filterWrap}>
+                {/* ВЫБОР ПО ТАРГЕТУ - ОТКЛЮЧЕН ❗❗❗❗
+                <select value={statTypeSelect} onChange={(event) => setStatTypeSelect(event.target.value as typeof statTypeSelect)} hidden>
+                    <option value={'all'}>Все статистики</option>
+                    <option value={'main'}>Главные статистики</option>
+                    <option value={'additional'}>Дополнительные статистики</option>
+                    <option value={'allOrg'}>Вся орг схема</option>
+                </select> */}
 
-            <div className={styles.itemsFilterBlock}>
-                <div  className={`${styles.itemFilterBtn} ${itemFilter.includes('off')?styles.itemFilterBtnOff:''} noselect`} onClick={() => itemFilterToggle('off')}>отделения</div>
-                <div className={`${styles.itemFilterBtn} ${itemFilter.includes('dep')?styles.itemFilterBtnDep:''} noselect`} onClick={() => itemFilterToggle('dep')}>отделы</div>
-                <div className={`${styles.itemFilterBtn} ${itemFilter.includes('sec')?styles.itemFilterBtnSec:''} noselect`} onClick={() => itemFilterToggle('sec')}>секции</div>
+                <select className={styles.officeSelect} value={officeIdFilter} onChange={(event) => setOfficeIdFilter(Number(event.target.value))}>
+                    <option value={0}> все отделения</option>
+                    {officesWithLatestPeriodStats
+                        .toSorted((a, b) => Number(a.name.split(' ')[0]) - Number(b.name.split(' ')[0]))
+                        .map((office) => (
+                            <option value={office.id} key={nanoid()}>
+                                🏢{office.name}
+                            </option>
+                        ))}
+                </select>
+
+                <select className={styles.statTypeSelect} value={statTypeFilter} onChange={(event) => setStatTypeFilter(event.target.value as typeof statTypeFilter)}>
+                    <option value={'all'}>Все статистики</option>
+                    <option value={'main'}>🚩Главные статистики</option>
+                    <option value={'additional'}>➕Дополнительные статистики</option>
+                </select>
+
+                <div className={styles.itemsFilterBlock}>
+                    <div className={`${styles.itemFilterBtn} ${itemFilter.includes('off') ? styles.itemFilterBtnOff : ''} noselect`} onClick={() => itemFilterToggle('off')}>
+                        отделения
+                    </div>
+                    <div className={`${styles.itemFilterBtn} ${itemFilter.includes('dep') ? styles.itemFilterBtnDep : ''} noselect`} onClick={() => itemFilterToggle('dep')}>
+                        отделы
+                    </div>
+                    <div className={`${styles.itemFilterBtn} ${itemFilter.includes('sec') ? styles.itemFilterBtnSec : ''} noselect`} onClick={() => itemFilterToggle('sec')}>
+                        секции
+                    </div>
+                </div>
             </div>
-
-            {/* ВЫБОР ПО ТАРГЕТУ - ОТКЛЮЧЕН ❗❗❗❗ */}
-            <select value={statTypeSelect} onChange={(event) => setStatTypeSelect(event.target.value as typeof statTypeSelect)} hidden>
-                <option value={'all'}>Все статистики</option>
-                <option value={'main'}>Главные статистики</option>
-                <option value={'additional'}>Дополнительные статистики</option>
-                <option value={'allOrg'}>Вся орг схема</option>
-            </select>
-
-            <select className={styles.statTypeSelect} value={statTypeFilter} onChange={(event) => setStatTypeFilter(event.target.value as typeof statTypeFilter)}>
-                <option value={'all'}>Все статистики</option>
-                <option value={'main'}>🚩Главные статистики</option>
-                <option value={'additional'}>➕Дополнительные статистики</option>
-            </select>
 
             {statTypeSelect !== 'allOrg' && (
                 <div className={styles.filterBlock}>
@@ -550,11 +582,8 @@ export default function ReportTables() {
                 </div>
             )}
             {getReportsInfoStat}
-            {reportsListHTML}
 
-            {/* <div style={{ fontSize: 10 }}>
-                Target : {JSON.stringify(reportsList, null, 2)}
-            </div> */}
+            {reportsListHTML}
         </div>
     );
 }

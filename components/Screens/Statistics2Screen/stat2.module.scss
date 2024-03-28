@@ -1,37 +1,55 @@
-.stat2Wrap{
+.stat2Wrap {
     background: white;
     //border: 1px solid black;
     display: flex;
     flex-direction: column;
     //align-items: flex-start;
     gap: 0px;
-   // clip-path: circle(50% at 0 0);
+    // clip-path: circle(50% at 0 0);
 
-    .postSelect{
+    .postSelect {
         border: 3px solid #56b9ff;
         border-radius: 5px;
         padding: 5px 15px;
         font-size: 17px;
         font-weight: 600;
-        
-     
+
+
     }
 
-    .shooseStatBlock{
+    .shooseStatBlock {
         display: flex;
-        gap: 20px;
-        //flex-direction: column;
+        gap: 5px;
+        flex-direction: column;
         align-items: flex-start;
         padding: 10px;
-        
-        span{
+
+        .filterBlock {
+            display: flex;
+            gap: 5px;
+
+            input {
+                padding: 1px 5px;
+                border-radius: 5px;
+                outline: 0;
+
+                border: 1px solid gray;
+            }
+
+            .close {
+                font-size: 12px;
+                cursor: pointer;
+            }
+        }
+
+        span {
             padding: 1px 2px;
             background: lightblue;
             font-size: 13px;
-            
+
         }
 
-        select{
+        select {
             border: 3px solid #56b9ff;
             border-radius: 5px;
             padding: 2px 5px;
@@ -41,16 +59,16 @@
 
 
 
-        &:hover{
+        &:hover {
 
-            select{
+            select {
                 height: auto;
-               // transform: scale(100%);
+                // transform: scale(100%);
             }
         }
     }
 
-    .userShooseStatBlock{
+    .userShooseStatBlock {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -58,7 +76,7 @@
     }
 }
 
-.periodSelect{
+.periodSelect {
     border: 3px solid rgb(64, 131, 247);
     padding: 1px 10px;
     border-radius: 5px;
@@ -67,12 +85,12 @@
     gap: 5px;
     box-shadow: 5px 5px 7px gray;
 
-    select{
+    select {
         border: 0;
     }
 }
 
-.orgFilterBlock{
+.orgFilterBlock {
     position: relative;
     border: 2px solid rgba(147, 145, 145, 0.116);
     padding: 3px;
@@ -83,7 +101,7 @@
     gap: 3px;
     margin: 0px 10px 5px 10px;
 
-    .orgFilterClose{
+    .orgFilterClose {
         position: absolute;
         top: 0;
         right: 0;
@@ -91,39 +109,43 @@
         cursor: pointer;
     }
 
-    select{
+    select {
         border: 2px solid #56b9ff;
         border-radius: 5px;
         padding: 2px 5px;
         font-size: 13px;
         font-weight: 600;
-        
+
     }
 
-    .officeList{
+    .officeList {
         border-color: #FF8056;
-        color:#d54e21;
+        color: #d54e21;
     }
-    .depList{
+
+    .depList {
         border-color: steelblue;
         color: rgb(34, 98, 150);
     }
-    .secList{
+
+    .secList {
         border-color: #2a9955d7;
         color: #136733f1;
     }
-    .targetList{
+
+    .targetList {
         border-width: 3px;
         font-size: 14px;
         margin-top: 3px;
         margin-left: 10px;
     }
 }
-.targetBlock{
+
+.targetBlock {
     border: 2px solid rgba(0, 0, 0, 0.178);
     padding: 5px;
     border-radius: 5px;
 
-    
-    
+
+
 }

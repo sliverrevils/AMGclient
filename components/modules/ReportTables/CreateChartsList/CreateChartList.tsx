@@ -3,13 +3,14 @@ import styles from './chartsList.module.scss';
 import { useSelector } from 'react-redux';
 import { StateReduxI } from '@/redux/store';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChartItemI, TableStatisticListItemI, UserI } from '@/types/types';
+import { ChartItemI, TableStatisticListItemI, UserFullI, UserI } from '@/types/types';
 import { clearStatName } from '@/utils/funcs';
 import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
 import useUsers from '@/hooks/useUsers';
 import Modal from '@/components/elements/Modal/Modal';
 import useChartList from '@/hooks/useChartsList';
 import { toast } from 'react-toastify';
+import { nanoid } from '@reduxjs/toolkit';
 
 interface ChartListItem {
     id: number;
@@ -23,6 +24,7 @@ export default function CreateChartList() {
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
     const isAdmin = useSelector((state: any) => state.main.user?.role === 'admin');
     const user: UserI = useSelector((state: any) => state.main.user);
+    const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
     const officesWithLatestPeriodStatsAndData = useSelector((state: StateReduxI) =>
         state.org.offices.map((office) => {
             // ЗАМЕНЯЕМ ID СТАТИСТИК НА ПОСЛЕДНИЕ
@@ -92,15 +94,25 @@ export default function CreateChartList() {
     const [listName, setListName] = useState('');
     const [chartsListsArr, setChartsListsArr] = useState<ChartListItem[]>([]);
     const [selectedListId, setSelectedListID] = useState(0);
+    const [listToUserField, setListToUserField] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(0);
 
     //HOOKS
     const { createMenu } = useUI();
     const { userByID } = useUsers();
 
     const [listMenu, onOpenListMenu, onCloseListMenu, listMenuStyle] = createMenu({ position: 'absolute' });
-    const { createChartsList, getAllUseresLists, deleteChartList, updateChartsList } = useChartList(setChartsListsArr);
+    const { createChartsList, getAllUseresLists, deleteChartList, updateChartsList, chartListToUser } = useChartList(setChartsListsArr);
 
     //FUNCS
+
+    //add list to user - admin
+    const onAddListToUser = () => {
+        chartListToUser(selectedListId, selectedUserId).then(() => {
+            setSelectedUserId(0);
+            setListToUserField(false);
+        });
+    };
 
     //on view charts - stat list up
     const statUp = (index: number) => {
@@ -193,11 +205,11 @@ export default function CreateChartList() {
 
     //print open
     const setShowPrint = () => {
-       const win = window.print();
-       
-    //     console.log(document.querySelector(`.${styles.chartList}`)?.innerHTML)
-    //    win?.document.write(document.querySelector(`.${styles.chartListFullScreen}`)?.innerHTML);
-    }
+        const win = window.print();
+
+        //     console.log(document.querySelector(`.${styles.chartList}`)?.innerHTML)
+        //    win?.document.write(document.querySelector(`.${styles.chartListFullScreen}`)?.innerHTML);
+    };
 
     //COMPONENTS
     //for menu
@@ -228,7 +240,6 @@ export default function CreateChartList() {
         console.log(statArr);
         const statListHtml = statArr.length ? (
             <div className={styles.statList}>
-                
                 {statArr.map((stat) => (
                     <div
                         className={styles.statItem}
@@ -247,10 +258,7 @@ export default function CreateChartList() {
                 ))}
             </div>
         ) : (
-        <>
-        {user.userId==item.leadership&&<span style={{textAlign:'center',color:'white'}}>нет установленных статистик</span>}
-        </>
-            
+            <>{user.userId == item.leadership && <span style={{ textAlign: 'center', color: 'white' }}>нет установленных статистик</span>}</>
         );
         return (
             <div
@@ -360,19 +368,32 @@ export default function CreateChartList() {
             return (
                 <Modal closeModalFunc={() => setShowOnModal(false)} fullWidth={true} black={false} zIndex={99}>
                     <div className={styles.chartListFullScreen}>{selectedStatsIdArr.map((selectedStat, index) => !selectedStat.isClose && <ChartItem chartItem={selectedStat} index={index} openCloseToggle={() => openCloseChartToggle(selectedStat.id)} />)}</div>
-                    <div className={styles.printScreenBtn} onClick={(event) => {event.stopPropagation(); setShowPrint()}} >
+                    <div
+                        className={styles.printScreenBtn}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            setShowPrint();
+                        }}
+                    >
                         🖨️
                     </div>
                 </Modal>
             );
         else
-            return ( // FULL SCREEN BTN 🔍
+            return (
+                // FULL SCREEN BTN 🔍
                 <div className={styles.chartList}>
-                    {selectedStatsIdArr.some((stat) => !stat.isClose) && (<>
-                        <div className={styles.fullScreenBtn} onClick={(event) => {event.stopPropagation(); setShowOnModal(true)}}>                            
-                            🔍
-                        </div>
-
+                    {selectedStatsIdArr.some((stat) => !stat.isClose) && (
+                        <>
+                            <div
+                                className={styles.fullScreenBtn}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setShowOnModal(true);
+                                }}
+                            >
+                                🔍
+                            </div>
                         </>
                     )}
                     {selectedStatsIdArr.map((selectedStat, index) => (
@@ -443,11 +464,15 @@ export default function CreateChartList() {
                         {!!selectedStatsIdArr.length && (
                             <>
                                 {!!selectedListId ? (
-                                    isListUpdated() && (
+                                    isListUpdated() ? (
                                         <div className={styles.save} onClick={() => updateChartsList(selectedListId, selectedStatsIdArr)}>
                                             {' '}
                                             обновить лист
                                         </div>
+                                    ) : listToUserField || !isAdmin ? (
+                                        <></>
+                                    ) : (
+                                        <div onClick={() => setListToUserField((state) => !state)}>предоставить лист пользователю</div>
                                     )
                                 ) : (
                                     <div className={styles.save} onClick={() => setIsSaveField(true)}>
@@ -475,6 +500,33 @@ export default function CreateChartList() {
                     </div>
                 )
             }
+
+            {listToUserField && isAdmin && (
+                <div className={styles.addToUserBlock}>
+                    <select value={selectedUserId} onChange={(event) => setSelectedUserId(Number(event.target.value))}>
+                        <option value={0}> выбор пользователя</option>
+                        {users.map((user) => (
+                            <option key={nanoid()} value={user.id}>
+                                {user.name}
+                            </option>
+                        ))}
+                    </select>
+                    <div className={styles.addToUser} onClick={onAddListToUser}>
+                        предоставить лист
+                    </div>
+
+                    <div
+                        className={styles.close}
+                        onClick={() => {
+                            setListToUserField((state) => !state);
+                            setSelectedUserId(0);
+                        }}
+                    >
+                        {' '}
+                        {!listToUserField ? 'предоставить пользователю' : 'отмена'}
+                    </div>
+                </div>
+            )}
 
             {/* меню */}
             <div className={styles.orgMenu} style={listMenuStyle}>

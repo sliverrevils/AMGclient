@@ -1,4 +1,4 @@
-.reportMainWrap{
+.reportMainWrap {
     border: 1px solid rgba(0, 128, 0, 0.184);
     display: flex;
     flex-direction: column;
@@ -6,12 +6,22 @@
     gap: 5px;
     padding: 20px 10px;
 
-    .filterBlock{
+    .filterBlock {
         display: flex;
         gap: 10px;
     }
 
-    .itemsFilterBlock{
+    .filterWrap {
+        width: 100%;
+        display: flex;
+        gap: 20px;
+
+        border: 2px solid rgba(128, 128, 128, 0.315);
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .itemsFilterBlock {
         width: 100%;
         //border: 2px solid #FF8056;
         display: flex;
@@ -19,7 +29,7 @@
         align-items: flex-start;
         gap: 20px;
 
-        .itemFilterBtn{
+        .itemFilterBtn {
             opacity: 1;
             border: 1px solid rgb(196, 194, 194);
             padding: 2px 10px;
@@ -28,41 +38,50 @@
 
             transition: all 300ms ease-in;
         }
-        
-        .itemFilterBtnOff{
+
+        .itemFilterBtnOff {
             background: #FF8056;
-            color:white;
+            color: white;
             box-shadow: 2px 2px 5px rgb(90, 29, 1);
             border: 0;
         }
 
-        .itemFilterBtnDep{
+        .itemFilterBtnDep {
             background: cornflowerblue;
-            color:white;
+            color: white;
             box-shadow: 2px 2px 5px rgb(2, 0, 87);
             border: 0;
         }
 
-        .itemFilterBtnSec{
+        .itemFilterBtnSec {
             background: rgba(42, 153, 85, 0.843);
-            color:white;
+            color: white;
             box-shadow: 2px 2px 5px rgb(6, 65, 0);
             border: 0;
         }
 
-        
+
     }
 
-    .statTypeSelect{
+    .statTypeSelect {
         align-self: center;
         border: 2px solid #FF8056;
         border-radius: 5px;
         padding: 1px 15px;
         font-size: 12px;
+        color: #5e5c5c;
+    }
+
+    .officeSelect {
+        align-self: center;
+        border: 2px solid #FF8056;
+        border-radius: 5px;
+        padding: 1px 3px;
+        font-size: 12px;
         color: #c23607;
     }
 
-    .reportsListBlock{
+    .reportsListBlock {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -73,9 +92,9 @@
         padding: 5px 10px 5px 5px;
         border: 2px solid rgba(128, 128, 128, 0.315);
         border-radius: 10px;
-        
 
-        .reportItem{
+
+        .reportItem {
             display: flex;
             flex-direction: column;
             //align-items: flex-start;
@@ -86,10 +105,10 @@
             padding: 3px 10px;
             border-radius: 5px;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.596);
-           // background: rgba(0, 0, 0, 0.097);
+            // background: rgba(0, 0, 0, 0.097);
             background: #FF8056;
 
-            .itemName{
+            .itemName {
                 font-size: 12px;
                 font-weight: 600;
                 margin-bottom: 0px;
@@ -97,14 +116,15 @@
                 letter-spacing: 0.7px;
                 text-shadow: 1px 1px 2px black;
 
-               // -webkit-text-stroke: 0.01px black;
-                
-               
+                // -webkit-text-stroke: 0.01px black;
+
+
             }
-            .additionalsList{
+
+            .additionalsList {
                 display: flex;
                 flex-direction: column;
-                gap: 2px;               
+                gap: 2px;
             }
 
         }
@@ -113,89 +133,97 @@
 
 }
 
-.statItem{
-    
+.statItem {
+
     border: 1px solid rgb(137, 137, 137);
     padding: 1px 0px;
     border-radius: 5px;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.504);
     background: white;
-    
+
     //transform: translateX(10px);
 
-    .statName{
+    .statName {
         font-weight: 600;
         font-size: 12px;
         color: rgba(0, 0, 0, 0.752);
         padding: 3px;
         position: relative;
+
         // width: 100%;
         // display:'flex' !important;
         // justify-content: space-between;
-        &::before{
+        &::before {
             content: '📄 ';
         }
 
     }
 
-    .infoBlock{
+    .infoBlock {
         display: flex;
         gap: 10px;
         justify-content: space-between;
         margin-left: 10px;
 
-        .dates{
+        .dates {
             color: #195f0e;
             font-weight: 600;
             //text-shadow: 1px 1px 1px rgb(0, 0, 0), -1px -1px 1px black;
             // /text-shadow: 0px 0px 2px black;
             letter-spacing: .6px;
         }
-        .trendType{
+
+        .trendType {
             opacity: .4;
             font-weight: 600;
         }
-        .trendStatus{
+
+        .trendStatus {
             padding: 0px 3px;
 
-            .true{
+            .true {
                 color: rgb(4, 106, 50);
                 font-weight: 600;
-                &::after{
+
+                &::after {
                     content: '↗️';
                 }
             }
-            .false{
+
+            .false {
                 color: tomato;
                 font-weight: 600;
-                &::after{
+
+                &::after {
                     content: '🔻';
                 }
             }
         }
     }
 }
-.statItemMain{
-     border: 1px solid #FF8056;
-     box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.497);
-     transform: translateX(0px);
-     position: relative;
 
-     &::before{
+.statItemMain {
+    border: 1px solid #FF8056;
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.497);
+    transform: translateX(0px);
+    position: relative;
+
+    &::before {
         content: '🚩';
         position: absolute;
         top: 0;
         left: 0;
-     }
-   
+    }
+
 }
-.filtersWrap{
+
+.filtersWrap {
     width: 100%;
     display: flex;
     gap: 5px;
-    
 
-    .reportsInfoBlock{
+
+    .reportsInfoBlock {
         width: 100%;
         border-radius: 10px;
         width: 100%;
@@ -208,13 +236,15 @@
         font-size: 15px;
         text-wrap: nowrap;
         font-size: 12px;
-        .growing{
+
+        .growing {
             padding: 2px 10px;
             border: 2px solid rgba(0, 128, 0, 0.363);
             border-radius: 10px;
             cursor: pointer;
         }
-        .falling{
+
+        .falling {
             padding: 2px 10px;
             border: 2px solid rgba(219, 61, 25, 0.426);
             border-radius: 10px;
@@ -224,9 +254,9 @@
 
 }
 
-.graphWin{
- 
-    
+.graphWin {
+
+
     border: 1px solid black;
     padding: 10px;
     position: fixed;
@@ -236,25 +266,26 @@
     height: 400px;
     background: white;
     z-index: 1000;
-    border-radius: 10px;   
+    border-radius: 10px;
     box-shadow: 3px 3px 7px black;
+
     //animation: graphOpen 200ms;
-    .graphClose{
+    .graphClose {
         position: absolute;
         right: 3px;
         top: 3px;
         cursor: pointer;
     }
-    
-    
+
+
 }
 
 @keyframes graphOpen {
-    from{
-        opacity:0;
+    from {
+        opacity: 0;
     }
+
     to {
         opacity: .9;
     }
 }
-

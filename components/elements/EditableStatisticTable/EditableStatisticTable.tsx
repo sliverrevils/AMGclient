@@ -21,6 +21,14 @@ import { getDayOfWeek, getMonthStr, getTextLength } from '@/utils/funcs';
 import useUsers from '@/hooks/useUsers';
 import { daySec } from '@/utils/vars';
 
+interface ILinearRes {
+    result: any[];
+    slope: number;
+    intercept: number;
+    r: number;
+    slopeArr: number[];
+}
+
 export default function EditableStatisticTable({ selectedTable, disableSelectOnList }: { selectedTable: TableStatisticI | 'clear' | undefined; disableSelectOnList: () => void }) {
     //--state
     const [headers, setHeaders] = useState<Array<StatHeaderI>>([]);
@@ -241,26 +249,23 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
             if (dateColumn.type == '2 года плюс текущий' && yearsArr) {
                 secStart = new Date(new Date(dateColumn.dateEnd).getFullYear() + 1, 0, 1).getTime();
-                console.log('DATE START ✅✅✅✅');
                 dateEnd = new Date(yearsArr.at(-1)! + 1, 11, 31).getTime();
             }
 
             for (let i = secStart, periodEnd = 0, monthStr = ''; i <= dateEnd; i += daySec) {
                 //  console.log(getDayOfWeek(i))
                 if (periodEnd < i + daySec) {
-                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) == dateColumn.firstWeekDay) {
-                        // CALC WEEK
-
-                        periodEnd = new Date(i + dateColumn.periodDayCount * daySec).getTime();
-
+                    // FIX HERE (dateColumn.firstWeekDay - 1 ) ! CONTROL '❗❗❗❗❗❗❗
+                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) == dateColumn.firstWeekDay - 1) {
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
+                        periodEnd = periodEndDate.getTime();
 
                         lastDayOfDatesArr = periodEndDate.getTime();
                         let periodWorning = dateEnd < periodEndDate.getTime();
 
                         if (dateColumn.isFullPeriod && !periodsArrTempStr.length) {
                             //add out of range dates
-                            periodsArrTempStr = [` ${new Date(dateStart).toLocaleDateString()} -fd  ${new Date(i).toLocaleDateString()}`];
+                            periodsArrTempStr = [` ${new Date(dateStart).toLocaleDateString()} - ${new Date(i).toLocaleDateString()}`];
 
                             newRows = [
                                 {
@@ -488,10 +493,83 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //-------------------------------------------------------------------------------------------- CALC ROWS ⭐⭐⭐⭐⭐⭐⭐
 
+    // trendType ? trend : revtrend ❗
+
+    //trends array values
+    let trendsObj = {};
+
+    const trendStatus = (trendType: boolean, value: any, itemIndex: number, rowIndex: number): string => {
+        let trendStatus = true;
+        const resultStatusText = () => (trendStatus ? 'Растущая↗️' : 'Падающая🔻');
+
+        //---ПУСТОЕ ЗНАЧЕНИЕ0️⃣
+
+        if (/❓/g.test(value)) {
+            return `не определено`;
+        }
+
+        //---ПЕРВЫЙ РЯД1️⃣
+
+        //обычный выше нуля
+        //перевернутый ниже нуля и ноль
+
+        if (!rowIndex) {
+            if (trendType) {
+                if (value < 0) {
+                    trendStatus = false;
+                }
+                return resultStatusText();
+            } else {
+                if (value > 0) {
+                    trendStatus = false;
+                }
+                return resultStatusText();
+            }
+        }
+
+        //---ОПРЕДЕЛЕНИЕ ТРЕНДА⚙️📈
+        //результат по статусу була trendStatus и вызываем resultStatusText() для возврата текста
+
+        if (trendsObj[itemIndex]) {
+            const trend = linearRegression(
+                trendsObj[itemIndex].map((_, index) => index + 1),
+                trendsObj[itemIndex]
+            );
+
+            if (trendType) {
+                //СТАНДАРТНЫЙ ТРЕНД📈
+                console.log('💵', trend.result[0].y - trend.result.at(-1).y, trend.slope);
+                if (trend.result[0].y - trend.result.at(-1).y < 0 && trend.slope !== 0) {
+                    return resultStatusText();
+                } else {
+                    trendStatus = false;
+                    // если наклона нет , то смотрим по логике первого значения
+                    if (value > 0 && trend.slope === 0) {
+                        trendStatus = true;
+                    }
+                    return resultStatusText();
+                }
+            } else {
+                //ПЕРЕВЕРНУТЫЙ ТРЕНД📉
+                if (trend.result.at(-1).y - trend.result[0].y <= 0 && trend.slope !== 0) {
+                    return resultStatusText();
+                } else {
+                    // если наклона нет , то смотрим по логике первого значения
+                    if (value > 0) {
+                        trendStatus = false;
+                    }
+                    return resultStatusText();
+                }
+            }
+        } else {
+            return `process⚙️`;
+        }
+    };
+
     const calcRows = () => {
         let lastRow: StatRowI;
+
         let calcedTemp = rows.map((row, rowIndex) => {
-            // console.log('HEADERS', headers)
             lastRow = {
                 ...row,
                 values: row.values.map((item, itemIndex) => {
@@ -499,6 +577,24 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     logicStr = headers?.[itemIndex]?.logicStr || '';
                     const calcedItemTemp = calcRowItem(rowIndex, itemIndex);
 
+                    //TREND 📈
+                    if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
+                        if (!isNaN(calcedItemTemp.result)) {
+                            trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), calcedItemTemp.result];
+                        }
+
+                        //  console.log('trends', trendsObj);
+                        const trendType = /@trend/.test(logicStr); // trend || revtrend
+
+                        return {
+                            ...item,
+                            value: calcedItemTemp.result,
+                            expression: calcedItemTemp.logicStrWithDecorValues,
+                            message: trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex),
+                        };
+                    }
+
+                    //SUM
                     if (logicStr && /@sum/.test(logicStr)) {
                         if (/❓/g.test(calcedItemTemp.result)) {
                             calcedItemTemp.result = '';
@@ -550,51 +646,59 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             return lastRow;
         });
 
-        headers.forEach((header, headerIdx) => {
-            if (/@trend/g.test(header.logicStr)) {
-                const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
-                const trend = linearRegression(
-                    trendRow.map((_, index) => index + 1),
-                    trendRow
-                );
+        // headers.forEach((header,headerIndex)=>{
+        //     if()
+        // })
 
-                calcedTemp = calcedTemp.map((row, rowIdx) => ({
-                    ...row,
-                    values: row.values.map((column, columnIdx) => ({
-                        ...column,
-                        message: columnIdx != headerIdx ? column.message : !/❓/g.test(column.value + '') ? (trend.slopeArr[rowIdx] >= 0 ? 'Растущая↗️' : 'Падающая🔻') : '❓',
-                    })),
-                }));
-            }
-        });
-        headers.forEach((header, headerIdx) => {
-            if (/@revtrend/g.test(header.logicStr)) {
-                const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
-                const trend = linearRegression(
-                    trendRow.map((_, index) => index + 1),
-                    trendRow
-                );
+        // headers.forEach((header, headerIdx) => {
+        //     if (/@trend/g.test(header.logicStr)) {
+        //         const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
+        //         const trend = linearRegression(
+        //             trendRow.map((_, index) => index + 1),
+        //             trendRow
+        //         );
 
-                calcedTemp = calcedTemp.map((row, rowIdx) => ({
-                    ...row,
-                    values: row.values.map((column, columnIdx) => ({
-                        ...column,
-                        message:
-                            columnIdx != headerIdx
-                                ? column.message
-                                : !/❓/g.test(column.value + '')
-                                ? //? trend.slopeArr[rowIdx] > 0||Number(column.value)>0 ? "Падающая🔻" : "Растущая↗️"
-                                  trend.slopeArr[rowIdx] > trend.slopeArr[0] || trend.slopeArr[rowIdx] > 0
-                                    ? 'Падающая🔻'
-                                    : 'Растущая↗️'
-                                : '❓',
-                    })),
-                }));
-            }
-        });
+        //         calcedTemp = calcedTemp.map((row, rowIdx) => ({
+        //             ...row,
+        //             values: row.values.map((column, columnIdx) => ({
+        //                 ...column,
+        //                 message: columnIdx != headerIdx ? column.message : !/❓/g.test(column.value + '') ? (trend.slopeArr[rowIdx] >= 0 ? 'Растущая↗️' : 'Падающая🔻') : '❓',
+        //             })),
+        //         }));
+        //     }
+        // });
+
+        // const trendStatus = ({ revTrend = false, rowIdx, trend }: { revTrend?: boolean; rowIdx: number; trend: ILinearRes }): 'Падающая🔻' | 'Растущая↗️' => {
+        //     if (revTrend) {
+        //     } else {
+        //     }
+        // };
+
+        // headers.forEach((header, headerIdx) => {
+        //     if (/@revtrend/g.test(header.logicStr)) {
+        //         const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
+        //         const trend = linearRegression(
+        //             trendRow.map((_, index) => index + 1),
+        //             trendRow
+        //         );
+
+        //         console.log('TREND ✅✅✅✅', trend);
+
+        //         calcedTemp = calcedTemp.map((row, rowIdx) => ({
+        //             ...row,
+        //             values: row.values.map((column, columnIdx) => ({
+        //                 ...column,
+        //                 message: columnIdx != headerIdx ? column.message : !/❓/g.test(column.value + '') ? (trend.slopeArr[rowIdx] >= 0 ? 'Падающая🔻' : 'Растущая↗️') : '❓',
+        //             })),
+        //         }));
+        //     }
+        // });
 
         setCalcedRows(calcedTemp);
     };
+
+    //? trend.slopeArr[rowIdx] > 0||Number(column.value)>=0 ? "Падающая🔻" : "Растущая↗️"
+    //   (rowIdx && trend.slopeArr[rowIdx] > trend.slopeArr[0]) || trend.slopeArr[rowIdx] > 0
 
     //--------------------------------------------------------------------------------- CREATE DATES COLUMNS ⭐⭐⭐⭐⭐⭐⭐
 
@@ -752,6 +856,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         const { datesArr } = dateColumn;
         const currentDateSec = new Date().getTime();
         // console.log('CURRENT PERIOD🕖',dateColumn?.datesArr,new Date(datesArr[rowIndex].start).getDate(),currentDateSec>=datesArr[rowIndex].start&&currentDateSec<=datesArr[rowIndex].end + (daySec*2))
+        if (dateColumn.type == '2 года плюс текущий') {
+            return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 10 };
+        }
         return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 2 };
     };
 
