@@ -297,7 +297,7 @@ export default function CreateChartList() {
         };
         const userPostText = {
             office: 'РО',
-            dep: 'РО',
+            dep: 'НО',
             sec: 'АС',
         };
 
