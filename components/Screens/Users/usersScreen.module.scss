@@ -1,33 +1,41 @@
-.usersWrapper{
+.usersWrapper {
     padding: 30px 10px 10px 10px;
 
-    thead{
-        border-radius: 5px;
-    }
-    
-    th{
-        font-size: 13px;
-        padding: 3px 5px;
-      
+    table {
+        display: block;
+        height: 75vh;
+        overflow: scroll;
+        overflow-x: hidden;
     }
 
-    td{
+    thead {
+        border-radius: 5px;
+    }
+
+    th {
+        font-size: 13px;
+        padding: 3px 5px;
+
+    }
+
+    td {
         cursor: pointer;
         font-size: 12px;
     }
-    .userInfo{
+
+    .userInfo {
         position: relative;
         display: flex;
         flex-direction: column;
 
-        .close{
+        .close {
             position: absolute;
             right: 10px;
             top: 10px;
             cursor: pointer;
         }
 
-        .infoLine{
+        .infoLine {
             border: 1px solid rgba(0, 0, 0, 0.26);
             border-radius: 5px;
             padding: 5px 10px;
@@ -36,97 +44,102 @@
 
         }
 
-        .controlBtns{
+        .controlBtns {
             display: flex;
-            outline:2px solid rgba(40, 177, 22, 0.297);
+            outline: 2px solid rgba(40, 177, 22, 0.297);
         }
 
     }
 
 
-        .addForm{
-            width: 100%;
-            //border: 1px solid black;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            background: white;   
-            position: relative;
-            gap: 10px;
-            padding: 15px 10px;
-        
-            input,textarea,select{
-                padding: 5px 10px;
-                border-radius: 5px;
+    .addForm {
+        width: 100%;
+        //border: 1px solid black;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        position: relative;
+        gap: 10px;
+        padding: 15px 10px;
+
+        input,
+        textarea,
+        select {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 0;
+            outline: 3px solid rgba(128, 128, 128, 0.247);
+
+            &:focus {
                 border: 0;
-                outline: 3px solid rgba(128, 128, 128, 0.247);
-        
-                &:focus{
-                    border: 0;
-                    outline: 3px solid #fa6e4079 ;
-                }
-                &::placeholder{
-                    opacity: .5;
-                }
+                outline: 3px solid #fa6e4079;
             }
-        
-            textarea{
-                resize: vertical;
-            }
-            select{
-                
-            }
-        
-            button{
-                
-                padding: 10px 10px;
-                border-radius: 5px;
-                width: 200px;
-                align-self: flex-end;
-                margin-top: 20px;
-                background: #2a9955d7;
-                color: #fff;
-                letter-spacing: 1px;
-                font-weight: 500;
-                border: 0;
-                box-shadow: 2px 2px 5px 1.3px rgba(0, 0, 0, 0.637);       
-                &:hover{
-                    cursor: pointer;
-                    box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.637);
-        
-                }
-                &:disabled{
-                    opacity:.3;                    
-                }
-            }
-        
-            h3{
-                color: rgb(0, 0, 0);
-                text-align: center;
-                font-weight: 500;
-            }
-        
-            .close{
-                width: 30px;
-                cursor: pointer;
-                position: absolute;
-                top: 3px;
-                right: 3px;
-                opacity:.2;
-                transition: all 200ms ease-in-out;
-                &:hover{
-                    opacity: .4;
-                }
-        
-            }
-            
-            .addHelp{
-                color: #2a99557e;
-                font-size: 14px;
-                font-weight: 600;
-                transform: translateY(8px) translateX(10px);
-                letter-spacing: 1px;
+
+            &::placeholder {
+                opacity: .5;
             }
         }
- 
+
+        textarea {
+            resize: vertical;
+        }
+
+        select {}
+
+        button {
+
+            padding: 10px 10px;
+            border-radius: 5px;
+            width: 200px;
+            align-self: flex-end;
+            margin-top: 20px;
+            background: #2a9955d7;
+            color: #fff;
+            letter-spacing: 1px;
+            font-weight: 500;
+            border: 0;
+            box-shadow: 2px 2px 5px 1.3px rgba(0, 0, 0, 0.637);
+
+            &:hover {
+                cursor: pointer;
+                box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.637);
+
+            }
+
+            &:disabled {
+                opacity: .3;
+            }
+        }
+
+        h3 {
+            color: rgb(0, 0, 0);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .close {
+            width: 30px;
+            cursor: pointer;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            opacity: .2;
+            transition: all 200ms ease-in-out;
+
+            &:hover {
+                opacity: .4;
+            }
+
+        }
+
+        .addHelp {
+            color: #2a99557e;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateY(8px) translateX(10px);
+            letter-spacing: 1px;
+        }
+    }
+
 }

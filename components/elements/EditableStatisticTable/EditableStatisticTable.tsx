@@ -573,26 +573,29 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             lastRow = {
                 ...row,
                 values: row.values.map((item, itemIndex) => {
+                    const result = { ...item };
                     let logicStr = '';
                     logicStr = headers?.[itemIndex]?.logicStr || '';
                     const calcedItemTemp = calcRowItem(rowIndex, itemIndex);
 
-                    //TREND 📈
-                    if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
-                        if (!isNaN(calcedItemTemp.result)) {
-                            trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), calcedItemTemp.result];
-                        }
+                    // //TREND 📈
+                    // if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
+                    //     if (!isNaN(calcedItemTemp.result)) {
+                    //         trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), calcedItemTemp.result];
+                    //     }
 
-                        //  console.log('trends', trendsObj);
-                        const trendType = /@trend/.test(logicStr); // trend || revtrend
+                    //     //  console.log('trends', trendsObj);
+                    //     const trendType = /@trend/.test(logicStr); // trend || revtrend
 
-                        return {
-                            ...item,
-                            value: calcedItemTemp.result,
-                            expression: calcedItemTemp.logicStrWithDecorValues,
-                            message: trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex),
-                        };
-                    }
+                    //     // return {
+                    //     //     ...item,
+                    //     //     value: calcedItemTemp.result,
+                    //     //     expression: calcedItemTemp.logicStrWithDecorValues,
+                    //     //     message: trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex),
+                    //     // };
+
+                    //     item.message = trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex);
+                    // }
 
                     //SUM
                     if (logicStr && /@sum/.test(logicStr)) {
@@ -623,10 +626,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         // clear ❓ in result
                         let resExpression = `${lastRow.values[itemIndex].value}+${calcedItemTemp.logicStrWithDecorValues}`;
                         let isUnknownsInExpressions = /❓/g.test(resExpression);
+                        const calcedValue = isUnknownsInExpressions ? '❓' : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2));
                         return {
                             ...item,
-                            value: isUnknownsInExpressions ? '❓' : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2)),
-                            // value: isUnknownsInExpressions ? '❓' : Number(lastRow.values[itemIndex].value) + Number(calcedItemTemp.result),
+                            value: calcedValue,
                             expression: isUnknownsInExpressions ? '❓' : resExpression,
                         };
                     }
@@ -644,6 +647,28 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 }),
             };
             return lastRow;
+        });
+
+        //-------------------------------------------------------- SET STATUS TRENDS📉📈📉📈
+        calcedTemp = calcedTemp.map((row, rowIndex) => {
+            return {
+                ...row,
+                values: row.values.map((item, itemIndex) => {
+                    const logicStr = headers?.[itemIndex]?.logicStr || '';
+                    if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
+                        if (!isNaN(+item.value)) {
+                            trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), item.value];
+                        }
+                        const trendType = /@trend/.test(logicStr); // trend || revtrend
+                        return {
+                            ...item,
+                            message: trendStatus(trendType, item.value, itemIndex, rowIndex),
+                        };
+                    } else {
+                        return item;
+                    }
+                }),
+            };
         });
 
         // headers.forEach((header,headerIndex)=>{
@@ -797,13 +822,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         return false;
                     }
                 });
-                //console.log('NUMBERS ⭐', numbers)
+                console.log('NUMBERS ⭐', numbers);
 
                 const trend = linearRegression(
                     numbers.map((_, index) => index + 1),
                     numbers
                 );
-                // console.log('📈', trend)
+                console.log('📈', trend);
                 return {
                     color: 'gray',
                     trend: false,
@@ -813,7 +838,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 };
             });
 
-        // console.log('VALUES CHART📈', linesArr, trendArr);
+        console.log('VALUES CHART📈', linesArr, trendArr);
 
         setChartLines(linesArr.length || trendArr.length ? [...linesArr, ...trendArr] : []);
     };
