@@ -12,7 +12,7 @@ export default function UsersScreen() {
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
 
-    const { createUser } = useAuth();
+    const { createUser, updateUser } = useAuth();
 
     const [newUserName, setNewUserName] = useState('');
     const [newUserSurname, setNewUserSurname] = useState('');
@@ -22,8 +22,24 @@ export default function UsersScreen() {
     // const [newUser,setNewUser]=useState('');
     // const [newUser,setNewUser]=useState('');
 
+    const [filterName, setFilterName] = useState('');
+
+    //EDIT PROFILE
+    const [editUserName, setEditUserName] = useState('');
+    const [editUserSurname, setEditUserSurname] = useState('');
+    const [editUserPatronymic, setEditUserPatronymic] = useState('');
+    const [editUserLogin, setEditUserLogin] = useState('');
+
     const singInHandle = () => {
         createUser(`${newUserName} ${newUserPatronymic} ${newUserSurname}`, '', newUserEmail, newUserPassword, () => allUsers(setUsers));
+    };
+
+    const updateProfile = () => {
+        users.filter((user) => user.email === editUserLogin);
+        updateUser(currentUser!.id, [editUserName, editUserPatronymic, editUserSurname].join(' '), editUserLogin, () => {
+            setCurrentUser(null);
+            allUsers(setUsers);
+        });
     };
 
     useEffect(() => {
@@ -34,15 +50,50 @@ export default function UsersScreen() {
         }
     }, []);
 
-    return (
-        <div className={styles.usersWrapper}>
-            {currentUser ? (
+    useEffect(() => {
+        if (currentUser) {
+            const nameArr = currentUser.name.split(' ').filter((str) => !!str);
+            console.log('NAME', nameArr);
+            setEditUserName(nameArr[0]);
+            setEditUserSurname(nameArr[2]);
+            setEditUserPatronymic(nameArr[1]);
+            setEditUserLogin(currentUser.email);
+        } else {
+            setEditUserName('');
+            setEditUserSurname('');
+            setEditUserPatronymic('');
+            setEditUserLogin('');
+        }
+    }, [currentUser]);
+
+    //ON SELECTED USER
+    if (currentUser) {
+        return (
+            <div className={styles.usersWrapper}>
                 <div className={styles.userInfo}>
                     <img src="svg/org/close_field.svg" onClick={() => setCurrentUser(null)} className={styles.close} />
                     <span className={styles.infoLine}>ID : {currentUser.id}</span>
-                    <span className={styles.infoLine}>Имя : {currentUser.name}</span>
-                    <span className={styles.infoLine}>Email : {currentUser.email}</span>
-                    <span className={styles.infoLine}>Пост : {currentUser.post}</span>
+                    {/* <span className={styles.infoLine}>Имя : {currentUser.name}</span> */}
+
+                    <div className={styles.editebleField}>
+                        <span>Имя</span>
+                        <input value={editUserName} onChange={(event) => setEditUserName(event.target.value)} placeholder="имя" />
+                    </div>
+                    <div className={styles.editebleField}>
+                        <span>Фамилия</span>
+                        <input value={editUserSurname} onChange={(event) => setEditUserSurname(event.target.value)} placeholder="фамилия" />
+                    </div>
+                    <div className={styles.editebleField}>
+                        <span>Отчество</span>
+                        <input value={editUserPatronymic} onChange={(event) => setEditUserPatronymic(event.target.value)} placeholder="отчество" />
+                    </div>
+                    <div className={styles.editebleField}>
+                        <span>Логин для авторизации</span>
+                        <input value={editUserLogin} onChange={(event) => setEditUserLogin(event.target.value)} placeholder="логин для авторизации" />
+                    </div>
+
+                    {/* <span className={styles.infoLine}>Логин : {currentUser.email}</span> */}
+                    {/* <span className={styles.infoLine}>Пост : {currentUser.post}</span> */}
                     <span className={styles.infoLine}>Верификация : {currentUser.is_verificated ? 'верифицирован' : 'не верифицирован'}</span>
                     <span className={styles.infoLine}>Блокировка : {currentUser.is_blocked ? 'заблокирован' : 'не заблокирован'}</span>
                     <span className={styles.infoLine}>Дата регистрации : {new Date(currentUser.createdAt).toLocaleString()}</span>
@@ -68,72 +119,86 @@ export default function UsersScreen() {
                                 Верифицировать
                             </div>
                         )}
+                        {[editUserName, editUserPatronymic, editUserSurname].join(' ') !== currentUser.name && (
+                            <div className="btn" onClick={updateProfile} style={{ background: '#339966' }}>
+                                Обновить
+                            </div>
+                        )}
                     </div>
                 </div>
-            ) : (
-                <>
-                    <h2>Список всех сотрудников</h2>
-                    {addUserField ? (
-                        <div className={styles.addForm}>
-                            <h3>Создание новго пользователя</h3>
+            </div>
+        );
+    }
 
-                            <span className={styles.addHelp}>Имя</span>
-                            <input type="text" value={newUserName} onChange={(event) => setNewUserName(event.target.value.trim())} placeholder="" />
+    //USERS LIST & CREATE
+    return (
+        <div className={styles.usersWrapper}>
+            <>
+                <h2>Список всех сотрудников</h2>
+                {addUserField ? (
+                    <div className={styles.addForm}>
+                        <h3>Создание новго пользователя</h3>
 
-                            <span className={styles.addHelp}>Фамилия</span>
-                            <input type="text" value={newUserSurname} onChange={(event) => setNewUserSurname(event.target.value.trim())} placeholder="" />
+                        <span className={styles.addHelp}>Имя</span>
+                        <input type="text" value={newUserName} onChange={(event) => setNewUserName(event.target.value.trim())} placeholder="" />
 
-                            <span className={styles.addHelp}>Отчество</span>
-                            <input type="text" value={newUserPatronymic} onChange={(event) => setNewUserPatronymic(event.target.value.trim())} placeholder="" />
+                        <span className={styles.addHelp}>Фамилия</span>
+                        <input type="text" value={newUserSurname} onChange={(event) => setNewUserSurname(event.target.value.trim())} placeholder="" />
 
-                            <span className={styles.addHelp}>Логин</span>
-                            <input type="text" value={newUserEmail} onChange={(event) => setNewUserEmail(event.target.value.trim())} placeholder="Укажите логин для авторизации пользователя" />
+                        <span className={styles.addHelp}>Отчество</span>
+                        <input type="text" value={newUserPatronymic} onChange={(event) => setNewUserPatronymic(event.target.value.trim())} placeholder="" />
 
-                            <span className={styles.addHelp}>Пароль</span>
-                            <input type="text" value={newUserPassword} onChange={(event) => setNewUserPassword(event.target.value.trim())} placeholder="Укажите пароль без пробелов , минимум 5 символов" />
+                        <span className={styles.addHelp}>Логин</span>
+                        <input type="text" value={newUserEmail} onChange={(event) => setNewUserEmail(event.target.value.trim())} placeholder="Укажите логин для авторизации пользователя" />
 
-                            <button onClick={singInHandle} className={styles.addBtn} style={{ width: 250 }} disabled={!(newUserName.length && newUserSurname.length && newUserPatronymic.length && newUserEmail.length && newUserPassword.length > 4)}>
-                                Добавить пользователя
-                            </button>
-                            <img src="svg/org/close_field.svg" onClick={() => setAddUserField(false)} className={styles.close} />
-                        </div>
-                    ) : (
-                        <div className="btn" onClick={() => setAddUserField(true)} style={{ width: 330, textAlign: 'center' }}>
-                            Добавить новго пользователя
-                        </div>
-                    )}
+                        <span className={styles.addHelp}>Пароль</span>
+                        <input type="text" value={newUserPassword} onChange={(event) => setNewUserPassword(event.target.value.trim())} placeholder="Укажите пароль без пробелов , минимум 5 символов" />
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>🆔</th>
-                                <th>Имя</th>
-                                <th>Логин</th>
+                        <button onClick={singInHandle} className={styles.addBtn} style={{ width: 250 }} disabled={!(newUserName.length && newUserSurname.length && newUserPatronymic.length && newUserEmail.length && newUserPassword.length > 4)}>
+                            Добавить пользователя
+                        </button>
+                        <img src="svg/org/close_field.svg" onClick={() => setAddUserField(false)} className={styles.close} />
+                    </div>
+                ) : (
+                    <div className="btn" onClick={() => setAddUserField(true)} style={{ width: 330, textAlign: 'center' }}>
+                        Добавить новго пользователя
+                    </div>
+                )}
 
-                                <th>Права</th>
-                                <th>Регистрация</th>
-                                <th>Верификация</th>
-                                <th>Блок</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users
-                                .toSorted((a, b) => replaceFio(a.name).localeCompare(replaceFio(b.name)))
-                                .map((user) => (
-                                    <tr key={user.id + 'users_list'} onClick={() => setCurrentUser(user)}>
-                                        <td>{user.id}</td>
-                                        <td>{replaceFio(user.name)}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.role}</td>
-                                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                        <td>{user.is_verificated ? '✅' : '🆕'}</td>
-                                        <td>{user.is_blocked ? '🚫' : '🆗'}</td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </>
-            )}
+                <input type="text" value={filterName} onChange={(event) => setFilterName(event.target.value.trim())} placeholder="поиск" />
+                {!!filterName.length && <span onClick={() => setFilterName('')}>❌</span>}
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>🆔</th>
+                            <th>Имя</th>
+                            <th>Логин</th>
+
+                            <th>Роль</th>
+                            <th>Регистрация</th>
+                            <th>Верификация</th>
+                            <th>Блок</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users
+                            .toSorted((a, b) => replaceFio(a.name).localeCompare(replaceFio(b.name)))
+                            .filter((user) => user.name.toLowerCase().includes(filterName.toLowerCase()))
+                            .map((user) => (
+                                <tr key={user.id + 'users_list'} onClick={() => setCurrentUser(user)}>
+                                    <td>{user.id}</td>
+                                    <td>{replaceFio(user.name)}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.role}</td>
+                                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                                    <td>{user.is_verificated ? '✅' : '🆕'}</td>
+                                    <td>{user.is_blocked ? '🚫' : '🆗'}</td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+            </>
         </div>
     );
 }
