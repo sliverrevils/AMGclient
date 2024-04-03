@@ -28,7 +28,7 @@ export const accessRoutesArray: Array<{ id: number; title: string; access: Array
     // { id: 7, title: "ОРГ схема", access: ['admin','user'], Component: OrgScreen2 },
     //{ id: 8, title: "📚 Отчеты", access: ['admin'], Component: ReportsScreen },
     { id: 8, title: '📚 Отчеты', access: ['admin'], Component: ReportsScreen },
-    { id: 12, title: '📊 Гарфики', access: ['admin', 'user'], Component: CreateChartList },
+    { id: 12, title: '📊 Графики', access: ['admin', 'user'], Component: CreateChartList },
     //{ id: 11, title: "📚 Отчеты2", access: ['admin'], Component: ReportNew },
     // { id: 9, title: "🛂 Контроль записей", access: ['admin'], Component: ControlScreen },
 ];
