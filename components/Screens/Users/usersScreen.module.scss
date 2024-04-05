@@ -69,7 +69,41 @@
                 border-radius: 5px;
                 border: 2px solid gray;
             }
+
+            .changePassBlock {
+                //border: 1px solid red;
+                width: 100%;
+                display: flex;
+                gap: 10px;
+
+                transition: all 1s linear;
+
+                input {
+                    width: 100%;
+                }
+
+                .changePassBtn {
+                    padding: 5px 15px;
+                    background: cornflowerblue;
+                    color: white;
+                    font-size: 12px;
+                    border-radius: 5px;
+                    white-space: nowrap;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    span {
+                        color: white;
+                        opacity: 1;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+
         }
+
 
     }
 

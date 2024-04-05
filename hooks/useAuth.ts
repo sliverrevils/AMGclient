@@ -142,7 +142,35 @@ export const useAuth = () => {
             .then(({ data }) => {
                 if (data) {
                     toast.error(data.errorMessage);
-                    console.log('RES');
+
+                    toast.success(data.message, {
+                        position: 'top-left',
+                        autoClose: 10000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light',
+                    });
+                    updater && updater();
+                }
+                return;
+            })
+            .catch(axiosError)
+            .finally(() => dispatch(setLoadingRedux(false)));
+    };
+
+    const changeUserPass = async (id: number, password: string, updater?: () => void) => {
+        dispatch(setLoadingRedux(true));
+        axiosClient
+            .post('users/change-pass', {
+                id,
+                password,
+            })
+            .then(({ data }) => {
+                if (data) {
+                    toast.error(data.errorMessage);
 
                     toast.success(data.message, {
                         position: 'top-left',
@@ -213,5 +241,5 @@ export const useAuth = () => {
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
-    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser };
+    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass };
 };

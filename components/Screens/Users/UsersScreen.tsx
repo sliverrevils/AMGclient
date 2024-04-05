@@ -12,7 +12,7 @@ export default function UsersScreen() {
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
 
-    const { createUser, updateUser } = useAuth();
+    const { createUser, updateUser, changeUserPass } = useAuth();
 
     const [newUserName, setNewUserName] = useState('');
     const [newUserSurname, setNewUserSurname] = useState('');
@@ -29,6 +29,7 @@ export default function UsersScreen() {
     const [editUserSurname, setEditUserSurname] = useState('');
     const [editUserPatronymic, setEditUserPatronymic] = useState('');
     const [editUserLogin, setEditUserLogin] = useState('');
+    const [editChangePass, setEditChangePass] = useState('');
 
     const singInHandle = () => {
         createUser(`${newUserName} ${newUserPatronymic} ${newUserSurname}`, '', newUserEmail, newUserPassword, () => allUsers(setUsers));
@@ -40,6 +41,10 @@ export default function UsersScreen() {
             setCurrentUser(null);
             allUsers(setUsers);
         });
+    };
+
+    const changePassword = () => {
+        changeUserPass(currentUser!?.id, editChangePass, () => setEditChangePass(''));
     };
 
     useEffect(() => {
@@ -90,6 +95,18 @@ export default function UsersScreen() {
                     <div className={styles.editebleField}>
                         <span>Логин для авторизации</span>
                         <input value={editUserLogin} onChange={(event) => setEditUserLogin(event.target.value)} placeholder="логин для авторизации" />
+                    </div>
+
+                    <div className={styles.editebleField}>
+                        <span>Смена пароля</span>
+                        <div className={styles.changePassBlock}>
+                            <input value={editChangePass} onChange={(event) => setEditChangePass(event.target.value)} placeholder="укажиите новый пароль" />
+                            {editChangePass.length >= 5 && (
+                                <div className={styles.changePassBtn} onClick={changePassword}>
+                                    <span>Сменить пароль</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* <span className={styles.infoLine}>Логин : {currentUser.email}</span> */}
