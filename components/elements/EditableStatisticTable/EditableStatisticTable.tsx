@@ -55,8 +55,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const [selectedHeaderPattern, setSelectedHeaderPattern] = useState(false);
     const [createdNextPeriod, setCreatedNextPeriod] = useState(false);
 
+    const [selectedRow, setSelectedRow] = useState<null | number>(null);
+    const [selectedItem, setSelectedItem] = useState(0);
+
     //REFS
     const reportResultRef = useRef<any>();
+    //const inputsArrRef = useRef<any>([]);
+    const inputsArrRef = useRef<Array<HTMLInputElement[]>>([]);
 
     //---SELECTORS
 
@@ -979,6 +984,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         // if(rows.length&&headers.length==rows[0].values.length)
         calcRows();
         //console.log('CALCED 🧮', calcedTemp);
+        inputsArrRef.current = [];
+        setSelectedRow(null);
+        setSelectedItem(0);
+        //alert('RELOAD');
     }, [rows, headers]);
 
     useEffect(() => {
@@ -987,16 +996,78 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         findChartColumnAndCreateLine();
     }, [headers, calcedRows]);
 
-    //-test
-    // useEffect(() => {
-
-    //     const userPosts=getUserPosts(user.userId)
-    //     console.log('USER POSTS⭐⭐⭐⭐', user,userPosts);
-    // }, [user])
-
+    //------------------------------------------- SELECTED ROW ⬆️⬇️
     useEffect(() => {
-        //  console.log('ROWS',rows)
-    }, [rows]);
+        //if (selectedRow === null) return;
+
+        const rowsCount = calcedRows.length - 1;
+
+        async function keyDown(event: KeyboardEvent) {
+            //console.log(event.key);
+            switch (event.key) {
+                case 'ArrowUp': {
+                    setSelectedRow((state) => (state ? state - 1 : state));
+                    setSelectedItem(0);
+                    break;
+                }
+                case 'ArrowDown': {
+                    setSelectedRow((state) => (state !== null && state !== rowsCount ? state + 1 : state));
+                    setSelectedItem(0);
+                    break;
+                }
+                case 'ArrowRight': {
+                    setSelectedItem((state) => (inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state));
+                    break;
+                }
+                case 'ArrowLeft': {
+                    setSelectedItem((state) => (state ? state - 1 : state));
+                    break;
+                }
+                case 'Enter': {
+                    // //setSelectedItem((state) => (inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state));
+                    // if (inputsArrRef.current[selectedRow!]?.[selectedItem + 1]) {
+                    //     setSelectedItem((state) => state + 1);
+                    //     console.log('YES');
+                    // } else {
+                    //     console.log('NO');
+                    //     setSelectedRow((state) => state! + 1);
+                    // }
+                    await onUpdateTable();
+
+                    break;
+                }
+            }
+        }
+        document.addEventListener('keydown', keyDown);
+
+        return () => {
+            // alert('reload');
+            document.removeEventListener('keydown', keyDown);
+        };
+    }, [selectedRow]);
+    //при смене выделеного ряда или ячейки
+    useEffect(() => {
+        // if (inputsArrRef.current.length) {
+        //     inputsArrRef.current.forEach((row) => {
+        //         if (row.length) {
+        //             row.forEach((itemRef) => {
+        //                 // itemRef.style.background = 'white';
+        //                 // itemRef.style.color = 'black';
+        //                 itemRef.style.cssText = '';
+        //             });
+        //         }
+        //     });
+        // }
+
+        if (selectedRow !== null) {
+            if (inputsArrRef.current[selectedRow]?.[selectedItem]) {
+                inputsArrRef.current[selectedRow][selectedItem].focus();
+                // inputsArrRef.current[selectedRow][selectedItem].style.background = 'rgb(240, 223, 230)';
+                // inputsArrRef.current[selectedRow][selectedItem].style.color = 'black';
+                // inputsArrRef.current[selectedRow][selectedItem].style.border = '1px solid black';
+            }
+        }
+    }, [selectedRow, selectedItem]);
 
     return (
         <div className={styles.blokWrap}>
@@ -1061,52 +1132,83 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 ${isCurrentPeriod ? styles.currentPeriod : ''}
                                 `}
                                 >
-                                    {row.values.map((value, itemIndex) => (
-                                        <div
-                                            key={value.id}
-                                            className={`
+                                    {row.values.map((value, itemIndex) => {
+                                        if (value.editable && headers[itemIndex]?.logicStr) {
+                                            // console.log('▶️', rowIndex, itemIndex);
+                                        }
+                                        let itemCount = 0;
+                                        return (
+                                            <div
+                                                key={value.id}
+                                                className={`
                                             ${styles.item} 
                                             ${value.descriptions == 'date' ? styles.itemDate : ''}
                                             ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value === '' ? styles.forInputData : ''}
                                             ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value !== '' ? styles.withInputData : ''}
+                                            ${selectedRow == rowIndex ? styles.selectedRow : ''}
                                             `}
-                                            style={{
-                                                width: columnsWidth[itemIndex] + 5,
-                                            }}
-                                        >
-                                            {value.editable ? (
-                                                <div className={styles.adminItemWrap}>
-                                                    {headers[itemIndex]?.logicStr ? (
-                                                        <div className={styles.resultWrap}>
-                                                            {isAdmin && (
-                                                                <div className={styles.expression}>
-                                                                    {/* Выражение : */}
-                                                                    <b className={styles.expressionStr}>{value.message ? value.value : value.expression}</b>
-                                                                </div>
-                                                            )}
-                                                            <div className={styles.resultValue}>{value.message || value.value}</div>
-                                                        </div>
-                                                    ) : (
-                                                        <input
-                                                            className={styles.itemInput}
-                                                            type="text"
-                                                            value={value.value}
-                                                            onChange={(event) => onChangeRowItem(event, rowIndex, value.id, true)}
-                                                            disabled={
-                                                                // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
-                                                                !(isCurrentPeriod || isAdmin)
-                                                            }
-                                                        />
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div style={{ textAlign: 'center' }} className={styles.itemValue}>
-                                                    <span>{value.value}</span>
-                                                    {!!(value.descriptions == 'date') && <div className={styles.itemDescription}>{value.message}</div>}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                style={{
+                                                    width: columnsWidth[itemIndex] + 5,
+                                                    // border: selectedRow == rowIndex ? `2px solid black` : '',
+                                                }}
+                                                onClick={() => {
+                                                    setSelectedRow(rowIndex);
+                                                    // alert(`selected row ${rowIndex}`);
+                                                }}
+                                            >
+                                                {value.editable ? (
+                                                    <div className={styles.adminItemWrap}>
+                                                        {headers[itemIndex]?.logicStr ? (
+                                                            <div className={styles.resultWrap}>
+                                                                {isAdmin && (
+                                                                    <div className={styles.expression}>
+                                                                        {/* Выражение : */}
+                                                                        <b className={styles.expressionStr}>{value.message ? value.value : value.expression}</b>
+                                                                    </div>
+                                                                )}
+                                                                <div className={styles.resultValue}>{value.message || value.value}</div>
+                                                            </div>
+                                                        ) : (
+                                                            <input
+                                                                ref={(ref) => {
+                                                                    if (ref) {
+                                                                        if (!inputsArrRef.current[rowIndex]?.length) {
+                                                                            inputsArrRef.current[rowIndex] = [];
+                                                                        }
+
+                                                                        //inputsArrRef.current[rowIndex][itemCount] = ref;
+                                                                        if (!inputsArrRef.current[rowIndex].includes(ref)) {
+                                                                            inputsArrRef.current[rowIndex].push(ref);
+                                                                            itemCount++;
+                                                                        }
+
+                                                                        //console.log('REF ARR', inputsArrRef.current);
+                                                                        //itemCount++;
+                                                                    }
+                                                                }}
+                                                                className={styles.itemInput}
+                                                                type="text"
+                                                                value={value.value}
+                                                                onChange={(event) => onChangeRowItem(event, rowIndex, value.id, true)}
+                                                                onClick={(event) => {
+                                                                    inputsArrRef.current[rowIndex].forEach((itemRef, itemIndex) => itemRef == event.target && setSelectedItem(itemIndex));
+                                                                }}
+                                                                disabled={
+                                                                    // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
+                                                                    !(isCurrentPeriod || isAdmin)
+                                                                }
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ textAlign: 'center' }} className={styles.itemValue}>
+                                                        <span>{value.value}</span>
+                                                        {!!(value.descriptions == 'date') && <div className={styles.itemDescription}>{value.message}</div>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                     {isAdmin && (
                                         <div onClick={() => onDelRow(row.id, rowIndex)} className={styles.rowDel} style={{ fontSize: 10 }}>
                                             ❌
@@ -1166,6 +1268,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                     )}
                                 </>
                             )}
+
+                            {/* <button onClick={() => console.log(inputsArrRef.current)}>InputRefs</button> */}
 
                             <button onClick={() => getRaportInfo(true)} style={{ alignSelf: 'flex-end' }}>
                                 RAPORT INFO
