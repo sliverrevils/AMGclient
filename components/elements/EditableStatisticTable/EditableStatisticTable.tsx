@@ -559,6 +559,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 if (trend.result.at(-1).y - trend.result[0].y <= 0 && trend.slope !== 0) {
                     return resultStatusText();
                 } else {
+                    //если линия с наклоном , то смотрим по наклону
+                    if (trend.slope !== 0) {
+                        trendStatus = trend.slope < 0;
+                        return resultStatusText();
+                    }
                     // если наклона нет , то смотрим по логике первого значения
                     if (value > 0) {
                         trendStatus = false;

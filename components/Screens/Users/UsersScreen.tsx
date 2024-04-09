@@ -188,7 +188,7 @@ export default function UsersScreen() {
                 <table>
                     <thead>
                         <tr>
-                            <th>🆔</th>
+                            <th style={{ color: 'tomato' }}>№</th>
                             <th>Имя</th>
                             <th>Логин</th>
 
@@ -202,9 +202,11 @@ export default function UsersScreen() {
                         {users
                             .toSorted((a, b) => replaceFio(a.name).localeCompare(replaceFio(b.name)))
                             .filter((user) => user.name.toLowerCase().includes(filterName.toLowerCase()))
-                            .map((user) => (
+                            .map((user, index) => (
                                 <tr key={user.id + 'users_list'} onClick={() => setCurrentUser(user)}>
-                                    <td>{user.id}</td>
+                                    <td style={{ color: 'tomato' }}>
+                                        <b>{index + 1}</b>
+                                    </td>
                                     <td>{replaceFio(user.name)}</td>
                                     <td>{user.email}</td>
                                     <td>{user.role}</td>
