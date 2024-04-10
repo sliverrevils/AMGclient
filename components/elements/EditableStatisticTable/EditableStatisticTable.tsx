@@ -30,6 +30,14 @@ interface ILinearRes {
 }
 
 export default function EditableStatisticTable({ selectedTable, disableSelectOnList }: { selectedTable: TableStatisticI | 'clear' | undefined; disableSelectOnList: () => void }) {
+    //REFS
+    const reportResultRef = useRef<any>();
+    //const inputsArrRef = useRef<any>([]);
+    const inputsArrRef = useRef<Array<HTMLInputElement[]>>([]);
+
+    const selectedRowRef = useRef<null | number>(null);
+    const selectedItemRef = useRef<number>(0);
+
     //--state
     const [headers, setHeaders] = useState<Array<StatHeaderI>>([]);
     const [rows, setRows] = useState<Array<StatRowI>>([]);
@@ -55,13 +63,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const [selectedHeaderPattern, setSelectedHeaderPattern] = useState(false);
     const [createdNextPeriod, setCreatedNextPeriod] = useState(false);
 
-    const [selectedRow, setSelectedRow] = useState<null | number>(null);
-    const [selectedItem, setSelectedItem] = useState(0);
-
-    //REFS
-    const reportResultRef = useRef<any>();
-    //const inputsArrRef = useRef<any>([]);
-    const inputsArrRef = useRef<Array<HTMLInputElement[]>>([]);
+    const [selectedRow, setSelectedRow] = useState<null | number>(selectedRowRef.current);
+    const [selectedItem, setSelectedItem] = useState<number>(selectedItemRef.current);
 
     //---SELECTORS
 
@@ -268,7 +271,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         lastDayOfDatesArr = periodEndDate.getTime();
                         let periodWorning = dateEnd < periodEndDate.getTime();
 
-                        if (dateColumn.isFullPeriod && !periodsArrTempStr.length) {
+                        if (dateColumn.isFullPeriod && !periodsArrTempStr.length && new Date(dateStart).getTime() > new Date(i).getTime()) {
                             //add out of range dates
                             periodsArrTempStr = [` ${new Date(dateStart).toLocaleDateString()} - ${new Date(i).toLocaleDateString()}`];
 
@@ -360,7 +363,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     };
 
     //update
-    const onUpdateTable = async () => {
+    const onUpdateTable = useCallback(async () => {
         const createdTable: TableStatisticI = {
             tableName,
             dateStart: dateColumn!.dateStart,
@@ -380,7 +383,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         } else {
             toast.error('Талица не выбрана');
         }
-    };
+    }, [dateColumn, headers, rows]);
     const onDeleteTable = () => {
         if (!confirm(`Вы точно хотите удалить статистику "${tableName}" ?`)) return;
         if (selectedTable !== 'clear' && selectedTable?.id) {
@@ -1002,6 +1005,15 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     }, [headers, calcedRows]);
 
     //------------------------------------------- SELECTED ROW ⬆️⬇️
+    function onClickItem(event: React.MouseEvent<HTMLInputElement, MouseEvent>, rowIndex: number) {
+        inputsArrRef.current[rowIndex].forEach((itemRef, itemIndex) => {
+            if (itemRef == event.target) {
+                setSelectedItem(itemIndex);
+                selectedItemRef.current = itemIndex;
+            }
+        });
+    }
+
     useEffect(() => {
         //if (selectedRow === null) return;
 
@@ -1011,21 +1023,39 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             //console.log(event.key);
             switch (event.key) {
                 case 'ArrowUp': {
-                    setSelectedRow((state) => (state ? state - 1 : state));
+                    setSelectedRow((state) => {
+                        const value = state ? state - 1 : state;
+                        selectedRowRef.current = value;
+                        return value;
+                    });
                     setSelectedItem(0);
+                    selectedItemRef.current = 0;
                     break;
                 }
                 case 'ArrowDown': {
-                    setSelectedRow((state) => (state !== null && state !== rowsCount ? state + 1 : state));
+                    setSelectedRow((state) => {
+                        const value = state !== null && state !== rowsCount ? state + 1 : state;
+                        selectedRowRef.current = value;
+                        return value;
+                    });
                     setSelectedItem(0);
+                    selectedItemRef.current = 0;
                     break;
                 }
                 case 'ArrowRight': {
-                    setSelectedItem((state) => (inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state));
+                    setSelectedItem((state) => {
+                        const value = inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state;
+                        selectedItemRef.current = value;
+                        return value;
+                    });
                     break;
                 }
                 case 'ArrowLeft': {
-                    setSelectedItem((state) => (state ? state - 1 : state));
+                    setSelectedItem((state) => {
+                        const value = state ? state - 1 : state;
+                        selectedItemRef.current = value;
+                        return value;
+                    });
                     break;
                 }
                 case 'Enter': {
@@ -1052,24 +1082,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     }, [selectedRow]);
     //при смене выделеного ряда или ячейки
     useEffect(() => {
-        // if (inputsArrRef.current.length) {
-        //     inputsArrRef.current.forEach((row) => {
-        //         if (row.length) {
-        //             row.forEach((itemRef) => {
-        //                 // itemRef.style.background = 'white';
-        //                 // itemRef.style.color = 'black';
-        //                 itemRef.style.cssText = '';
-        //             });
-        //         }
-        //     });
-        // }
-
         if (selectedRow !== null) {
             if (inputsArrRef.current[selectedRow]?.[selectedItem]) {
                 inputsArrRef.current[selectedRow][selectedItem].focus();
-                // inputsArrRef.current[selectedRow][selectedItem].style.background = 'rgb(240, 223, 230)';
-                // inputsArrRef.current[selectedRow][selectedItem].style.color = 'black';
-                // inputsArrRef.current[selectedRow][selectedItem].style.border = '1px solid black';
             }
         }
     }, [selectedRow, selectedItem]);
@@ -1150,7 +1165,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                             ${value.descriptions == 'date' ? styles.itemDate : ''}
                                             ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value === '' ? styles.forInputData : ''}
                                             ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value !== '' ? styles.withInputData : ''}
-                                            ${selectedRow == rowIndex ? styles.selectedRow : ''}
+                                            ${selectedRowRef.current == rowIndex ? styles.selectedRow : ''}
                                             `}
                                                 style={{
                                                     width: columnsWidth[itemIndex] + 5,
@@ -1158,6 +1173,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                 }}
                                                 onClick={() => {
                                                     setSelectedRow(rowIndex);
+                                                    selectedRowRef.current = rowIndex;
                                                     // alert(`selected row ${rowIndex}`);
                                                 }}
                                             >
@@ -1194,10 +1210,16 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 className={styles.itemInput}
                                                                 type="text"
                                                                 value={value.value}
-                                                                onChange={(event) => onChangeRowItem(event, rowIndex, value.id, true)}
-                                                                onClick={(event) => {
-                                                                    inputsArrRef.current[rowIndex].forEach((itemRef, itemIndex) => itemRef == event.target && setSelectedItem(itemIndex));
+                                                                onChange={(event) => {
+                                                                    event.preventDefault();
+                                                                    onChangeRowItem(event, rowIndex, value.id, true);
+                                                                    console.log('ROW', selectedRow, selectedRowRef.current);
+                                                                    if (selectedRowRef.current && selectedItemRef.current) {
+                                                                        setSelectedRow(() => selectedRowRef.current);
+                                                                        setSelectedItem(() => selectedItemRef.current);
+                                                                    }
                                                                 }}
+                                                                onClick={(event) => onClickItem(event, rowIndex)}
                                                                 disabled={
                                                                     // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
                                                                     !(isCurrentPeriod || isAdmin)
