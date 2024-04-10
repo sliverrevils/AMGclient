@@ -12,7 +12,7 @@ export default function UsersScreen() {
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
 
-    const { createUser, updateUser, changeUserPass } = useAuth();
+    const { createUser, updateUser, changeUserPass, deleteUser } = useAuth();
 
     const [newUserName, setNewUserName] = useState('');
     const [newUserSurname, setNewUserSurname] = useState('');
@@ -38,6 +38,13 @@ export default function UsersScreen() {
     const updateProfile = () => {
         users.filter((user) => user.email === editUserLogin);
         updateUser(currentUser!.id, [editUserName, editUserPatronymic, editUserSurname].join(' '), editUserLogin, () => {
+            setCurrentUser(null);
+            allUsers(setUsers);
+        });
+    };
+
+    const deleteUserHandle = () => {
+        deleteUser(currentUser!?.id, () => {
             setCurrentUser(null);
             allUsers(setUsers);
         });
@@ -117,14 +124,21 @@ export default function UsersScreen() {
                     <span className={styles.infoLine}>Дата обновления : {new Date(currentUser.updatedAt).toLocaleString()}</span>
                     <div className={styles.controlBtns}>
                         {currentUser.role !== 'admin' && (
-                            <div
-                                className="btn"
-                                onClick={() => {
-                                    blockUserToggle(currentUser.id, setUsers), setCurrentUser(null);
-                                }}
-                            >
-                                {currentUser.is_blocked ? 'Разблокировать' : 'Заблокировать'}
-                            </div>
+                            <>
+                                <div
+                                    className="btn"
+                                    onClick={() => {
+                                        blockUserToggle(currentUser.id, setUsers), setCurrentUser(null);
+                                    }}
+                                >
+                                    {currentUser.is_blocked ? 'Разблокировать' : 'Заблокировать'}
+                                </div>
+                                {currentUser.role !== 'admin' && (
+                                    <div className="btn" onClick={() => confirm(`Вы точно хотите удалить пользователя ${currentUser.name} ?`) && deleteUserHandle()}>
+                                        Удалить пользователя
+                                    </div>
+                                )}
+                            </>
                         )}
                         {!currentUser.is_verificated && (
                             <div

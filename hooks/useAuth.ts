@@ -161,6 +161,32 @@ export const useAuth = () => {
             .finally(() => dispatch(setLoadingRedux(false)));
     };
 
+    const deleteUser = async (id: number, updater?: () => void) => {
+        dispatch(setLoadingRedux(true));
+        axiosClient
+            .get(`users/delete/${id}`)
+            .then(({ data }) => {
+                if (data) {
+                    toast.error(data.errorMessage);
+
+                    toast.success(data.message, {
+                        position: 'top-left',
+                        autoClose: 10000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light',
+                    });
+                    updater && updater();
+                }
+                return;
+            })
+            .catch(axiosError)
+            .finally(() => dispatch(setLoadingRedux(false)));
+    };
+
     const changeUserPass = async (id: number, password: string, updater?: () => void) => {
         dispatch(setLoadingRedux(true));
         axiosClient
@@ -241,5 +267,5 @@ export const useAuth = () => {
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
-    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass };
+    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass, deleteUser };
 };

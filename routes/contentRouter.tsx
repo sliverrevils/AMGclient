@@ -3,7 +3,7 @@ import ChartFillerScreen from '@/components/Screens/ChartFiller/ChartFiller';
 import ControlScreen from '@/components/Screens/ControlScreen/ControlScreen';
 import MainScreen from '@/components/Screens/Main/MainScreen';
 import OrgScreen from '@/components/Screens/Org/OrgScreen';
-import OrgScreen2 from '@/components/Screens/Org/OrgScreen2';
+
 import ReportsScreen from '@/components/Screens/ReportScreen/ReportsScreen';
 import StatisticScreen from '@/components/Screens/StatisticScreen/StatisticScreen';
 import Statistics2Screen from '@/components/Screens/Statistics2Screen/Statistics2Screen';
