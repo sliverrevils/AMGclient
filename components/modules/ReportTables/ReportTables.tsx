@@ -227,11 +227,11 @@ export default function ReportTables() {
         }
 
         const currentDateSec = new Date().getTime();
-        const isCurrentPeriod = currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod.end + daySec * 2;
+        const isCurrentPeriod = currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2;
 
         const currentIcon = () => {
-            if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod.end + daySec * 2) return '✅';
-            if (currentDateSec >= info.lastFilledPeriod.end + daySec * 2) return '🕖';
+            if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return '✅';
+            if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return '🕖';
             return '🆙';
         };
 
