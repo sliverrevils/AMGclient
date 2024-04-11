@@ -222,7 +222,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         }
 
         //СОЗДАЕМ НОВЫЕ РЯДЫ
-        console.log('SAVED DATA ROWS', savedDataRows);
+        //console.log('SAVED DATA ROWS', savedDataRows);
         let newRows: DatesI[] = [];
         let lastDayOfDatesArr = 0;
         let dateStart = savedRows.length ? savedRows!.at(-1)!?.end + daySec : dateColumn?.lastDayOfDatesArr || 0; /// ---------- LAST MONTH SET 0 !!! <---HERE ❗❗❗❗❗❗🚩
@@ -264,23 +264,28 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 //  console.log(getDayOfWeek(i))
                 if (periodEnd < i + daySec) {
                     // FIX HERE (dateColumn.firstWeekDay - 1 ) ! CONTROL '❗❗❗❗❗❗❗
-                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) == dateColumn.firstWeekDay - 1) {
+                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) == dateColumn.firstWeekDay) {
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
+
                         periodEnd = periodEndDate.getTime();
 
                         lastDayOfDatesArr = periodEndDate.getTime();
                         let periodWorning = dateEnd < periodEndDate.getTime();
 
-                        if (dateColumn.isFullPeriod && !periodsArrTempStr.length && new Date(dateStart).getTime() > new Date(i).getTime()) {
+                        if (dateColumn.isFullPeriod && !periodsArrTempStr.length) {
                             //add out of range dates
-                            periodsArrTempStr = [` ${new Date(dateStart).toLocaleDateString()} - ${new Date(i).toLocaleDateString()}`];
-
+                            periodsArrTempStr = [` ${new Date(dateStart).toLocaleDateString()} - ${new Date(i).toLocaleDateString()} ⬅️`];
+                            let end = new Date(i - daySec).getTime();
+                            if (new Date(i).getMonth() != new Date(end).getMonth()) {
+                                end = new Date(i).getTime();
+                                periodEnd = i;
+                            }
                             newRows = [
                                 {
                                     start: secStart,
-                                    end: new Date(i - daySec).getTime(),
+                                    end,
                                     warning: false,
-                                    description: '',
+                                    description: 'dsd',
                                 },
                             ];
                         }
@@ -546,7 +551,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
             if (trendType) {
                 //СТАНДАРТНЫЙ ТРЕНД📈
-                console.log('💵', trend.result[0].y - trend.result.at(-1).y, trend.slope);
+                //  console.log('💵', trend.result[0].y - trend.result.at(-1).y, trend.slope);
                 if (trend.result[0].y - trend.result.at(-1).y < 0 && trend.slope !== 0) {
                     return resultStatusText();
                 } else {
@@ -835,13 +840,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         return false;
                     }
                 });
-                console.log('NUMBERS ⭐', numbers);
+                // console.log('NUMBERS ⭐', numbers);
 
                 const trend = linearRegression(
                     numbers.map((_, index) => index + 1),
                     numbers
                 );
-                console.log('📈', trend);
+                //console.log('📈', trend);
                 return {
                     color: 'gray',
                     trend: false,
@@ -851,7 +856,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 };
             });
 
-        console.log('VALUES CHART📈', linesArr, trendArr);
+        // console.log('VALUES CHART📈', linesArr, trendArr);
 
         setChartLines(linesArr.length || trendArr.length ? [...linesArr, ...trendArr] : []);
     };
@@ -961,7 +966,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             alert(JSON.stringify(result, null, 2));
         }
 
-        console.log(result);
+        // console.log(result);
         return result;
     };
 
