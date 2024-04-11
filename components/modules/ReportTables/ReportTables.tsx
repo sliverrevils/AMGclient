@@ -177,7 +177,7 @@ export default function ReportTables() {
 
                 currentPatterns = [...new Set(arrTemp)];
             }
-            console.log('currentPatterns', currentPatterns);
+            //console.log('currentPatterns', currentPatterns);
 
             getReportList(currentPatterns, setReportList);
         }
@@ -227,21 +227,26 @@ export default function ReportTables() {
         }
 
         const currentDateSec = new Date().getTime();
-        const isCurrentPeriod = currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2;
 
-        const currentIcon = () => {
-            if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return '✅';
-            if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return '🕖';
-            return '🆙';
+        //---- ПРОВЕРКА ЗАПОЛНЕНОГО АКТУАЛЬНОГО ПЕРИОДА (скопирована еще на 300стр)
+        const checkFilledPeriod = (): boolean => {
+            if (info.statHeaders?.[0].trim() == '2 года плюс текущий период') {
+                //проверяем заполнение прошлого месяца
+                const lastMonth = new Date(new Date().setDate(0));
+                lastMonth.setHours(0, 0, 0, 0);
+                if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return true;
+                else return false;
+            }
+            if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return true;
+            if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return false;
+
+            return false;
         };
 
-        isCurrentPeriod ? addFilledStat(statId) : addNotFilledStat(statId); //----------------------------------- !!!!!!!!!!!!!!!! FILLED COUNT ❗❗❗❗❗❗❗❗
+        //--- ДОБАВЛЕНИЕ В СЧЕТЧИК ЧИСЛА ФИЛЬТРОВ (ЗАПОЛНЕНЫХ / не ЗАПОЛНЕНЫХ)
+        checkFilledPeriod() ? addFilledStat(statId) : addNotFilledStat(statId); //----------------------------------- !!!!!!!!!!!!!!!! FILLED COUNT ❗❗❗❗❗❗❗❗
 
-        // console.log(info.trendStatus);
-
-        //growing?addGrowingStat(statId):addNotGrowingStat(statId);
-
-        if (filledFilter == 'none' || (!isCurrentPeriod && filledFilter == 'notFilled') || (isCurrentPeriod && filledFilter == 'filled')) {
+        if (filledFilter == 'none' || (!checkFilledPeriod() && filledFilter == 'notFilled') || (checkFilledPeriod() && filledFilter == 'filled')) {
             growing ? addGrowingStat(statId) : addNotGrowingStat(statId);
             return (
                 <div
@@ -255,7 +260,7 @@ export default function ReportTables() {
                         <span>{clearStatName(statNameById(statId))}</span>
                     </div>
                     <div className={styles.infoBlock}>
-                        <span className={styles.dates}>{` ${new Date(info?.lastFilledPeriod?.start || '').toLocaleDateString()} -  ${new Date(info?.lastFilledPeriod?.end || '').toLocaleDateString()} ${currentIcon()}`}</span>
+                        <span className={styles.dates}>{` ${new Date(info?.lastFilledPeriod?.start || '').toLocaleDateString()} -  ${new Date(info?.lastFilledPeriod?.end || '').toLocaleDateString()} ${checkFilledPeriod() ? '✅' : '🕗'}`}</span>
                         <span className={styles.trendType}>{info.trendType}</span>
                         <span className={styles.trendStatus} onMouseEnter={showGraph} onMouseLeave={() => setChartHTML(undefined)} style={{ cursor: 'help' }}>
                             <span className={`${styles[growing + '']}`}>{info.trendStatus}</span>
@@ -291,12 +296,25 @@ export default function ReportTables() {
                 const growing = /Растущая/g.test(info.trendStatus);
 
                 const currentDateSec = new Date().getTime();
-                const isCurrentPeriod = currentDateSec >= info?.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2;
+
+                const checkFilledPeriod = (): boolean => {
+                    if (info.statHeaders?.[0].trim() == '2 года плюс текущий период') {
+                        //проверяем заполнение прошлого месяца
+                        const lastMonth = new Date(new Date().setDate(0));
+                        lastMonth.setHours(0, 0, 0, 0);
+                        if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return true;
+                        else return false;
+                    }
+                    if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return true;
+                    if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return false;
+
+                    return false;
+                };
                 if (infoFilter || filledFilter != 'none') {
                     if (infoFilter == 'Падающая' && growing) return acc;
                     if (infoFilter == 'Растущая' && !growing) return acc;
-                    if (filledFilter == 'filled' && !isCurrentPeriod) return acc;
-                    if (filledFilter == 'notFilled' && isCurrentPeriod) return acc;
+                    if (filledFilter == 'filled' && !checkFilledPeriod()) return acc;
+                    if (filledFilter == 'notFilled' && checkFilledPeriod()) return acc;
                     if ((infoFilter || filledFilter) && !info?.lastFilledPeriod) return acc; //если пустая
                     // if (statTypeFilter=='main'&&!item.mainPattern) return acc;
                     // if (statTypeFilter=='additional') return acc;
@@ -392,32 +410,6 @@ export default function ReportTables() {
                                 </>
                             );
                         })}
-
-                    {/* {statTypeSelect !== 'allOrg' &&
-                        currentTargets.map((item: OfficeI | DepartmentI) => {
-                            // return false;
-                            return (
-                                <div key={nanoid()} className={styles.reportItem}>
-                                    <div className={styles.itemName}>{item.name}</div>
-                                    {statTypeSelect == 'main' && <StatRaportItem statId={item.mainPattern} main={true} />}
-                                    {statTypeSelect == 'additional' && (
-                                        <div className={styles.additionalsList}>
-                                            {item.patterns.map((statId) => (
-                                                <StatRaportItem key={nanoid()} statId={statId} main={false} />
-                                            ))}
-                                        </div>
-                                    )}
-                                    {statTypeSelect == 'all' && (
-                                        <div className={styles.additionalsList}>
-                                            <StatRaportItem statId={item.mainPattern} main={true} />
-                                            {item.patterns.map((statId) => (
-                                                <StatRaportItem key={nanoid()} statId={statId} main={false} />
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })} */}
                 </div>
             );
         }
@@ -427,8 +419,6 @@ export default function ReportTables() {
     const getReportsInfoStat = useMemo(() => {
         // console.log('RAPORT LIST', reportsList)
 
-        //   let growingCount = reportsList.map(repItem => repItem.dateColumn.raportInfo?.trendStatus).filter(status => status == 'Растущая').length;
-        //   let fallingCount = reportsList.map(repItem => repItem.dateColumn.raportInfo?.trendStatus).filter(status => status == 'Падающая').length;
         if (reportsList.length)
             return (
                 <div className={styles.filtersWrap}>
