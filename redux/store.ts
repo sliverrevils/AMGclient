@@ -17,6 +17,7 @@ export const store = configureStore({
         [patternsSlice.name]: patternReducer,
         [statsSlice.name]: statsReducer,
     },
+    devTools: false,
     //devTools:process.env.NODE_ENV==='development',
 });
 
