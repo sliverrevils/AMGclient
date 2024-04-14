@@ -1303,7 +1303,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
                             {/* <button onClick={() => console.log(inputsArrRef.current)}>InputRefs</button> */}
 
-                            <button onClick={() => getRaportInfo(true)} style={{ alignSelf: 'flex-end' }}>
+                            {/* <button onClick={() => getRaportInfo(true)} style={{ alignSelf: 'flex-end' }}>
                                 RAPORT INFO
                             </button>
                             <button
@@ -1317,7 +1317,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             </button>
                             <button onClick={() => alert(JSON.stringify(headers, null, 2))} style={{ alignSelf: 'flex-end' }}>
                                 headers
-                            </button>
+                            </button> */}
                         </div>
                     )}
                     {dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
