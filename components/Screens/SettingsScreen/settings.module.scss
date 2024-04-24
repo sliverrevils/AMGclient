@@ -1,0 +1,57 @@
+.settingsWrap {
+    // border: 1px solid black;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+        text-align: center;
+        padding: 10px;
+        color: #fa6e40;
+    }
+
+    .propBlock {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        border: 2px solid #fa6e401d;
+        border-radius: 5px;
+        margin: 5px;
+        padding: 5px;
+
+        input {
+            border: 0;
+            padding: 5px;
+
+            border-bottom: 1px solid rgba(128, 128, 128, 0.276);
+
+            &:focus {
+                border: 0;
+                outline: 2px solid #fa6e4079;
+                border-radius: 5px;
+            }
+        }
+
+        .propTitle {
+            font-size: 12px;
+            opacity: .5;
+        }
+
+        .propValue {
+            opacity: .7;
+            font-size: 15px;
+            font-weight: 600;
+            margin-left: 10px;
+            color: #b9441c;
+        }
+
+        .chagePassBtn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            align-self: flex-start;
+            background: cornflowerblue;
+            color: white;
+            cursor: pointer;
+        }
+    }
+}

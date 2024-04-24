@@ -187,12 +187,13 @@ export const useAuth = () => {
             .finally(() => dispatch(setLoadingRedux(false)));
     };
 
-    const changeUserPass = async (id: number, password: string, updater?: () => void) => {
+    const changeUserPass = async (id: number, password: string, updater: () => void, oldPassword: string = '') => {
         dispatch(setLoadingRedux(true));
         axiosClient
             .post('users/change-pass', {
                 id,
                 password,
+                oldPassword,
             })
             .then(({ data }) => {
                 if (data) {

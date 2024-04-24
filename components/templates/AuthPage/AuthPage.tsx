@@ -76,10 +76,10 @@ export default function AuthPage() {
                             </div>
                         </div>
                     )}
-                    <div className={styles.authChoose} onClick={singInUpToggle}>
+                    {/* <div className={styles.authChoose} onClick={singInUpToggle}>
                         <span>перейти на экран </span>
                         {singInUp ? <span className={styles.choose}>Регистрации</span> : <span className={styles.choose}>Авторизации</span>}
-                    </div>
+                    </div> */}
                 </div>
             </AuthLayout>
         </>

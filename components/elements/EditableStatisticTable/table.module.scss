@@ -666,3 +666,73 @@
     }
 
 }
+
+.miniTableWrap {
+    background: #f5f2f1;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    border: 2px solid rgba(153, 153, 153, 0.416);
+    padding: 5px;
+    border-radius: 5px;
+
+    .miniHeaderBlock {
+        display: flex;
+
+        .miniHeaderItem {
+            border: 1px solid rgb(222, 219, 219);
+            text-align: center;
+            background: #FF8056;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            border-radius: 3px;
+
+            &:nth-child(1) {
+                background: #148947;
+                //color: white;
+
+            }
+        }
+    }
+
+    .miniBodyBlock {
+
+
+        .miniBodyRow {
+            display: flex;
+            //border: 1px solid black;
+
+            .miniRowItem {
+                text-align: center;
+                border: 1px solid rgb(222, 219, 219);
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 3px;
+
+
+                &:nth-child(1) {
+                    background: #a6bdb0;
+
+                    font-size: 10px;
+                    font-weight: 600;
+                }
+            }
+
+
+        }
+
+        .currentPeriod {
+            margin: 2px 0;
+            background: rgb(224, 193, 193);
+            border: 1px solid rgba(255, 99, 71, 0.167);
+            border-radius: 3px;
+        }
+
+
+    }
+}

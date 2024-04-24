@@ -57,7 +57,7 @@ export default function UsersScreen() {
     useEffect(() => {
         if (init) {
             init = false;
-            console.log('INIT');
+            //console.log('INIT');
             allUsers(setUsers);
         }
     }, []);
@@ -65,7 +65,7 @@ export default function UsersScreen() {
     useEffect(() => {
         if (currentUser) {
             const nameArr = currentUser.name.split(' ').filter((str) => !!str);
-            console.log('NAME', nameArr);
+            //console.log('NAME', nameArr);
             setEditUserName(nameArr[0]);
             setEditUserSurname(nameArr[2]);
             setEditUserPatronymic(nameArr[1]);

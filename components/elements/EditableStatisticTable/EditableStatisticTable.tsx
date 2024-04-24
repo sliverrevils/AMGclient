@@ -29,7 +29,7 @@ interface ILinearRes {
     slopeArr: number[];
 }
 
-export default function EditableStatisticTable({ selectedTable, disableSelectOnList }: { selectedTable: TableStatisticI | 'clear' | undefined; disableSelectOnList: () => void }) {
+export default function EditableStatisticTable({ selectedTable, disableSelectOnList, view = false }: { selectedTable: TableStatisticI | 'clear' | undefined; disableSelectOnList: () => void; view?: boolean }) {
     //REFS
     const reportResultRef = useRef<any>();
     //const inputsArrRef = useRef<any>([]);
@@ -1093,6 +1093,62 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             }
         }
     }, [selectedRow, selectedItem]);
+
+    if (view) {
+        return (
+            <div className={styles.miniTableWrap}>
+                <div className={styles.miniHeaderBlock}>
+                    {headers.map((header, headerIdx) => (
+                        <div
+                            className={styles.miniHeaderItem}
+                            style={{
+                                width: columnsWidth[headerIdx] + 5,
+                                // border: selectedRow == rowIndex ? `2px solid black` : '',
+                            }}
+                        >
+                            {header.name}
+                        </div>
+                    ))}
+                </div>
+
+                <div className={styles.miniBodyBlock}>
+                    {calcedRows.map((row, rowIndex) => {
+                        const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
+                        return (
+                            <div className={`${styles.miniBodyRow} ${isCurrentPeriod ? styles.currentPeriod : ''}`}>
+                                {row.values.map((item, itemIdx) => {
+                                    return (
+                                        <div
+                                            className={styles.miniRowItem}
+                                            style={{
+                                                width: columnsWidth[itemIdx] + 5,
+                                                // border: selectedRow == rowIndex ? `2px solid black` : '',
+                                            }}
+                                        >
+                                            {(() => {
+                                                //return itemIdx ? item.message || item.value : item.value;
+                                                if (itemIdx) {
+                                                    if (item.message) {
+                                                        if (/не определено/.test(item.message)) return '';
+                                                        else return item.message;
+                                                    } else {
+                                                        if (/❓/.test(String(item.value))) return '';
+                                                        else return item.value;
+                                                    }
+                                                } else {
+                                                    return item.value;
+                                                }
+                                            })()}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.blokWrap}>

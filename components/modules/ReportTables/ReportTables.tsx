@@ -505,7 +505,7 @@ export default function ReportTables() {
                 selectedTable && (
                     <Modal closeModalFunc={() => setSelectedTable(undefined)}>
                         <div style={{ background: 'white', padding: 10, marginRight: 5 }}>
-                            <EditableStatisticTable selectedTable={selectedTable} disableSelectOnList={() => {}} />
+                            <EditableStatisticTable selectedTable={selectedTable} disableSelectOnList={() => {}} view={true} />
                         </div>
                     </Modal>
                 )

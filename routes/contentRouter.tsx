@@ -5,6 +5,7 @@ import MainScreen from '@/components/Screens/Main/MainScreen';
 import OrgScreen from '@/components/Screens/Org/OrgScreen';
 
 import ReportsScreen from '@/components/Screens/ReportScreen/ReportsScreen';
+import SettingsScreen from '@/components/Screens/SettingsScreen/SettingsScreen';
 import StatisticScreen from '@/components/Screens/StatisticScreen/StatisticScreen';
 import Statistics2Screen from '@/components/Screens/Statistics2Screen/Statistics2Screen';
 import TablePatternsScreen from '@/components/Screens/TablePatterns/TablePatternsScreen';
@@ -29,6 +30,9 @@ export const accessRoutesArray: Array<{ id: number; title: string; access: Array
     //{ id: 8, title: "📚 Отчеты", access: ['admin'], Component: ReportsScreen },
     { id: 8, title: '📚 Отчеты', access: ['admin'], Component: ReportsScreen },
     { id: 12, title: '📊 Графики', access: ['admin', 'user'], Component: CreateChartList },
+
     //{ id: 11, title: "📚 Отчеты2", access: ['admin'], Component: ReportNew },
     // { id: 9, title: "🛂 Контроль записей", access: ['admin'], Component: ControlScreen },
+
+    { id: 777, title: '⚙️Настройки', access: ['admin', 'user'], Component: SettingsScreen },
 ];
