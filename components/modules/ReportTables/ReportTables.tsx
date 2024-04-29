@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './repTable.module.scss';
 import { nanoid } from '@reduxjs/toolkit';
-import { DateColumnI, DepartmentI, OfficeI, RaportTableInfoI, SectionI, TableStatisticI } from '@/types/types';
+import { DateColumnI, DepartmentI, OfficeI, RaportTableInfoI, ReportItemI, SectionI, TableStatisticI } from '@/types/types';
 import useOrg from '@/hooks/useOrg';
 import useStatistic from '@/hooks/useStatistic';
 import useTableStatistics from '@/hooks/useTableStatistics';
@@ -14,12 +14,6 @@ import EditableStatisticTable from '@/components/elements/EditableStatisticTable
 import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
 import CreateRaport from './CreateRaport/CreateRaport';
 import CreateChartList from './CreateChartsList/CreateChartList';
-
-interface ReportItemI {
-    id: number;
-    name: string;
-    dateColumn: DateColumnI;
-}
 
 export default function ReportTables() {
     //SELECTORS

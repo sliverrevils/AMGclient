@@ -1,0 +1,50 @@
+.mainWrap {
+    background: whitesmoke;
+    //padding: 10px;
+    //border: 2px solid tomato;
+    border-radius: 5px;
+    width: 200px;
+    padding: 5px 10px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.655);
+
+
+    .content {
+        max-width: 200px;
+        //border: 1px solid black;
+        font-size: 10px;
+
+
+        .name {
+            color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+        }
+
+        .leadership {
+            color: rgb(231, 201, 201);
+            text-align: right;
+        }
+
+        .ckp {
+            text-transform: lowercase;
+            color: rgb(184, 184, 184);
+        }
+
+        .description {
+            font-size: 7px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            //white-space: nowrap;
+            max-height: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.121);
+            border-radius: 3px;
+            padding: 1px 2px;
+            text-transform: lowercase;
+            color: rgb(184, 184, 184);
+
+        }
+    }
+
+}

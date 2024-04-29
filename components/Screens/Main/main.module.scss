@@ -1,0 +1,22 @@
+.mainWrap {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
+    .fullOrgBtn {
+        align-self: flex-start;
+        border: 1px solid rgba(255, 253, 253, 0.496);
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-weight: 600;
+        background: #FF8056;
+        box-shadow: 3px 3px 7px black;
+        color: white;
+        letter-spacing: .7px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 1px 1px 4px black;
+        }
+    }
+}
