@@ -59,6 +59,12 @@ export interface SectionI {
     mainPattern: number;
     patterns: number[];
 }
+
+export interface StatInfoWithData {
+    id: number;
+    name: string;
+    data: RaportTableInfoI | null;
+}
 export interface SectionWithStatsI {
     id: number;
     office_id: number;
@@ -70,8 +76,8 @@ export interface SectionWithStatsI {
     createdAt: string;
     updatedAt: string;
     ckp: string;
-    mainPattern: ReportItemI | null;
-    patterns: (ReportItemI | null)[];
+    mainPattern: StatInfoWithData;
+    patterns: StatInfoWithData[];
 }
 
 export interface DepartmentI {
@@ -95,8 +101,8 @@ export interface DepartmentWithStatI {
     descriptions: string;
     sections: Array<SectionWithStatsI>;
     ckp: string;
-    mainPattern: ReportItemI | null;
-    patterns: (ReportItemI | null)[];
+    mainPattern: StatInfoWithData;
+    patterns: StatInfoWithData[];
 }
 
 export interface OfficeI {
@@ -117,9 +123,15 @@ export interface OfficeWithStatsI {
     descriptions: string;
     departments: Array<DepartmentWithStatI>;
     ckp: string;
-    mainPattern: ReportItemI | null;
-    patterns: (ReportItemI | null)[];
+    mainPattern: StatInfoWithData;
+    patterns: StatInfoWithData[];
 }
+
+export interface OfficeWithStatsTypeI extends OfficeWithStatsI, SectionWithStatsI {
+    type: string;
+    setActiveItem: Function;
+}
+
 //CHART PATTERN
 export interface FieldI {
     id: number;

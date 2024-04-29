@@ -1,13 +1,16 @@
 import { useSelector } from 'react-redux';
 import styles from './orgflow.module.scss';
 import { StateReduxI } from '@/redux/store';
-import { OfficeI, OfficeWithStatsI, RaportTableInfoI, ReportItemI } from '@/types/types';
+import { OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData } from '@/types/types';
 import useOrg from '@/hooks/useOrg';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Controls, Edge, Node } from 'reactflow';
 import MyNode from './MyNode/MyNode';
 import MyEdge from './MyEdge/MyEdge';
 import 'reactflow/dist/style.css';
+import useTableStatistics from '@/hooks/useTableStatistics';
+import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
+import { clearStatName } from '@/utils/funcs';
 
 export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     //VARS
@@ -25,8 +28,15 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     const [nodesState, setNodesState] = useState<Node[]>([]);
     const [edgesState, setEdgesState] = useState<Edge[]>([]);
 
+    const [activeItem, setActiveItem] = useState<{ x: number; y: number; data: OfficeWithStatsTypeI } | null>(null);
+    const [activeStat, setActiveStat] = useState<StatInfoWithData | null>(null);
+
     //HOOKS
     const { getReportList } = useOrg();
+    const { statNameById } = useTableStatistics();
+
+    //SELECTORS
+    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
 
     const officesWithLatestPeriodStats = useSelector((state: StateReduxI) => {
         const officesWithLatest = state.org.offices.map((office) => {
@@ -90,7 +100,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
 
     //КОГДА МАССИВ СТАТИСТИК ПОЛУЧЕН ФОРМИРУЕМ СТЭЙТ ОРГСХЕМЫ И ДОПИСЫВАЕМ ТУДА ДАННЫЕ СТАТИСТИКИ
     useEffect(() => {
-        const getStat = (id: number) => reportsList.find((report) => report.id == id)?.dateColumn?.raportInfo || null;
+        const getStat = (id: number) => ({ id, name: statNameById(id), data: reportsList.find((report) => report.id == id)?.dateColumn?.raportInfo || null });
         if (reportsList.length) {
             const res = officesWithLatestPeriodStats.map((office) => ({
                 ...office,
@@ -139,19 +149,19 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 //add office node
                 const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
                 const currentOffId = `off_${office.id}`;
-                addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off' } });
+                addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem } });
 
                 //add departments node
                 let departmentStartX = oficeStartposX;
                 office.departments.forEach((department, depIdx) => {
                     const currentDepId = `dep_${department.id}`;
-                    addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep' } });
+                    addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem } });
                     addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: true, style: { strokeWidth: 2, stroke: 'tomato' } });
 
                     //add sections node
                     department.sections.forEach((section, secIdx) => {
                         const currentSecId = `sec_${section.id}`;
-                        addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec' } });
+                        addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem } });
                         addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: true, style: { strokeWidth: 2, stroke: 'blue' } });
                     });
                 });
@@ -165,7 +175,49 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
         }
     }, [orgWithStats]);
 
-    useEffect(() => {}, [nodesState]);
+    const infoBlock = useMemo(() => {
+        if (activeItem && isAdmin) {
+            const { mainPattern, patterns } = activeItem.data;
+            // alert(JSON.stringify(mainPatternData, null, 2));
+            // if (mainPatternData?.chartProps) {
+            //     return (
+            //         <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }}>
+            //             <div>{mainPatternData.}</div>
+
+            //             <MultiLinesChart2 {...{ ...mainPatternData.chartProps }} chartSchema={[]} showBtns={false} />
+            //         </div>
+            //     );
+            // }
+            return (
+                <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }}>
+                    <div>Статистики</div>
+                    <div className={styles.statItem} onMouseEnter={() => setActiveStat(mainPattern)} onMouseLeave={() => setActiveStat(null)}>
+                        {clearStatName(mainPattern.name)}
+                    </div>
+                    {patterns.map((pattern) => (
+                        <div className={styles.statItem} onMouseEnter={() => setActiveStat(pattern)} onMouseLeave={() => setActiveStat(null)}>
+                            {clearStatName(pattern.name)}
+                        </div>
+                    ))}
+                </div>
+            );
+        } else {
+            return;
+        }
+    }, [activeItem]);
+
+    const showSelectedStat = useMemo(() => {
+        if (isAdmin && activeStat && activeStat.data?.chartProps) {
+            return (
+                <div className={styles.statInfo}>
+                    {activeStat.name}
+                    <MultiLinesChart2 {...{ ...activeStat.data?.chartProps }} chartSchema={[]} showBtns={false} />
+                </div>
+            );
+        } else {
+            return;
+        }
+    }, [activeStat]);
 
     return (
         <div className={styles.mainWrap}>
@@ -173,7 +225,8 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             <div className={styles.close} onClick={() => closeFn()}>
                 ❌
             </div>
-
+            {showSelectedStat}
+            {infoBlock}
             {nodesState.length && (
                 <ReactFlow nodes={nodesState} edges={edgesState} nodeTypes={nodeTypes} edgeTypes={edgeTypes}>
                     <Controls position="bottom-right" />

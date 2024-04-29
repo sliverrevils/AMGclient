@@ -20,3 +20,30 @@
         cursor: pointer;
     }
 }
+
+.itemInfo {
+    background: white;
+    z-index: 99;
+    border: 1px solid black;
+    padding: 5px;
+
+    position: fixed;
+
+    .statItem {
+        font-size: 12px;
+        cursor: pointer;
+    }
+}
+
+.statInfo {
+    background: white;
+    z-index: 999;
+    position: fixed;
+    left: 10;
+    top: 10;
+    width: 33vw;
+    height: 33vh;
+
+    border: 1px solid black;
+
+}
