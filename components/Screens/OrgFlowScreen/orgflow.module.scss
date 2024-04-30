@@ -27,15 +27,51 @@
 .itemInfo {
     background: white;
     z-index: 99;
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 2px 5px 5px 5px;
+
     padding: 5px;
 
     position: fixed;
+
+    box-shadow: 3px 3px 7px black;
 
     .statItem {
         font-size: 12px;
         cursor: pointer;
     }
+
+    .adminsList {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+
+
+        .adminItem {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0, 0, 0, 0.411);
+            border-radius: 3px;
+            padding: 2px 5px;
+
+            .post {
+                font-size: 10px;
+                font-weight: 600;
+            }
+
+            .name {
+                font-size: 10px;
+            }
+        }
+
+        .adminItemSelected {
+            background: black;
+            color: white
+        }
+    }
+
+
 }
 
 .statInfo {
@@ -48,5 +84,7 @@
     height: 33vh;
 
     border: 1px solid black;
+
+
 
 }

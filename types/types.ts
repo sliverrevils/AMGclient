@@ -129,8 +129,17 @@ export interface OfficeWithStatsI {
 
 export interface OfficeWithStatsTypeI extends OfficeWithStatsI, SectionWithStatsI {
     type: string;
-    setActiveItem: Function;
+    setActiveItem: React.Dispatch<React.SetStateAction<ActiveItemI | null>>;
     selected: boolean;
+    selectedUserId: null | number;
+}
+
+export interface ActiveItemI {
+    type: string;
+    x: number;
+    y: number;
+    data: OfficeWithStatsTypeI;
+    eventType: string;
 }
 
 //CHART PATTERN
@@ -344,6 +353,7 @@ export interface UserPostsI {
     userOffices: OfficeI[];
     userDepartments: DepartmentI[];
     userSections: SectionI[];
+    workerOnSections: SectionI[];
 }
 
 export interface RaportTableInfoI {

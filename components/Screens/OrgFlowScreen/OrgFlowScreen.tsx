@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from './orgflow.module.scss';
 import { StateReduxI } from '@/redux/store';
-import { OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData, UserFullI } from '@/types/types';
+import { ActiveItemI, OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData, UserFullI } from '@/types/types';
 import useOrg from '@/hooks/useOrg';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Controls, Edge, Node } from 'reactflow';
@@ -10,13 +10,21 @@ import MyEdge from './MyEdge/MyEdge';
 import 'reactflow/dist/style.css';
 import useTableStatistics from '@/hooks/useTableStatistics';
 import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
-import { clearStatName } from '@/utils/funcs';
+import { clearStatName, replaceFio } from '@/utils/funcs';
 import FilterUsers from './FilterUsers/FilterUsers';
+import useUsers from '@/hooks/useUsers';
 
 export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     //VARS
-    const nodeTypes = { myNode: MyNode };
-    const edgeTypes = { myEdge: MyEdge };
+    // const nodeTypes = { myNode: MyNode };
+    //const edgeTypes = { myEdge: MyEdge };
+
+    const nodeTypes = useMemo(
+        () => ({
+            myNode: MyNode,
+        }),
+        []
+    );
 
     const BOXSIZE_X = 250;
     const BOXSIZE_Y = 150;
@@ -32,12 +40,13 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     const [nodesState, setNodesState] = useState<Node[]>([]);
     const [edgesState, setEdgesState] = useState<Edge[]>([]);
 
-    const [activeItem, setActiveItem] = useState<{ x: number; y: number; data: OfficeWithStatsTypeI } | null>(null);
+    const [activeItem, setActiveItem] = useState<ActiveItemI | null>(null);
     const [activeStat, setActiveStat] = useState<StatInfoWithData | null>(null);
 
     //HOOKS
     const { getReportList } = useOrg();
     const { statNameById } = useTableStatistics();
+    const { userByID, getUserPosts } = useUsers();
 
     //SELECTORS
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
@@ -143,47 +152,73 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             };
 
             let oficeStartposX = 0;
-            orgWithStats.forEach((office, offIdx) => {
-                //calc sizes x
-                const blocksArr = [1, office.departments.length];
-                office.departments.forEach((dep) => blocksArr.push(dep.sections.length));
-                // const blocksCount = Math.max(...blocksArr); //количество блоков
-                const blocksCount = office.departments.length; //количество блоков
+            orgWithStats
+                .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
+                .forEach((office, offIdx) => {
+                    //calc sizes x
+                    const blocksArr = [1, office.departments.length];
+                    office.departments.forEach((dep) => blocksArr.push(dep.sections.length));
+                    // const blocksCount = Math.max(...blocksArr); //количество блоков
+                    const blocksCount = office.departments.length; //количество блоков
 
-                //add office node
-                const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
-                const currentOffId = `off_${office.id}`;
-                const selected = Boolean(selectedUserId && office.leadership === selectedUserId);
-                addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem, selected } });
+                    //add office node
+                    const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
+                    const currentOffId = `off_${office.id}`;
+                    const selected = Boolean(selectedUserId && office.leadership === selectedUserId);
+                    addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem, selected, selectedUserId } });
 
-                //add departments node
-                let departmentStartX = oficeStartposX;
-                office.departments.forEach((department, depIdx) => {
-                    const currentDepId = `dep_${department.id}`;
-                    const selected = Boolean(selectedUserId && department.leadership === selectedUserId);
-                    addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem, selected } });
-                    addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'tomato' } });
+                    //add departments node
+                    let departmentStartX = oficeStartposX;
+                    office.departments
+                        .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
+                        .forEach((department, depIdx) => {
+                            const currentDepId = `dep_${department.id}`;
+                            const selected = Boolean(selectedUserId && department.leadership === selectedUserId);
+                            addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem, selected, selectedUserId } });
+                            addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'tomato' } });
 
-                    //add sections node
-                    department.sections.forEach((section, secIdx) => {
-                        const currentSecId = `sec_${section.id}`;
-                        const selected = Boolean(selectedUserId && section.leadership === selectedUserId);
-                        addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem, selected } });
-                        addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'blue' } });
-                    });
+                            //add sections node
+                            department.sections
+                                .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
+                                .forEach((section, secIdx) => {
+                                    const currentSecId = `sec_${section.id}`;
+                                    const selected = Boolean(selectedUserId && (section.leadership === selectedUserId || getUserPosts(selectedUserId).workerOnSections.some((sec) => sec.id === section.id)));
+                                    addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem, selected, selectedUserId } });
+                                    addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'blue' } });
+                                });
+                        });
+
+                    //set next start position
+                    oficeStartposX += blocksCount * BOXSIZE_X + 50;
                 });
-
-                //set next start position
-                oficeStartposX += blocksCount * BOXSIZE_X + 50;
-            });
             console.log('NODES', nodesTemp);
             setNodesState(nodesTemp);
             setEdgesState(edgesTemp);
         }
     }, [orgWithStats, selectedUserId]);
 
-    const infoBlock = useMemo(() => {
-        if (activeItem && isAdmin) {
+    // MENU ITEM
+    const menuBlock = useMemo(() => {
+        if (activeItem && activeItem.eventType === 'mouseenter' && activeItem.type === 'sec') {
+            //alert(JSON.stringify(activeItem.data.administrators, null, 2));
+            return (
+                <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }} onMouseLeave={() => setActiveItem(null)}>
+                    {activeItem.data.administrators.length ? 'Сотрудники : ' : 'Нет сотрудников.'}
+                    <div className={styles.adminsList}>
+                        {activeItem.data.administrators.map((admin) => {
+                            console.log(admin);
+                            return (
+                                <div className={`${styles.adminItem} ${admin.id === selectedUserId ? styles.adminItemSelected : ''}`}>
+                                    <div className={styles.post}>{admin.descriptions}</div>
+                                    <div className={styles.name}>{replaceFio(userByID(admin.id)!?.name || '')}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+        if (activeItem && activeItem.eventType === 'contextmenu' && isAdmin) {
             const { mainPattern, patterns } = activeItem.data;
 
             return (
@@ -199,8 +234,6 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                     ))}
                 </div>
             );
-        } else {
-            return;
         }
     }, [activeItem]);
 
@@ -226,9 +259,9 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             </div>
             <FilterUsers {...{ selectedUserId, setSelectedUserID }} />
             {showSelectedStat}
-            {infoBlock}
+            {menuBlock}
             {nodesState.length && (
-                <ReactFlow nodes={nodesState} edges={edgesState} nodeTypes={nodeTypes} edgeTypes={edgeTypes}>
+                <ReactFlow nodes={nodesState} edges={edgesState} nodeTypes={nodeTypes}>
                     <Controls position="bottom-right" />
                 </ReactFlow>
             )}

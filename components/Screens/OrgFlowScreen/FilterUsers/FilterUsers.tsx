@@ -37,6 +37,10 @@ export default function FilterUsers({ setSelectedUserID, selectedUserId }: { sel
                             {getUserPosts(selectedUserId).userSections.map((section) => (
                                 <div className={styles.secItem}>{section.name}</div>
                             ))}
+
+                            {getUserPosts(selectedUserId).workerOnSections.map((section) => (
+                                <div className={styles.secItem}>сотрудник секуции :{section.name}</div>
+                            ))}
                         </div>
                     </div>
                 )}

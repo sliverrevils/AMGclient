@@ -1,26 +1,23 @@
-import { StateReduxI } from "@/redux/store";
-import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from "@/types/types";
-import { useSelector } from "react-redux"
-
+import { StateReduxI } from '@/redux/store';
+import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from '@/types/types';
+import { useSelector } from 'react-redux';
 
 export default function useUsers() {
     const { offices } = useSelector((state: StateReduxI) => state.org);
     const user: UserI = useSelector((state: any) => state.main.user);
-    const { patterns, access } = useSelector((state: StateReduxI) => state.patterns)
+    const { patterns, access } = useSelector((state: StateReduxI) => state.patterns);
 
     const { users }: { users: UserFullI[] } = useSelector((state: any) => state.users);
 
-    const userByID = (userId: number): UserFullI | undefined => users.find(user => user.id == userId);
+    const userByID = (userId: number): UserFullI | undefined => users.find((user) => user.id == userId);
 
     const userPatterns = (userId: number): UserAllPatternsI => {
-
-        const accessPatternsIds: UserAllPatternsIdsI =
-        {
+        const accessPatternsIds: UserAllPatternsIdsI = {
             mains: [],
             additionals: [],
             viewMains: [],
-            viewAdditionals: []
-        }
+            viewAdditionals: [],
+        };
 
         const patternsFrom: PatternsFromI = {};
 
@@ -28,23 +25,22 @@ export default function useUsers() {
             if (patternsFrom?.[pattern_id]) {
                 patternsFrom[pattern_id] = [...new Set([...patternsFrom[pattern_id], from])];
             } else {
-                patternsFrom[pattern_id] = [from]
+                patternsFrom[pattern_id] = [from];
             }
-        }
+        };
 
-        const addSelfPatterns = ({ mainPattern, patterns, name }: { mainPattern: number, patterns: number[], name: string }) => {
-
+        const addSelfPatterns = ({ mainPattern, patterns, name }: { mainPattern: number; patterns: number[]; name: string }) => {
             if (mainPattern) {
                 accessPatternsIds.mains = [...new Set([...accessPatternsIds.mains, mainPattern])];
                 addPatternFrom(mainPattern, name);
             }
             if (patterns.length) {
                 accessPatternsIds.additionals = [...new Set([...accessPatternsIds.additionals, ...patterns])];
-                patterns.forEach((pattern_id) => addPatternFrom(pattern_id, name))
+                patterns.forEach((pattern_id) => addPatternFrom(pattern_id, name));
             }
-        }
+        };
 
-        const addViewPatterns = ({ mainPattern, patterns, name }: { mainPattern: number, patterns: number[], name: string }) => {
+        const addViewPatterns = ({ mainPattern, patterns, name }: { mainPattern: number; patterns: number[]; name: string }) => {
             if (mainPattern) {
                 accessPatternsIds.viewMains = [...new Set([...accessPatternsIds.viewMains, mainPattern])];
                 addPatternFrom(mainPattern, name);
@@ -53,7 +49,7 @@ export default function useUsers() {
                 accessPatternsIds.viewAdditionals = [...new Set([...accessPatternsIds.viewAdditionals, ...patterns])];
                 addPatternFrom(mainPattern, name);
             }
-        }
+        };
 
         offices.forEach((office) => {
             let officeLeader = false;
@@ -85,8 +81,8 @@ export default function useUsers() {
                     if (officeLeader || departmentLeader) {
                         addViewPatterns(section);
                     }
-                })
-            })
+                });
+            });
         });
 
         const accessPatterns: UserAllPatternsI = {
@@ -94,12 +90,12 @@ export default function useUsers() {
             additionals: [],
             viewAdditionals: [],
             viewMains: [],
-            patternsFrom
+            patternsFrom,
         };
 
         Object.keys(accessPatternsIds).forEach((field) => {
-            accessPatterns[field] = patterns.filter(pattern => accessPatternsIds[field].includes(pattern.id))
-        })
+            accessPatterns[field] = patterns.filter((pattern) => accessPatternsIds[field].includes(pattern.id));
+        });
 
         console.log('ACCESS 🔐\n', accessPatterns);
 
@@ -111,33 +107,40 @@ export default function useUsers() {
         // }else{
         //     return []
         // }
+    };
 
-    }
-
-    const getUserPosts = (userId: number):UserPostsI => {
+    const getUserPosts = (userId: number): UserPostsI => {
         // OFFICES SERACH
-        const userOffices = offices.filter((office) => office.leadership == userId); 
+        const userOffices = offices.filter((office) => office.leadership == userId);
 
         // DEPATMENTS SEARCH
         let userDepartments: DepartmentI[] = [];
-        offices.forEach(office => {
-            userDepartments = [...userDepartments, ...office.departments.filter(department => department.leadership == userId)];
+        offices.forEach((office) => {
+            userDepartments = [...userDepartments, ...office.departments.filter((department) => department.leadership == userId)];
         });
 
         // SECTION SERCH
-        let userSections: SectionI[] = []; 
-        offices.forEach(office => office.departments.forEach(department => {
-            userSections = [...userSections, ...department.sections.filter(section => section.leadership == userId)]
-        }));
+        let userSections: SectionI[] = [];
+        let workerOnSections: SectionI[] = [];
+        offices.forEach((office) =>
+            office.departments.forEach((department) => {
+                userSections = [...userSections, ...department.sections.filter((section) => section.leadership == userId)];
+                department.sections.forEach((section) => {
+                    if (section.administrators.some((admin) => admin.id == userId)) {
+                        workerOnSections = [...workerOnSections, section];
+                    }
+                });
+            })
+        );
 
-        const result =
-        {
+        const result = {
             userOffices,
             userDepartments,
-            userSections
-        }
-        return result
-    }
+            userSections,
+            workerOnSections,
+        };
+        return result;
+    };
 
-    return { users, userByID, userPatterns, getUserPosts }
+    return { users, userByID, userPatterns, getUserPosts };
 }
