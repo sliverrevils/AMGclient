@@ -231,6 +231,17 @@ export default function ReportTables() {
                 if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return true;
                 else return false;
             }
+            if (info.statHeaders?.[0].trim() == '13ти недельный период') {
+                //проверяем заполнение прошлой недели
+                const currentDate = new Date();
+                const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
+                console.log(startOfLastWeek);
+
+                console.log('LAST', startOfLastWeek);
+
+                if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.end) return true;
+                else return false;
+            }
             if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return true;
             if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return false;
 
@@ -299,6 +310,18 @@ export default function ReportTables() {
                         if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return true;
                         else return false;
                     }
+                    if (info.statHeaders?.[0].trim() == '13ти недельный период') {
+                        //проверяем заполнение прошлой недели
+                        const currentDate = new Date();
+                        const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
+                        console.log(startOfLastWeek);
+
+                        console.log('LAST', startOfLastWeek);
+
+                        if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.end) return true;
+                        else return false;
+                    }
+
                     if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return true;
                     if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return false;
 
