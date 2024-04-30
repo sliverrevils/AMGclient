@@ -18,6 +18,7 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
 
     const onMenuOpen = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         console.log(event.type);
+
         event.preventDefault();
         data.setActiveItem({ x: event.clientX, y: event.clientY, data, eventType: event.type, type: data.type });
     };

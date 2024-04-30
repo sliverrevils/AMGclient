@@ -206,11 +206,11 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                     {activeItem.data.administrators.length ? 'Сотрудники : ' : 'Нет сотрудников.'}
                     <div className={styles.adminsList}>
                         {activeItem.data.administrators.map((admin) => {
-                            console.log(admin);
+                            // console.log(admin);
                             return (
-                                <div className={`${styles.adminItem} ${admin.id === selectedUserId ? styles.adminItemSelected : ''}`}>
+                                <div className={`${styles.adminItem} ${admin.user_id === selectedUserId ? styles.adminItemSelected : ''}`}>
                                     <div className={styles.post}>{admin.descriptions}</div>
-                                    <div className={styles.name}>{replaceFio(userByID(admin.id)!?.name || '')}</div>
+                                    <div className={styles.name}>{replaceFio(userByID(admin.user_id)!?.name || '')}</div>
                                 </div>
                             );
                         })}

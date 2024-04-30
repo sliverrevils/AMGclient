@@ -126,7 +126,7 @@ export default function useUsers() {
             office.departments.forEach((department) => {
                 userSections = [...userSections, ...department.sections.filter((section) => section.leadership == userId)];
                 department.sections.forEach((section) => {
-                    if (section.administrators.some((admin) => admin.id == userId)) {
+                    if (section.administrators.some((admin) => admin.user_id == userId)) {
                         workerOnSections = [...workerOnSections, section];
                     }
                 });
