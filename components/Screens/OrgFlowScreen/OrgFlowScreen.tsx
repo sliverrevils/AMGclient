@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from './orgflow.module.scss';
 import { StateReduxI } from '@/redux/store';
-import { OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData } from '@/types/types';
+import { OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData, UserFullI } from '@/types/types';
 import useOrg from '@/hooks/useOrg';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Controls, Edge, Node } from 'reactflow';
@@ -11,6 +11,7 @@ import 'reactflow/dist/style.css';
 import useTableStatistics from '@/hooks/useTableStatistics';
 import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
 import { clearStatName } from '@/utils/funcs';
+import FilterUsers from './FilterUsers/FilterUsers';
 
 export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     //VARS
@@ -24,6 +25,9 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     //STATE
     const [reportsList, setReportList] = useState<ReportItemI[]>([]);
     const [orgWithStats, setOrgWithStats] = useState<OfficeWithStatsI[]>([]);
+
+    const [selectedUserId, setSelectedUserID] = useState<number | null>(null);
+
     //--flow
     const [nodesState, setNodesState] = useState<Node[]>([]);
     const [edgesState, setEdgesState] = useState<Edge[]>([]);
@@ -149,20 +153,23 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 //add office node
                 const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
                 const currentOffId = `off_${office.id}`;
-                addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem } });
+                const selected = Boolean(selectedUserId && office.leadership === selectedUserId);
+                addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem, selected } });
 
                 //add departments node
                 let departmentStartX = oficeStartposX;
                 office.departments.forEach((department, depIdx) => {
                     const currentDepId = `dep_${department.id}`;
-                    addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem } });
-                    addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: true, style: { strokeWidth: 2, stroke: 'tomato' } });
+                    const selected = Boolean(selectedUserId && department.leadership === selectedUserId);
+                    addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem, selected } });
+                    addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'tomato' } });
 
                     //add sections node
                     department.sections.forEach((section, secIdx) => {
                         const currentSecId = `sec_${section.id}`;
-                        addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem } });
-                        addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: true, style: { strokeWidth: 2, stroke: 'blue' } });
+                        const selected = Boolean(selectedUserId && section.leadership === selectedUserId);
+                        addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem, selected } });
+                        addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'blue' } });
                     });
                 });
 
@@ -173,23 +180,14 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             setNodesState(nodesTemp);
             setEdgesState(edgesTemp);
         }
-    }, [orgWithStats]);
+    }, [orgWithStats, selectedUserId]);
 
     const infoBlock = useMemo(() => {
         if (activeItem && isAdmin) {
             const { mainPattern, patterns } = activeItem.data;
-            // alert(JSON.stringify(mainPatternData, null, 2));
-            // if (mainPatternData?.chartProps) {
-            //     return (
-            //         <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }}>
-            //             <div>{mainPatternData.}</div>
 
-            //             <MultiLinesChart2 {...{ ...mainPatternData.chartProps }} chartSchema={[]} showBtns={false} />
-            //         </div>
-            //     );
-            // }
             return (
-                <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }}>
+                <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }} onMouseLeave={() => setActiveItem(null)}>
                     <div>Статистики</div>
                     <div className={styles.statItem} onMouseEnter={() => setActiveStat(mainPattern)} onMouseLeave={() => setActiveStat(null)}>
                         {clearStatName(mainPattern.name)}
@@ -221,10 +219,12 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
 
     return (
         <div className={styles.mainWrap}>
+            {/* <div>{JSON.stringify(selectedUserId)}</div> */}
             {/* <pre style={{ fontSize: 8 }}>{JSON.stringify(reportsList, null, 4)}</pre> */}
             <div className={styles.close} onClick={() => closeFn()}>
                 ❌
             </div>
+            <FilterUsers {...{ selectedUserId, setSelectedUserID }} />
             {showSelectedStat}
             {infoBlock}
             {nodesState.length && (

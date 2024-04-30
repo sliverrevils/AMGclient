@@ -130,6 +130,7 @@ export interface OfficeWithStatsI {
 export interface OfficeWithStatsTypeI extends OfficeWithStatsI, SectionWithStatsI {
     type: string;
     setActiveItem: Function;
+    selected: boolean;
 }
 
 //CHART PATTERN

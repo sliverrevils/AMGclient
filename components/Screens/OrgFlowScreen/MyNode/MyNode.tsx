@@ -4,9 +4,9 @@ import { OfficeWithStatsI, OfficeWithStatsTypeI, SectionWithStatsI } from '@/typ
 import useUsers from '@/hooks/useUsers';
 
 enum BlockStyle {
-    'off' = 'tomato',
-    'dep' = 'blue',
-    'sec' = 'green',
+    'off' = '#FF8056',
+    'dep' = 'steelblue',
+    'sec' = 'rgba(42, 153, 85, 0.8431372549)',
 }
 
 export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
@@ -16,17 +16,13 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
 
     const { userByID } = useUsers();
 
-    const onItemMouseEnter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const onMenuOpen = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.preventDefault();
         data.setActiveItem({ x: event.clientX, y: event.clientY, data });
     };
     return (
-        <div
-            className={styles.mainWrap}
-            onClick={(e) => console.log(JSON.stringify(data, null, 2))}
-            style={{ background: BlockStyle[data.type] }}
-            onMouseEnter={onItemMouseEnter}
-            //onMouseLeave={() => data.setActiveItem(null)}
-        >
+        <div className={`${styles.mainWrap} ${data.selected ? styles.mainWrapSelected : ''}`} onClick={(e) => console.log(JSON.stringify(data, null, 2))} style={{ background: BlockStyle[data.type] }} onContextMenu={onMenuOpen}>
+            <div className={styles.seleted}>➡️</div>
             {data.type == 'off' && <Handle id={String(Math.random())} type="source" position={Position.Bottom} />}
 
             {data.type == 'dep' && <Handle id={String(Math.random())} type="target" position={Position.Top} />}

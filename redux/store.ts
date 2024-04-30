@@ -18,7 +18,7 @@ export const store = configureStore({
         [statsSlice.name]: statsReducer,
     },
     devTools: false,
-    //devTools:process.env.NODE_ENV==='development',
+    // devTools: process.env.NODE_ENV === 'development',
 });
 
 export type StateReduxI = ReturnType<typeof store.getState>;

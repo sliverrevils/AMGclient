@@ -12,6 +12,9 @@
 
     background: white;
 
+    display: flex;
+    flex-direction: column;
+
     .close {
         position: absolute;
         right: 20px;
