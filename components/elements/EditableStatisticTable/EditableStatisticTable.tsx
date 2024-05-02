@@ -252,6 +252,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
             if (dateColumn.type == 'Месячный') {
                 // CALC END FOR MONTH
+
                 dateEnd = new Date(new Date(secStart).getFullYear(), new Date(secStart).getMonth() + 1, 0).getTime();
             }
 
@@ -261,14 +262,12 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             }
 
             for (let i = secStart, periodEnd = 0, monthStr = ''; i <= dateEnd; i += daySec) {
-                //  console.log(getDayOfWeek(i))
                 if (periodEnd < i + daySec) {
-                    // FIX HERE (dateColumn.firstWeekDay - 1 ) ! CONTROL '❗❗❗❗❗❗❗
-                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) == dateColumn.firstWeekDay) {
+                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) === dateColumn.firstWeekDay) {
+                        console.log('❤️❤️❤️', getDayOfWeek(i), dateColumn.firstWeekDay, dateColumn.periodDayCount);
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
 
                         periodEnd = periodEndDate.getTime();
-
                         lastDayOfDatesArr = periodEndDate.getTime();
                         let periodWorning = dateEnd < periodEndDate.getTime();
 
@@ -285,7 +284,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                     start: secStart,
                                     end,
                                     warning: false,
-                                    description: 'dsd',
+                                    description: '',
                                 },
                             ];
                         }
