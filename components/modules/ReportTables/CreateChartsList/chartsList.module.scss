@@ -357,6 +357,18 @@
             font-weight: 600;
         }
 
+        .statPeriod {
+            //border: 1px solid black;
+            display: flex;
+            justify-content: center;
+
+            select {
+                border: 2px solid cornflowerblue;
+                border-radius: 5px;
+                padding: 3px 5px;
+            }
+        }
+
         .infoBlock {
             align-self: flex-end;
             border: 2px solid rgba(0, 0, 0, 0.164);

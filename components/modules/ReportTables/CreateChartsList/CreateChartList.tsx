@@ -3,7 +3,7 @@ import styles from './chartsList.module.scss';
 import { useSelector } from 'react-redux';
 import { StateReduxI } from '@/redux/store';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChartItemI, TableStatisticListItemI, UserFullI, UserI } from '@/types/types';
+import { ChartItemI, CostumLineI, DatesI, TableStatisticListItemI, UserFullI, UserI } from '@/types/types';
 import { clearStatName } from '@/utils/funcs';
 import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
 import useUsers from '@/hooks/useUsers';
@@ -289,6 +289,19 @@ export default function CreateChartList() {
     //chart item
 
     const ChartItem = ({ chartItem, index, openCloseToggle }: { chartItem: ChartItemI; index: number; openCloseToggle: () => void }) => {
+        let allStats: TableStatisticListItemI[] = [];
+        const currentStat = tableStatisticsList.find((table) => table.id === chartItem.id);
+        if (currentStat) {
+            allStats = tableStatisticsList.filter((table) => clearStatName(table.name) === clearStatName(currentStat.name));
+        }
+
+        //текущая последняя статистика
+        const actualStat = getLatestTable(chartItem.id);
+        //STATE
+
+        const [showStat, setShowStat] = useState(actualStat);
+        const [selectStat, setSelectStat] = useState('actual');
+
         //VARS
         const itemTextObj = {
             office: 'Отделение',
@@ -301,8 +314,67 @@ export default function CreateChartList() {
             sec: 'АС',
         };
 
-        const actualStat = getLatestTable(chartItem.id);
-        if (actualStat) {
+        useEffect(() => {
+            if (selectStat === 'actual') {
+                //alert('Actual');
+                setShowStat(actualStat);
+            }
+
+            if (selectStat === 'all') {
+                let recordsAll: any = [[], []];
+                let datesAll: DatesI[] = [];
+                console.log('All', allStats);
+                allStats.forEach((table) => {
+                    if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
+                        const { costumsLines, dates } = table.dateColumn.raportInfo.chartProps;
+
+                        costumsLines.forEach((line, lineIdx) => {
+                            recordsAll[lineIdx] = [...recordsAll[lineIdx], ...line.records];
+                        });
+                        datesAll = [...datesAll, ...dates];
+                    }
+                });
+
+                console.log({ recordsAll, datesAll });
+
+                if (actualStat && actualStat?.dateColumn.raportInfo?.chartProps) {
+                    //NEW LINES
+
+                    let allStatsLines: CostumLineI[] = [];
+                    allStatsLines = actualStat?.dateColumn.raportInfo?.chartProps.costumsLines.map((line, lineIdx) => {
+                        return {
+                            ...line,
+                            records: recordsAll[lineIdx],
+                        };
+                    });
+
+                    // console.log('ALL LINES', allStatsLines);
+                    setShowStat({
+                        ...actualStat,
+                        dateColumn: {
+                            ...actualStat.dateColumn,
+                            raportInfo: {
+                                ...actualStat.dateColumn.raportInfo,
+                                chartProps: {
+                                    ...actualStat.dateColumn.raportInfo.chartProps,
+                                    costumsLines: allStatsLines,
+                                    dates: datesAll,
+                                },
+                            },
+                        },
+                    });
+                }
+            }
+
+            //поиск по имени
+            const selectedStat = tableStatisticsList.find((table) => table.name === selectStat);
+            if (selectedStat) {
+                setShowStat(selectedStat);
+                console.log('SELECTED', selectedStat);
+            }
+        }, [selectStat]);
+
+        if (showStat) {
             return (
                 <div className={`${styles.chartItem} ${chartItem.isClose ? styles.chartItemClose : ''} ${styles[chartItem.type]} noselect`} onClick={() => chartItem.isClose && openCloseToggle()}>
                     <div className={styles.btnsBlock}>
@@ -348,9 +420,26 @@ export default function CreateChartList() {
                         </div>
                     </div>
 
-                    <div className={styles.statName}>{clearStatName(actualStat.name)}</div>
+                    <div className={styles.statName}>{clearStatName(showStat.name)}</div>
+                    {!chartItem.isClose && allStats.length > 1 && (
+                        <div className={styles.statPeriod}>
+                            <select value={selectStat} onChange={(event) => setSelectStat(event.target.value)}>
+                                <option value={'actual'}>➡️ актуальная статистика</option>
+                                {allStats.map((table) => {
+                                    const titleArr = table.name.split('@');
+                                    const periodTitle = titleArr?.[1] || titleArr[0];
+                                    return (
+                                        <option key={table.name} value={table.name}>
+                                            📅{periodTitle}
+                                        </option>
+                                    );
+                                })}
+                                <option value={'all'}>📈 общая статистика</option>
+                            </select>
+                        </div>
+                    )}
 
-                    {!chartItem.isClose && actualStat.dateColumn.raportInfo?.chartProps && <MultiLinesChart2 {...{ ...actualStat.dateColumn.raportInfo?.chartProps }} chartSchema={[]} showBtns={false} showX={!showOnModal} linesBtns={!showOnModal} />}
+                    {!chartItem.isClose && showStat.dateColumn.raportInfo?.chartProps && <MultiLinesChart2 {...{ ...showStat.dateColumn.raportInfo?.chartProps }} chartSchema={[]} showBtns={false} showX={!showOnModal} linesBtns={!showOnModal} />}
                 </div>
             );
         } else {
