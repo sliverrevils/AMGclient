@@ -360,13 +360,28 @@
         .statPeriod {
             //border: 1px solid black;
             display: flex;
+            flex-direction: column;
+            gap: 5px;
             justify-content: center;
 
             select {
+                align-self: center;
                 border: 2px solid cornflowerblue;
                 border-radius: 5px;
                 padding: 3px 5px;
             }
+
+            .statPeriodSelect {
+                display: flex;
+                gap: 5px;
+                align-self: center;
+
+                select {
+                    border: 2px solid #FF8056;
+                }
+            }
+
+
         }
 
         .infoBlock {

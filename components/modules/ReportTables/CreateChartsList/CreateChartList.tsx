@@ -302,6 +302,9 @@ export default function CreateChartList() {
         const [showStat, setShowStat] = useState(actualStat);
         const [selectStat, setSelectStat] = useState('actual');
 
+        const [scopeStart, setScopeStart] = useState(0);
+        const [scopeEnd, setScopeEnd] = useState(0);
+
         //VARS
         const itemTextObj = {
             office: 'Отделение',
@@ -320,22 +323,26 @@ export default function CreateChartList() {
                 setShowStat(actualStat);
             }
 
-            if (selectStat === 'all') {
+            if (selectStat === 'all' || selectStat === 'scope') {
                 let recordsAll: any = [[], []];
                 let datesAll: DatesI[] = [];
-                console.log('All', allStats);
-                allStats.forEach((table) => {
-                    if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
-                        const { costumsLines, dates } = table.dateColumn.raportInfo.chartProps;
 
-                        costumsLines.forEach((line, lineIdx) => {
-                            recordsAll[lineIdx] = [...recordsAll[lineIdx], ...line.records];
-                        });
-                        datesAll = [...datesAll, ...dates];
+                console.log('All', allStats);
+                //setScopeEnd(allStats.length - 1);
+                allStats.forEach((table, tableIDx) => {
+                    if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
+                        if (selectStat === 'all' || (tableIDx >= scopeStart && tableIDx <= scopeEnd)) {
+                            const { costumsLines, dates } = table.dateColumn.raportInfo.chartProps;
+
+                            costumsLines.forEach((line, lineIdx) => {
+                                recordsAll[lineIdx] = [...recordsAll[lineIdx], ...line.records];
+                            });
+                            datesAll = [...datesAll, ...dates];
+                        }
                     }
                 });
 
-                console.log({ recordsAll, datesAll });
+                // console.log({ recordsAll, datesAll });
 
                 if (actualStat && actualStat?.dateColumn.raportInfo?.chartProps) {
                     //NEW LINES
@@ -372,7 +379,7 @@ export default function CreateChartList() {
                 setShowStat(selectedStat);
                 console.log('SELECTED', selectedStat);
             }
-        }, [selectStat]);
+        }, [selectStat, scopeStart, scopeEnd]);
 
         if (showStat) {
             return (
@@ -435,7 +442,37 @@ export default function CreateChartList() {
                                     );
                                 })}
                                 <option value={'all'}>📈 общая статистика</option>
+                                <option value={'scope'}>📉 диапазон статистик</option>
                             </select>
+                            {selectStat === 'scope' && (
+                                <>
+                                    <div className={styles.statPeriodSelect}>
+                                        <select value={scopeStart} onChange={(event) => setScopeStart(Number(event.target.value))}>
+                                            {allStats.map((stat, statIdx) => {
+                                                const titleArr = stat.name.split('@');
+                                                const periodTitle = titleArr?.[1] || titleArr[0];
+                                                return (
+                                                    <option key={stat.name + statIdx} value={statIdx}>
+                                                        {periodTitle}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        <select value={scopeEnd} onChange={(event) => setScopeEnd(Number(event.target.value))}>
+                                            {allStats.map((stat, statIdx) => {
+                                                //if (statIdx < scopeStart) return false;
+                                                const titleArr = stat.name.split('@');
+                                                const periodTitle = titleArr?.[1] || titleArr[0];
+                                                return (
+                                                    <option key={stat.name + statIdx + 'end'} value={statIdx}>
+                                                        {periodTitle}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
 
