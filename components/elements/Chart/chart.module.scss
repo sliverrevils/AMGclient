@@ -1,0 +1,20 @@
+.buttonsBlock {
+    width: 100%;
+    position: relative;
+
+    .pointLabelData {
+        background: #FF8056;
+        color: white;
+        box-shadow: 2px 2px 5px black;
+        border: 1px solid rgba(0, 0, 0, 0.267);
+        border-radius: 5px;
+        padding: 2px 5px;
+        position: absolute;
+        text-wrap: nowrap;
+        font-size: 12px;
+        left: 15px;
+        top: 5px;
+        cursor: pointer;
+    }
+
+}

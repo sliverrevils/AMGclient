@@ -3,8 +3,10 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line, Bar } from 'react-chartjs-2';
 import { getChartImage, logicMath } from '@/utils/funcs';
 import Modal from '../Modal/Modal';
+import styles from './chart.module.scss';
 // import faker from 'faker';
 import chartTrendline from 'chartjs-plugin-trendline';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 //import chartTrendline from './trend';
 import { CostumLineI } from '@/types/types';
@@ -12,7 +14,7 @@ import { linearRegression } from '@/utils/trend';
 import { useSelector } from 'react-redux';
 import { StateReduxI } from '@/redux/store';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartTrendline);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartTrendline, ChartDataLabels);
 
 export function MultiLinesChart2({
     dates,
@@ -39,6 +41,7 @@ export function MultiLinesChart2({
     const [modal, setModal] = useState(false);
     const [reverse, setReverse] = useState(reverseTrend);
     const chartRef = useRef<any>();
+    const [showPointData, setShowPointData] = useState(false);
     //SELECTORS
 
     useEffect(() => {
@@ -64,6 +67,12 @@ export function MultiLinesChart2({
                         </div>
                     </div>
                 )}
+                <div className={styles.buttonsBlock}>
+                    <div className={styles.pointLabelData} onClick={() => setShowPointData((state) => !state)}>
+                        {showPointData ? `убрать данные координат` : `показать данные координат`}
+                    </div>
+                </div>
+
                 <Line
                     className="myChart"
                     ref={chartRef}
@@ -73,6 +82,8 @@ export function MultiLinesChart2({
                             mode: 'index' as const,
                             intersect: false,
                         },
+
+                        //pointLabel: true,
                         //stacked: false,
                         plugins: {
                             title: {
@@ -133,43 +144,21 @@ export function MultiLinesChart2({
                             fill: false,
                             data: line.records,
                             tension: 0.4, //soft angels
+                            datalabels: {
+                                display: !/тренд/.test(line.name.toLocaleLowerCase()) && showPointData,
+                                color: 'black',
+                                font: { size: 12, weight: 600 },
+                                backgroundColor: 'white',
+                                borderColor: '#FF8056',
+                                borderWidth: 2,
+                                borderRadius: 10,
+                                padding: 3,
+                                clamp: true,
+                                align: 'center',
+                                textAlign: 'center',
+                                opacity: 0.8,
+                            },
                         })),
-
-                        // [...chartSchema?.lines?.map(line => (
-                        //   {
-                        //     type: 'line',
-                        //     label: line.name,
-                        //     borderColor: line.lineColor,
-                        //     borderWidth: 4,
-                        //     fill: false,
-                        //     data: records.map((el, index) => logicMath(line.logicString, el.fields, index)),
-                        //     tension: 0.4, //soft angels
-
-                        //   }
-                        // )),
-                        // ...costumLines.map(costumLine => (
-                        //   {
-                        //     type: 'line',
-                        //     label: costumLine.name,
-                        //     borderColor: costumLine.color,
-                        //     borderWidth: 4,
-                        //     fill: false,
-                        //     data: costumLine.records,
-                        //     tension: 0.4, //soft angels
-                        //     ...costumLine.trend
-                        //       ? {
-                        //         trendlineLinear: {
-                        //           colorMin: "red",
-                        //           colorMax: "green",
-                        //           lineStyle: "solid",
-                        //           width: 3,
-                        //           projection: true,
-                        //         }
-                        //       }
-                        //       : { trendlineLinear: false }
-                        //   }
-                        // ))
-                        // ]
                     }}
                     onContextMenu={(event) => {
                         event.stopPropagation();
@@ -179,7 +168,7 @@ export function MultiLinesChart2({
                 />
             </>
         ),
-        [costumsLines, reverse, modal]
+        [costumsLines, reverse, modal, showPointData]
     );
 
     useEffect(() => {
