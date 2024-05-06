@@ -1,16 +1,17 @@
-import useUI from '@/hooks/useUI';
-import styles from './chartsList.module.scss';
-import { useSelector } from 'react-redux';
-import { StateReduxI } from '@/redux/store';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChartItemI, CostumLineI, DatesI, TableStatisticListItemI, UserFullI, UserI } from '@/types/types';
-import { clearStatName } from '@/utils/funcs';
-import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
-import useUsers from '@/hooks/useUsers';
-import Modal from '@/components/elements/Modal/Modal';
-import useChartList from '@/hooks/useChartsList';
-import { toast } from 'react-toastify';
-import { nanoid } from '@reduxjs/toolkit';
+import useUI from "@/hooks/useUI";
+import styles from "./chartsList.module.scss";
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChartItemI, CostumLineI, DatesI, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { clearStatName } from "@/utils/funcs";
+import { MultiLinesChart2 } from "@/components/elements/Chart/MultilineChart2";
+import useUsers from "@/hooks/useUsers";
+import Modal from "@/components/elements/Modal/Modal";
+import useChartList from "@/hooks/useChartsList";
+import { toast } from "react-toastify";
+import { nanoid } from "@reduxjs/toolkit";
+import { linearRegression } from "@/utils/trend";
 
 interface ChartListItem {
     id: number;
@@ -22,7 +23,7 @@ interface ChartListItem {
 export default function CreateChartList() {
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
-    const isAdmin = useSelector((state: any) => state.main.user?.role === 'admin');
+    const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
     const user: UserI = useSelector((state: any) => state.main.user);
     const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
     const officesWithLatestPeriodStatsAndData = useSelector((state: StateReduxI) =>
@@ -33,8 +34,8 @@ export default function CreateChartList() {
                 const currentStat = state.stats.tableStatisticsList.find((stat) => stat.id == id);
 
                 if (currentStat && /@/g.test(currentStat.name)) {
-                    const statName = currentStat.name.split('@')[0].trim();
-                    const statsArr = state.stats.tableStatisticsList.filter((stat) => stat.name.split('@')[0].trim() == statName).toSorted((a, b) => b.id - a.id);
+                    const statName = currentStat.name.split("@")[0].trim();
+                    const statsArr = state.stats.tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
                     if (statsArr.length) {
                         return statsArr[0];
                     } else {
@@ -85,13 +86,13 @@ export default function CreateChartList() {
             };
         })
     );
-    console.log(officesWithLatestPeriodStatsAndData);
+    // console.log(officesWithLatestPeriodStatsAndData);
 
     //STATE
     const [selectedStatsIdArr, setSelectedStatsIdArr] = useState<ChartItemI[]>([]); // ❗❗❗❗❗СОХРАНЯТЬ ЭТОТ МАССИВ И ЗАГРУЖАТЬ В ЭТО СОСТОЯНИЕ( ПОСЛЕДНИЕ СТАТИСТИКИ БУДУТ АВТОМАТИЧЕСКИ ВЫБИРАТЬСЯ)
     const [showOnModal, setShowOnModal] = useState(false);
     const [isSaveField, setIsSaveField] = useState(false);
-    const [listName, setListName] = useState('');
+    const [listName, setListName] = useState("");
     const [chartsListsArr, setChartsListsArr] = useState<ChartListItem[]>([]);
     const [selectedListId, setSelectedListID] = useState(0);
     const [listToUserField, setListToUserField] = useState(false);
@@ -101,7 +102,7 @@ export default function CreateChartList() {
     const { createMenu } = useUI();
     const { userByID } = useUsers();
 
-    const [listMenu, onOpenListMenu, onCloseListMenu, listMenuStyle] = createMenu({ position: 'absolute' });
+    const [listMenu, onOpenListMenu, onCloseListMenu, listMenuStyle] = createMenu({ position: "absolute" });
     const { createChartsList, getAllUseresLists, deleteChartList, updateChartsList, chartListToUser } = useChartList(setChartsListsArr);
 
     //FUNCS
@@ -135,8 +136,8 @@ export default function CreateChartList() {
         const currentStat = tableStatisticsList.find((stat) => stat.id == id);
 
         if (currentStat && /@/g.test(currentStat.name)) {
-            const statName = currentStat.name.split('@')[0].trim();
-            const statsArr = tableStatisticsList.filter((stat) => stat.name.split('@')[0].trim() == statName).toSorted((a, b) => b.id - a.id);
+            const statName = currentStat.name.split("@")[0].trim();
+            const statsArr = tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
             if (statsArr.length) {
                 return statsArr[0];
             } else {
@@ -173,19 +174,19 @@ export default function CreateChartList() {
 
     // save list
     const onSaveList = () => {
-        console.log('CURRENT LIST', selectedStatsIdArr);
+        console.log("CURRENT LIST", selectedStatsIdArr);
         if (!listName.length) {
-            toast.error('Укажите название листа');
+            toast.error("Укажите название листа");
             return;
         }
         //alert(JSON.stringify(selectedStatsIdArr, null, 2));
         if (!chartsListsArr.some((list) => list.name == listName)) {
-            createChartsList(listName, selectedStatsIdArr, 'test');
-            setListName('');
+            createChartsList(listName, selectedStatsIdArr, "test");
+            setListName("");
             setIsSaveField(false);
             setSelectedListID(0);
         } else {
-            toast.error('Уже есть лист с таким названием');
+            toast.error("Уже есть лист с таким названием");
         }
     };
 
@@ -214,30 +215,30 @@ export default function CreateChartList() {
     //COMPONENTS
     //for menu
     //отображение блоков айтемов выясняем в формированиие селектора
-    const OrgItem = ({ item, type, leadership, controled = false }: { item: any; type: 'office' | 'dep' | 'sec'; leadership: number; controled?: boolean }) => {
+    const OrgItem = ({ item, type, leadership, controled = false }: { item: any; type: "office" | "dep" | "sec"; leadership: number; controled?: boolean }) => {
         let controledNow = controled || user.userId == item.leadership;
-        console.log('controledNow', item.name, controled, controledNow);
+        // console.log("controledNow", item.name, controled, controledNow);
 
         if (!isAdmin && !item.showBlock) return false; // НЕ ПОКАЗЫВАЕМ ЛИШНИЕ АЙТЕМЫ
 
-        const [checked, setChecked] = useState(type === 'sec');
+        const [checked, setChecked] = useState(type === "sec");
         const stylesObg = {
             office: styles.orgOffice,
             dep: styles.orgDep,
             sec: styles.orgSec,
         };
 
-        let statArr: { statType: 'main' | 'additional'; stat: TableStatisticListItemI }[] = [];
+        let statArr: { statType: "main" | "additional"; stat: TableStatisticListItemI }[] = [];
 
         if (isAdmin) {
-            statArr = [{ statType: 'main', stat: item.mainPattern }, ...item.patterns.map((stat) => ({ statType: 'additional', stat }))].filter((stat) => stat.stat) as { statType: 'main' | 'additional'; stat: TableStatisticListItemI }[];
+            statArr = [{ statType: "main", stat: item.mainPattern }, ...item.patterns.map((stat) => ({ statType: "additional", stat }))].filter((stat) => stat.stat) as { statType: "main" | "additional"; stat: TableStatisticListItemI }[];
         } else {
             if (controledNow) {
-                statArr = [{ statType: 'main', stat: item.mainPattern }, ...item.patterns.map((stat) => ({ statType: 'additional', stat }))].filter((stat) => stat.stat) as { statType: 'main' | 'additional'; stat: TableStatisticListItemI }[];
+                statArr = [{ statType: "main", stat: item.mainPattern }, ...item.patterns.map((stat) => ({ statType: "additional", stat }))].filter((stat) => stat.stat) as { statType: "main" | "additional"; stat: TableStatisticListItemI }[];
             }
         }
 
-        console.log(statArr);
+        // console.log(statArr);
         const statListHtml = statArr.length ? (
             <div className={styles.statList}>
                 {statArr.map((stat) => (
@@ -252,34 +253,34 @@ export default function CreateChartList() {
                         // }}
                         onClick={(event) => onAddChartFromMenu(event, stat, type, item, leadership)}
                     >
-                        {stat.statType == 'main' ? <span>🚩</span> : <span>➕</span>}
-                        <span>{clearStatName(stat.stat?.name || '')}</span>
+                        {stat.statType == "main" ? <span>🚩</span> : <span>➕</span>}
+                        <span>{clearStatName(stat.stat?.name || "")}</span>
                     </div>
                 ))}
             </div>
         ) : (
-            <>{user.userId == item.leadership && <span style={{ textAlign: 'center', color: 'white' }}>нет установленных статистик</span>}</>
+            <>{user.userId == item.leadership && <span style={{ textAlign: "center", color: "white" }}>нет установленных статистик</span>}</>
         );
         return (
             <div
                 className={stylesObg[type]}
                 onClick={(event) => {
                     event.stopPropagation();
-                    console.log('click', item.name);
+                    console.log("click", item.name);
                     setChecked((state) => !state);
                 }}
             >
                 <div className={`${styles.itemName} noselect`}>
                     <span>{item.name}</span>
-                    <span className={styles.check}>{!checked ? '🡄' : '🡇'}</span>
+                    <span className={styles.check}>{!checked ? "🡄" : "🡇"}</span>
                 </div>
 
-                {type !== 'sec' && statListHtml}
+                {type !== "sec" && statListHtml}
                 {checked && (
                     <div className={styles.itemsList}>
-                        {type == 'office' && item.departments.map((dep, index) => <OrgItem item={dep} type="dep" leadership={dep.leadership} controled={controledNow} />)}
-                        {type == 'dep' && item.sections.map((sec, index) => <OrgItem item={sec} type="sec" leadership={sec.leadership} controled={controledNow} />)}
-                        {type == 'sec' && statListHtml}
+                        {type == "office" && item.departments.map((dep, index) => <OrgItem item={dep} type="dep" leadership={dep.leadership} controled={controledNow} />)}
+                        {type == "dep" && item.sections.map((sec, index) => <OrgItem item={sec} type="sec" leadership={sec.leadership} controled={controledNow} />)}
+                        {type == "sec" && statListHtml}
                     </div>
                 )}
             </div>
@@ -300,43 +301,54 @@ export default function CreateChartList() {
         //STATE
 
         const [showStat, setShowStat] = useState(actualStat);
-        const [selectStat, setSelectStat] = useState('actual');
+        const [selectStat, setSelectStat] = useState("actual");
 
         const [scopeStart, setScopeStart] = useState(0);
         const [scopeEnd, setScopeEnd] = useState(0);
 
         //VARS
         const itemTextObj = {
-            office: 'Отделение',
-            dep: 'Отдел',
-            sec: 'Cекция',
+            office: "Отделение",
+            dep: "Отдел",
+            sec: "Cекция",
         };
         const userPostText = {
-            office: 'РО',
-            dep: 'НО',
-            sec: 'АС',
+            office: "РО",
+            dep: "НО",
+            sec: "АС",
         };
 
         useEffect(() => {
-            if (selectStat === 'actual') {
+            if (selectStat === "actual") {
                 //alert('Actual');
                 setShowStat(actualStat);
             }
 
-            if (selectStat === 'all' || selectStat === 'scope') {
+            if (selectStat === "all" || selectStat === "scope") {
                 let recordsAll: any = [[], []];
                 let datesAll: DatesI[] = [];
 
-                console.log('All', allStats);
+                console.log("All", allStats);
                 //setScopeEnd(allStats.length - 1);
                 allStats.forEach((table, tableIDx) => {
                     if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
-                        if (selectStat === 'all' || (tableIDx >= scopeStart && tableIDx <= scopeEnd)) {
+                        if (selectStat === "all" || (tableIDx >= scopeStart && tableIDx <= scopeEnd)) {
                             const { costumsLines, dates } = table.dateColumn.raportInfo.chartProps;
 
                             costumsLines.forEach((line, lineIdx) => {
+                                //Убираем тренд
                                 recordsAll[lineIdx] = [...recordsAll[lineIdx], ...line.records];
                             });
+
+                            // recordsAll.forEach((line) => {
+                            //     const { result } = linearRegression(
+                            //         line.map((_, index) => index + 1),
+                            //         line
+                            //     );
+                            //     console.log("TREND", result);
+                            //     recordsAll = [...recordsAll, ...result];
+                            // });
+
                             datesAll = [...datesAll, ...dates];
                         }
                     }
@@ -348,14 +360,33 @@ export default function CreateChartList() {
                     //NEW LINES
 
                     let allStatsLines: CostumLineI[] = [];
-                    allStatsLines = actualStat?.dateColumn.raportInfo?.chartProps.costumsLines.map((line, lineIdx) => {
+                    allStatsLines = actualStat?.dateColumn.raportInfo?.chartProps.costumsLines.map((line, lineIdx, linesArr) => {
+                        // ПРОСЧИТЫВАЕМ ТРЕНД ПО ПРОШЛОЙ ЛИНИИ
+                        let trendLineRecords;
+                        let go = true;
+                        if (line.name === "тренд") {
+                            const lineTrend = recordsAll[lineIdx - 1].filter((value) => {
+                                if (!Number.isNaN(value) && value !== null && go) {
+                                    return true;
+                                } else {
+                                    go = false;
+                                    return false;
+                                }
+                            });
+                            const { result } = linearRegression(
+                                lineTrend.map((_, index) => index + 1),
+                                lineTrend
+                            );
+                            console.log("TREND ℹ👍", lineTrend);
+                            trendLineRecords = result;
+                        }
                         return {
                             ...line,
-                            records: recordsAll[lineIdx],
+                            records: trendLineRecords || recordsAll[lineIdx],
                         };
                     });
 
-                    // console.log('ALL LINES', allStatsLines);
+                    console.log("ALL LINES", allStatsLines);
                     setShowStat({
                         ...actualStat,
                         dateColumn: {
@@ -377,13 +408,13 @@ export default function CreateChartList() {
             const selectedStat = tableStatisticsList.find((table) => table.name === selectStat);
             if (selectedStat) {
                 setShowStat(selectedStat);
-                console.log('SELECTED', selectedStat);
+                console.log("SELECTED", selectedStat);
             }
         }, [selectStat, scopeStart, scopeEnd]);
 
         if (showStat) {
             return (
-                <div className={`${styles.chartItem} ${chartItem.isClose ? styles.chartItemClose : ''} ${styles[chartItem.type]} noselect`} onClick={() => chartItem.isClose && openCloseToggle()}>
+                <div className={`${styles.chartItem} ${chartItem.isClose ? styles.chartItemClose : ""} ${styles[chartItem.type]} noselect`} onClick={() => chartItem.isClose && openCloseToggle()}>
                     <div className={styles.btnsBlock}>
                         <div className={styles.arrowBlock}>
                             {!!index && (
@@ -409,7 +440,7 @@ export default function CreateChartList() {
                         </div>
                         {!chartItem.isClose && (
                             <div className={styles.isOpen} onClick={openCloseToggle}>
-                                {!chartItem.isClose ? '🪟' : '📕'}
+                                {!chartItem.isClose ? "🪟" : "📕"}
                             </div>
                         )}
                         <div className={styles.delete} onClick={() => setSelectedStatsIdArr((state) => state.filter((item) => item.id !== chartItem.id))}>
@@ -418,7 +449,7 @@ export default function CreateChartList() {
                     </div>
 
                     <div className={styles.infoBlock}>
-                        <div>{chartItem.statType === 'main' ? '🚩Главная статистика' : '➕Дополнительная статистика'}</div>
+                        <div>{chartItem.statType === "main" ? "🚩Главная статистика" : "➕Дополнительная статистика"}</div>
                         <div>
                             🏢{itemTextObj[chartItem.type]} : {chartItem.itemName}
                         </div>
@@ -431,9 +462,9 @@ export default function CreateChartList() {
                     {!chartItem.isClose && allStats.length > 1 && (
                         <div className={styles.statPeriod}>
                             <select value={selectStat} onChange={(event) => setSelectStat(event.target.value)}>
-                                <option value={'actual'}>➡️ актуальная статистика</option>
+                                <option value={"actual"}>➡️ актуальная статистика</option>
                                 {allStats.map((table) => {
-                                    const titleArr = table.name.split('@');
+                                    const titleArr = table.name.split("@");
                                     const periodTitle = titleArr?.[1] || titleArr[0];
                                     return (
                                         <option key={table.name} value={table.name}>
@@ -441,15 +472,15 @@ export default function CreateChartList() {
                                         </option>
                                     );
                                 })}
-                                <option value={'all'}>📈 общая статистика</option>
-                                <option value={'scope'}>📉 диапазон статистик</option>
+                                <option value={"all"}>📈 общая статистика</option>
+                                <option value={"scope"}>📉 диапазон статистик</option>
                             </select>
-                            {selectStat === 'scope' && (
+                            {selectStat === "scope" && (
                                 <>
                                     <div className={styles.statPeriodSelect}>
                                         <select value={scopeStart} onChange={(event) => setScopeStart(Number(event.target.value))}>
                                             {allStats.map((stat, statIdx) => {
-                                                const titleArr = stat.name.split('@');
+                                                const titleArr = stat.name.split("@");
                                                 const periodTitle = titleArr?.[1] || titleArr[0];
                                                 return (
                                                     <option key={stat.name + statIdx} value={statIdx}>
@@ -461,10 +492,10 @@ export default function CreateChartList() {
                                         <select value={scopeEnd} onChange={(event) => setScopeEnd(Number(event.target.value))}>
                                             {allStats.map((stat, statIdx) => {
                                                 //if (statIdx < scopeStart) return false;
-                                                const titleArr = stat.name.split('@');
+                                                const titleArr = stat.name.split("@");
                                                 const periodTitle = titleArr?.[1] || titleArr[0];
                                                 return (
-                                                    <option key={stat.name + statIdx + 'end'} value={statIdx}>
+                                                    <option key={stat.name + statIdx + "end"} value={statIdx}>
                                                         {periodTitle}
                                                     </option>
                                                 );
@@ -560,7 +591,7 @@ export default function CreateChartList() {
                 //CHARTS LIST SELECT
                 !!chartsListsArr.length && !isSaveField && (
                     <select className={styles.listsSelect} onChange={(event) => setSelectedListID(Number(event.target.value))}>
-                        <option value={0}> {!selectedListId ? 'выбор листа' : 'создать новый лист'}</option>
+                        <option value={0}> {!selectedListId ? "выбор листа" : "создать новый лист"}</option>
                         {chartsListsArr.map((listItem) => (
                             <option value={listItem.id}>{listItem.name}</option>
                         ))}
@@ -592,7 +623,7 @@ export default function CreateChartList() {
                                 {!!selectedListId ? (
                                     isListUpdated() ? (
                                         <div className={styles.save} onClick={() => updateChartsList(selectedListId, selectedStatsIdArr)}>
-                                            {' '}
+                                            {" "}
                                             обновить лист
                                         </div>
                                     ) : listToUserField || !isAdmin ? (
@@ -602,7 +633,7 @@ export default function CreateChartList() {
                                     )
                                 ) : (
                                     <div className={styles.save} onClick={() => setIsSaveField(true)}>
-                                        {' '}
+                                        {" "}
                                         сохранить лист
                                     </div>
                                 )}
@@ -648,8 +679,8 @@ export default function CreateChartList() {
                             setSelectedUserId(0);
                         }}
                     >
-                        {' '}
-                        {!listToUserField ? 'предоставить пользователю' : 'отмена'}
+                        {" "}
+                        {!listToUserField ? "предоставить пользователю" : "отмена"}
                     </div>
                 </div>
             )}
