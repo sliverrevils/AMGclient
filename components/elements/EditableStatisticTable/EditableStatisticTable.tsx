@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { nanoid } from '@reduxjs/toolkit';
-import styles from './table.module.scss';
-import { useSelector } from 'react-redux';
-import dynamic from 'next/dynamic';
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-import 'react-quill/dist/quill.snow.css';
-import CreateTableControl from './CreateTableControl/CreateTableControl';
-import { CostumLineI, DateColumnI, DatesI, RaportTableInfoI, StatHeaderI, StatRowI, TablePatternI, TableStatisticI, UserI } from '@/types/types';
-import { linearRegression } from '@/utils/trend';
-import { MultiLinesChart } from '../Chart/MultilineChart';
-import { MultiLinesChart2 } from '../Chart/MultilineChart2';
-import TableHeader from './header';
-import useChart from '@/hooks/useChart';
-import { StateReduxI } from '@/redux/store';
-import EditableTable from '../EditableTable/EditableTable';
-import useTablePatterns from '@/hooks/useTablePatterns';
-import useTableStatistics from '@/hooks/useTableStatistics';
-import { toast } from 'react-toastify';
-import { getDayOfWeek, getMonthStr, getTextLength } from '@/utils/funcs';
-import useUsers from '@/hooks/useUsers';
-import { daySec } from '@/utils/vars';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { nanoid } from "@reduxjs/toolkit";
+import styles from "./table.module.scss";
+import { useSelector } from "react-redux";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+import CreateTableControl from "./CreateTableControl/CreateTableControl";
+import { CostumLineI, DateColumnI, DatesI, RaportTableInfoI, StatHeaderI, StatRowI, TablePatternI, TableStatisticI, UserI } from "@/types/types";
+import { linearRegression } from "@/utils/trend";
+import { MultiLinesChart } from "../Chart/MultilineChart";
+import { MultiLinesChart2 } from "../Chart/MultilineChart2";
+import TableHeader from "./header";
+import useChart from "@/hooks/useChart";
+import { StateReduxI } from "@/redux/store";
+import EditableTable from "../EditableTable/EditableTable";
+import useTablePatterns from "@/hooks/useTablePatterns";
+import useTableStatistics from "@/hooks/useTableStatistics";
+import { toast } from "react-toastify";
+import { getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
+import useUsers from "@/hooks/useUsers";
+import { daySec } from "@/utils/vars";
 
 interface ILinearRes {
     result: any[];
@@ -29,7 +29,7 @@ interface ILinearRes {
     slopeArr: number[];
 }
 
-export default function EditableStatisticTable({ selectedTable, disableSelectOnList, view = false }: { selectedTable: TableStatisticI | 'clear' | undefined; disableSelectOnList: () => void; view?: boolean }) {
+export default function EditableStatisticTable({ selectedTable, disableSelectOnList, view = false }: { selectedTable: TableStatisticI | "clear" | undefined; disableSelectOnList: () => void; view?: boolean }) {
     //REFS
     const reportResultRef = useRef<any>();
     //const inputsArrRef = useRef<any>([]);
@@ -42,7 +42,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const [headers, setHeaders] = useState<Array<StatHeaderI>>([]);
     const [rows, setRows] = useState<Array<StatRowI>>([]);
     const [calcedRows, setCalcedRows] = useState<Array<StatRowI>>([]);
-    const [about, setAbout] = useState('');
+    const [about, setAbout] = useState("");
     const [dateColumn, setDateColumn] = useState<DateColumnI>(); // TABLE INFO Созданная таблица
 
     const [chartDates, setChartDates] = useState([]);
@@ -50,12 +50,12 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     const [columnsWidth, setColumnsWidth] = useState<Array<number>>([130]);
 
-    const [patternName, setPatternName] = useState('');
+    const [patternName, setPatternName] = useState("");
 
     const [isDescriptionsShow, setIsDescriptionsShow] = useState(false);
-    const [tableDescriptions, setTableDescriptions] = useState('');
-    const [tableName, setTableName] = useState('');
-    const [tableDescriptionsName, setTableDescriptionsName] = useState('');
+    const [tableDescriptions, setTableDescriptions] = useState("");
+    const [tableName, setTableName] = useState("");
+    const [tableDescriptionsName, setTableDescriptionsName] = useState("");
 
     const [isCreateTableBlock, setIsCreateTableBlock] = useState(false);
     const [currentTablePattern, setCurrentTablePattern] = useState(0);
@@ -68,7 +68,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //---SELECTORS
 
-    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
+    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
     const user = useSelector((state: any) => state.main.user as UserI);
 
     const { tablePatterns } = useSelector((state: StateReduxI) => state.patterns);
@@ -84,8 +84,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //headers
     const onAddHeader = () => {
         setColumnsWidth((state) => [...state, 100]);
-        setHeaders((state) => [...state, { name: `колонка ${state.length + 1}`, id: nanoid(), logicStr: '', initValue: 0, showControl: true, onChart: false }]);
-        setRows((state) => state.map((row) => ({ ...row, values: [...row.values, { id: nanoid(), value: '', expression: '', editable: true, message: '', descriptions: '' }] })));
+        setHeaders((state) => [...state, { name: `колонка ${state.length + 1}`, id: nanoid(), logicStr: "", initValue: 0, showControl: true, onChart: false }]);
+        setRows((state) => state.map((row) => ({ ...row, values: [...row.values, { id: nanoid(), value: "", expression: "", editable: true, message: "", descriptions: "" }] })));
     };
 
     //rows
@@ -96,7 +96,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 id: nanoid(),
                 values: Array(headers.length)
                     .fill({})
-                    .map((el, idx) => ({ id: nanoid(), value: '', expression: '', editable: true, message: '', descriptions: '' })),
+                    .map((el, idx) => ({ id: nanoid(), value: "", expression: "", editable: true, message: "", descriptions: "" })),
             },
         ]);
     };
@@ -130,9 +130,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         setCalcedRows([]);
         setRows([]);
         setColumnsWidth([]);
-        setTableDescriptions('');
-        setTableDescriptionsName('');
-        setTableName('');
+        setTableDescriptions("");
+        setTableDescriptionsName("");
+        setTableName("");
         setCalcedRows([]);
         setIsCreateTableBlock(false); // DISABLED FOR TEST !!! ❗❗❗❗❗❗❗
         setDateColumn(undefined);
@@ -142,12 +142,12 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     const onSaveTable = (next: boolean = false) => {
         if (!tableName.length) {
-            toast.warning('Укажите название статистики');
+            toast.warning("Укажите название статистики");
             return;
         }
 
         if (tableStatisticsList.map((table) => table.name).includes(tableName)) {
-            toast.warning('Статистика с таким названием уже есть');
+            toast.warning("Статистика с таким названием уже есть");
             return;
         }
 
@@ -155,7 +155,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
         // if (dateColumn?.type === '13ти недельный') {
         if (dateColumn?.autoRenewal) {
-            console.log('Date', dateColumn);
+            console.log("Date", dateColumn);
             const yearStart = +new Date(dateColumn!.dateStart).getFullYear();
             const yearEnd = +new Date(dateColumn!.dateEnd).getFullYear();
 
@@ -163,13 +163,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             const monthEndStr = getMonthStr(dateColumn!.lastDayOfDatesArr);
 
             let periodStr = `${yearStart !== yearEnd ? `${yearStart} - ${yearEnd}` : yearStart} : ${monthStartStr}/${monthEndStr}`;
-            if (dateColumn.type == 'Месячный') {
+            if (dateColumn.type == "Месячный") {
                 periodStr = `${yearStart !== yearEnd ? `${yearStart} - ${yearEnd}` : yearStart} : ${monthStartStr}`;
             }
-            if (dateColumn.type == '2 года плюс текущий') {
+            if (dateColumn.type == "2 года плюс текущий") {
                 periodStr = `${new Date(dateColumn.dateEnd).getFullYear()}`;
             }
-            currentName = currentName.split('@')[0].split('@')[0].trim();
+            currentName = currentName.split("@")[0].split("@")[0].trim();
 
             currentName = dateColumn?.autoRenewal ? `${currentName} @ ${periodStr}` : tableName; // формирутся имя для автопродолжения статистики
         }
@@ -206,19 +206,19 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         let yearsArr: number[] = [];
 
         //СОХРАНЯЕМ РЯДЫ
-        if (dateColumn?.type == '13ти недельный') {
+        if (dateColumn?.type == "13ти недельный") {
             savedRows = dateColumn?.datesArr.toSpliced(0, dateColumn?.datesArr.length - 3);
-            savedDataRows = rows.toSpliced(0, rows.length - 3).map((row) => ({ ...row, values: row.values.map((item) => ({ ...item, editable: true, descriptions: 'saved' })) })); //save rows & editable = false - SAVED
+            savedDataRows = rows.toSpliced(0, rows.length - 3).map((row) => ({ ...row, values: row.values.map((item) => ({ ...item, editable: true, descriptions: "saved" })) })); //save rows & editable = false - SAVED
         }
 
-        if (dateColumn.type == '2 года плюс текущий') {
+        if (dateColumn.type == "2 года плюс текущий") {
             yearsArr = [...new Set(dateColumn.datesArr.map((date) => new Date(date.start).getFullYear()))];
             const delYear = yearsArr[0];
             const delCount = dateColumn.datesArr.reduce((acc, date) => (new Date(date.start).getFullYear() == delYear ? acc + 1 : acc), 0);
 
             savedRows = dateColumn?.datesArr.toSpliced(0, delCount);
-            savedDataRows = rows.toSpliced(0, delCount).map((row) => ({ ...row, values: row.values.map((item) => ({ ...item, editable: true, descriptions: 'saved' })) })); //save rows & editable = false - SAVED
-            console.log('YEARS', delYear, delCount, savedRows, savedDataRows);
+            savedDataRows = rows.toSpliced(0, delCount).map((row) => ({ ...row, values: row.values.map((item) => ({ ...item, editable: true, descriptions: "saved" })) })); //save rows & editable = false - SAVED
+            console.log("YEARS", delYear, delCount, savedRows, savedDataRows);
         }
 
         //СОЗДАЕМ НОВЫЕ РЯДЫ
@@ -229,9 +229,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         //console.log('START',dateStart)
         let dateEnd = 0;
 
-        if (dateColumn?.type == '13ти недельный') {
+        if (dateColumn?.type == "13ти недельный") {
             newRows.length = 10;
-            newRows = newRows.fill({ description: '', warning: false, start: 0, end: 0 }).map((row, rowIdx) => {
+            newRows = newRows.fill({ description: "", warning: false, start: 0, end: 0 }).map((row, rowIdx) => {
                 const currentStartSec = new Date(new Date(dateStart).getTime() + daySec * 7 * rowIdx).getTime();
                 const currentEndSec = new Date(new Date(dateStart).getTime() + (daySec * (7 * (rowIdx + 1)) - daySec)).getTime();
                 let currentStartMonth = getMonthStr(currentStartSec);
@@ -246,25 +246,27 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             });
         }
 
-        if (dateColumn?.type == '2 года плюс текущий' || dateColumn?.type == 'Месячный') {
+        if (dateColumn?.type == "2 года плюс текущий" || dateColumn?.type == "Месячный") {
             let periodsArrTempStr: string[] = [];
             let secStart = dateColumn.dateEnd + daySec;
 
-            if (dateColumn.type == 'Месячный') {
+            if (dateColumn.type == "Месячный") {
                 // CALC END FOR MONTH
 
                 dateEnd = new Date(new Date(secStart).getFullYear(), new Date(secStart).getMonth() + 1, 0).getTime();
+                console.log("DATE END➡️ ", new Date(dateEnd).toDateString());
             }
 
-            if (dateColumn.type == '2 года плюс текущий' && yearsArr) {
+            if (dateColumn.type == "2 года плюс текущий" && yearsArr) {
                 secStart = new Date(new Date(dateColumn.dateEnd).getFullYear() + 1, 0, 1).getTime();
                 dateEnd = new Date(yearsArr.at(-1)! + 1, 11, 31).getTime();
             }
 
-            for (let i = secStart, periodEnd = 0, monthStr = ''; i <= dateEnd; i += daySec) {
-                if (periodEnd < i + daySec) {
-                    if (dateColumn?.type == 'Месячный' && getDayOfWeek(i) === dateColumn.firstWeekDay) {
-                        console.log('❤️❤️❤️', getDayOfWeek(i), dateColumn.firstWeekDay, dateColumn.periodDayCount);
+            for (let i = secStart, periodEnd = 0, monthStr = ""; i <= dateEnd + daySec; i += daySec) {
+                console.log("VARS", i + daySec, "<=", dateEnd);
+                console.log("❤️❤️❤️", new Date(dateEnd).getDate(), new Date(i).getDate(), getDayOfWeek(i) === dateColumn.firstWeekDay);
+                if (periodEnd <= i + daySec) {
+                    if (dateColumn?.type == "Месячный" && getDayOfWeek(i) === dateColumn.firstWeekDay) {
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
 
                         periodEnd = periodEndDate.getTime();
@@ -284,7 +286,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                     start: secStart,
                                     end,
                                     warning: false,
-                                    description: '',
+                                    description: "",
                                 },
                             ];
                         }
@@ -295,12 +297,12 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 start: new Date(i).getTime(),
                                 end: periodWorning && dateColumn.isFullPeriod ? dateEnd : periodEndDate.getTime(),
                                 warning: periodWorning ? false : dateEnd < periodEndDate.getTime(),
-                                description: '',
+                                description: "",
                             },
                         ];
                     }
 
-                    if (dateColumn?.type == '2 года плюс текущий') {
+                    if (dateColumn?.type == "2 года плюс текущий") {
                         //CALC MONTH
                         let currentMonth = getMonthStr(i);
                         if (monthStr != currentMonth) {
@@ -338,17 +340,17 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             };
             //change name of new period
             let currentName = tableName;
-            currentName = currentName.split('@')[0].split('@')[0].trim();
+            currentName = currentName.split("@")[0].split("@")[0].trim();
             const yearStart = +new Date(tempDateColumn!.dateStart).getFullYear();
             const yearEnd = +new Date(tempDateColumn!.lastDayOfDatesArr).getFullYear();
             const monthStartStr = getMonthStr(tempDateColumn!.dateStart);
             const monthEndStr = getMonthStr(tempDateColumn!.dateEnd);
             let periodStr = `${yearStart !== yearEnd ? `${yearStart} - ${yearEnd}` : yearStart} : ${monthStartStr}/${monthEndStr}`;
 
-            if (tempDateColumn.type == 'Месячный') {
+            if (tempDateColumn.type == "Месячный") {
                 periodStr = `${yearStart !== yearEnd ? `${yearStart} - ${yearEnd}` : yearStart} : ${monthEndStr}`; // в месячном только месяц
             }
-            if (tempDateColumn.type == '2 года плюс текущий') {
+            if (tempDateColumn.type == "2 года плюс текущий") {
                 periodStr = `${yearsArr.at(-1)! + 1}`; // в месячном только месяц
             }
 
@@ -382,39 +384,39 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             about,
         };
         console.log(createdTable);
-        if (selectedTable !== 'clear' && selectedTable?.id) {
+        if (selectedTable !== "clear" && selectedTable?.id) {
             await updateTableStatistic(selectedTable.id, createdTable);
         } else {
-            toast.error('Талица не выбрана');
+            toast.error("Талица не выбрана");
         }
     }, [dateColumn, headers, rows]);
     const onDeleteTable = () => {
         if (!confirm(`Вы точно хотите удалить статистику "${tableName}" ?`)) return;
-        if (selectedTable !== 'clear' && selectedTable?.id) {
+        if (selectedTable !== "clear" && selectedTable?.id) {
             deleteTableStatistic(selectedTable.id);
             clearStates();
             disableSelectOnList();
         } else {
-            toast.error('Талица не выбрана');
+            toast.error("Талица не выбрана");
         }
     };
 
     // save pattern
     const onSavePattern = () => {
         if (!patternName.length) {
-            toast.warning('Укажите название шаблона');
+            toast.warning("Укажите название шаблона");
             return;
         }
 
         if (tablePatterns.map((pattern) => pattern.name).includes(patternName)) {
-            toast.warning('Шаблон с таким названием уже есть');
+            toast.warning("Шаблон с таким названием уже есть");
             return;
         }
 
         const pattern: TablePatternI = {
             id: 0,
-            name: patternName || 'без названия',
-            headers: headers.filter((header) => !header.name.includes('период')),
+            name: patternName || "без названия",
+            headers: headers.filter((header) => !header.name.includes("период")),
         };
         //console.log('CREATED PATTERN', pattern);
 
@@ -424,7 +426,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //----------------------------------------------------------------------------------------------CALC ITEM⭐⭐⭐⭐⭐⭐⭐
 
     const calcRowItem = (rowIndex: number, itemIndex: number): { logicStrWithDecorValues: string; result: any } => {
-        const logicStr = headers?.[itemIndex]?.logicStr || '';
+        const logicStr = headers?.[itemIndex]?.logicStr || "";
         const initValue = headers?.[itemIndex]?.initValue || 0;
 
         const columnDecorsObj = headers.reduce((acc, header, idx) => {
@@ -432,14 +434,14 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             return acc;
         }, {});
 
-        let logicStrWithDecorValues = logicStr.replaceAll('@sum', '').replaceAll('@trend', '').replaceAll('@revtrend', '');
+        let logicStrWithDecorValues = logicStr.replaceAll("@sum", "").replaceAll("@trend", "").replaceAll("@revtrend", "");
 
         // console.log('DECORS',columnDecorsObj);
         if (logicStr) {
             try {
                 logicStrWithDecorValues = logicStrWithDecorValues.replaceAll(/@@\d{1,3}/g, (decorator, a, b) => {
                     // ПРОШЛЫЙ РЯД
-                    const targetIndex = Number(decorator.replace('@@', '')) - 1;
+                    const targetIndex = Number(decorator.replace("@@", "")) - 1;
                     //console.log('CURRENT COLUMN',targetIndex==itemIndex);
                     if (rowIndex == 0) {
                         //itemValue = headers[targetIndex].initValue;
@@ -460,10 +462,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
                 logicStrWithDecorValues = logicStrWithDecorValues.replaceAll(/@\d{1,3}/g, (decorator, a, b) => {
                     // TЕКУЩИЙ РЯД
-                    const targetIndex = Number(decorator.replace('@', '')) - 1;
+                    const targetIndex = Number(decorator.replace("@", "")) - 1;
                     //console.log('CURRENT COLUMN',targetIndex==itemIndex);
                     if (targetIndex > headers.length - 1) {
-                        return 'не существующая колонка';
+                        return "не существующая колонка";
                     }
 
                     let itemValue;
@@ -478,7 +480,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     return String(itemValue);
                 });
 
-                logicStrWithDecorValues = logicStrWithDecorValues.replaceAll('@init', String(initValue));
+                logicStrWithDecorValues = logicStrWithDecorValues.replaceAll("@init", String(initValue));
                 //console.log(`STR VALUES : ${logicStrWithDecorValues}`);
                 let result = eval(logicStrWithDecorValues);
 
@@ -512,7 +514,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     const trendStatus = (trendType: boolean, value: any, itemIndex: number, rowIndex: number): string => {
         let trendStatus = true;
-        const resultStatusText = () => (trendStatus ? 'Растущая↗️' : 'Падающая🔻');
+        const resultStatusText = () => (trendStatus ? "Растущая↗️" : "Падающая🔻");
 
         //---ПУСТОЕ ЗНАЧЕНИЕ0️⃣
 
@@ -591,8 +593,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 ...row,
                 values: row.values.map((item, itemIndex) => {
                     const result = { ...item };
-                    let logicStr = '';
-                    logicStr = headers?.[itemIndex]?.logicStr || '';
+                    let logicStr = "";
+                    logicStr = headers?.[itemIndex]?.logicStr || "";
                     const calcedItemTemp = calcRowItem(rowIndex, itemIndex);
 
                     // //TREND 📈
@@ -617,10 +619,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     //SUM
                     if (logicStr && /@sum/.test(logicStr)) {
                         if (/❓/g.test(calcedItemTemp.result)) {
-                            calcedItemTemp.result = '';
+                            calcedItemTemp.result = "";
                             return {
                                 ...item,
-                                value: '❓',
+                                value: "❓",
                                 expression: calcedItemTemp.logicStrWithDecorValues,
                             };
                         }
@@ -643,11 +645,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         // clear ❓ in result
                         let resExpression = `${lastRow.values[itemIndex].value}+${calcedItemTemp.logicStrWithDecorValues}`;
                         let isUnknownsInExpressions = /❓/g.test(resExpression);
-                        const calcedValue = isUnknownsInExpressions ? '❓' : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2));
+                        const calcedValue = isUnknownsInExpressions ? "❓" : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2));
                         return {
                             ...item,
                             value: calcedValue,
-                            expression: isUnknownsInExpressions ? '❓' : resExpression,
+                            expression: isUnknownsInExpressions ? "❓" : resExpression,
                         };
                     }
                     if (logicStr) {
@@ -671,7 +673,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             return {
                 ...row,
                 values: row.values.map((item, itemIndex) => {
-                    const logicStr = headers?.[itemIndex]?.logicStr || '';
+                    const logicStr = headers?.[itemIndex]?.logicStr || "";
                     if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
                         if (!isNaN(+item.value)) {
                             trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), item.value];
@@ -751,7 +753,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         //SET HEADERS
         let patternHeaders: StatHeaderI[] = currentHeaders;
 
-        if (selectedTable == 'clear' || !selectedTable) {
+        if (selectedTable == "clear" || !selectedTable) {
             // если новая статистика то грузит шаблнные поля , если готовая то продлевает уже созданные
             if (dateColumnParam?.selectedPattern) {
                 if (tablePatterns[dateColumnParam?.selectedPattern - 1].headers) {
@@ -769,21 +771,21 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             ]; // initial width of colmns
 
             //setHeaders
-            const tempHeaders = [{ name: `${dateColumnParam.type} период `, id: nanoid(), logicStr: '', initValue: 0, showControl: false, onChart: false }, ...patternHeaders];
+            const tempHeaders = [{ name: `${dateColumnParam.type} период `, id: nanoid(), logicStr: "", initValue: 0, showControl: false, onChart: false }, ...patternHeaders];
 
             //set rows
             const tempRows: StatRowI[] = dateColumnParam.datesArr.map((period, periodIdx) => {
                 return {
                     id: nanoid(),
-                    descriptions: savedDataRows && savedDataRows.length && periodIdx < savedDataRows.length ? 'saved' : '', // SAVED ROW ON DESCRIPTION
+                    descriptions: savedDataRows && savedDataRows.length && periodIdx < savedDataRows.length ? "saved" : "", // SAVED ROW ON DESCRIPTION
                     values: [
                         {
                             id: nanoid(),
-                            value: `${new Date(period.start).toLocaleDateString()} - ${period.warning ? '⚠️' : ''} ${new Date(period.end).toLocaleDateString()}`,
-                            expression: '',
+                            value: `${new Date(period.start).toLocaleDateString()} - ${period.warning ? "⚠️" : ""} ${new Date(period.end).toLocaleDateString()}`,
+                            expression: "",
                             editable: false,
                             message: period.description,
-                            descriptions: 'date',
+                            descriptions: "date",
                         },
                         ...(savedDataRows && savedDataRows.length && periodIdx < savedDataRows.length
                             ? savedDataRows[periodIdx].values.toSpliced(0, 1)
@@ -791,11 +793,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                   .fill({})
                                   .map(() => ({
                                       id: nanoid(),
-                                      value: '',
-                                      expression: '',
+                                      value: "",
+                                      expression: "",
                                       editable: true,
-                                      message: '',
-                                      descriptions: '',
+                                      message: "",
+                                      descriptions: "",
                                   }))),
                     ],
                 };
@@ -817,11 +819,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const findChartColumnAndCreateLine = () => {
         const chartColumnsIdxArr = headers.reduce((arr: number[], header, idx) => (header.onChart ? [...arr, idx] : arr), []);
         const linesArr: CostumLineI[] = chartColumnsIdxArr.map((columnIdx) => ({
-            color: 'green',
+            color: "green",
             trend: false,
             name: headers[columnIdx].name,
             columnKey: 22,
-            records: calcedRows.map((row, rowIdx) => (row.values.length && row.values[columnIdx]?.value !== '' ? Number(row.values[columnIdx]?.value) : NaN)), //clear empty data
+            records: calcedRows.map((row, rowIdx) => (row.values.length && row.values[columnIdx]?.value !== "" ? Number(row.values[columnIdx]?.value) : NaN)), //clear empty data
         }));
 
         const trendColumnsIdxArr = headers.reduce((arr: number[], header, idx) => (/@trend/g.test(header.logicStr) || /@revtrend/g.test(header.logicStr) ? [...arr, idx] : arr), []);
@@ -847,9 +849,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 );
                 //console.log('📈', trend);
                 return {
-                    color: 'gray',
+                    color: "gray",
                     trend: false,
-                    name: 'тренд',
+                    name: "тренд",
                     columnKey: 22,
                     records: trend.result, //clear empty data
                 };
@@ -862,24 +864,24 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //FULL FIELDS STAT CHECK
     const fullFileldsStatsChecks = (): boolean => {
-        let statFilled: 'full' | 'notFull' | 'clean' = 'full';
+        let statFilled: "full" | "notFull" | "clean" = "full";
         let lastFilledRow: StatRowI | null = null;
         let lastRowIndex: number | null = null;
 
         calcedRows.forEach((row, rowIdx) => {
             // ИЩЕМ КОЛОНКИ С ТРЕНДОМ И ПО НИМ РАБОТАЕМ
 
-            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith('Растущая') || String(item.message).startsWith('Падающая')) && statFilled !== 'clean') {
+            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith("Растущая") || String(item.message).startsWith("Падающая")) && statFilled !== "clean") {
                 if (!rowIdx) {
-                    statFilled = 'clean';
+                    statFilled = "clean";
                 } else {
                     lastFilledRow = calcedRows[rowIdx - 1];
                     lastRowIndex = rowIdx - 1;
-                    statFilled = 'notFull';
+                    statFilled = "notFull";
                 }
             }
         });
-        return statFilled == 'full';
+        return statFilled == "full";
 
         // let isFull=true;
         // if(headers.length&&rows.length&&dateColumn?.autoRenewal){
@@ -898,7 +900,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         const { datesArr } = dateColumn;
         const currentDateSec = new Date().getTime();
         // console.log('CURRENT PERIOD🕖',dateColumn?.datesArr,new Date(datesArr[rowIndex].start).getDate(),currentDateSec>=datesArr[rowIndex].start&&currentDateSec<=datesArr[rowIndex].end + (daySec*2))
-        if (dateColumn.type == '2 года плюс текущий') {
+        if (dateColumn.type == "2 года плюс текущий") {
             return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 10 };
         }
         return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 2 };
@@ -907,38 +909,38 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //GET RAPORT INFO -----------------------------------📄📄📄📄📄📄📄📄📄
 
     const getRaportInfo = (isAlert = false) => {
-        let statFilled: 'full' | 'notFull' | 'clean' = 'full';
+        let statFilled: "full" | "notFull" | "clean" = "full";
         let lastFilledRow: StatRowI | null = null;
         let lastRowIndex: number | null = null;
 
         calcedRows.forEach((row, rowIdx) => {
             // ИЩЕМ КОЛОНКИ С ТРЕНДОМ И ПО НИМ РАБОТАЕМ
 
-            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith('Растущая') || String(item.message).startsWith('Падающая')) && statFilled !== 'clean') {
+            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith("Растущая") || String(item.message).startsWith("Падающая")) && statFilled !== "clean") {
                 if (!rowIdx) {
-                    statFilled = 'clean';
+                    statFilled = "clean";
                 } else {
                     lastFilledRow = calcedRows[rowIdx - 1];
                     lastRowIndex = rowIdx - 1;
-                    statFilled = 'notFull';
+                    statFilled = "notFull";
                 }
             }
         });
 
-        if (statFilled === 'full') {
+        if (statFilled === "full") {
             lastRowIndex = calcedRows.length - 1;
             lastFilledRow = calcedRows[lastRowIndex];
         }
 
-        let trendStatus = 'не определено';
-        let trendColumnName = 'тренд не найден';
-        let trendType = 'не указан';
+        let trendStatus = "не определено";
+        let trendColumnName = "тренд не найден";
+        let trendType = "не указан";
 
         if (lastFilledRow && lastRowIndex !== null) {
-            let trendIdx = lastFilledRow.values.findLastIndex((item) => /Падающая/g.test(item.message + '') || /Растущая/g.test(item.message + ''));
+            let trendIdx = lastFilledRow.values.findLastIndex((item) => /Падающая/g.test(item.message + "") || /Растущая/g.test(item.message + ""));
             if (trendIdx >= 0) {
-                trendType = /revtrend/g.test(headers[trendIdx].logicStr) ? 'Перевёрнутый тренд' : 'Стандартный тренд';
-                trendStatus = /Падающая/g.test(lastFilledRow.values[trendIdx].message) ? 'Падающая' : 'Растущая';
+                trendType = /revtrend/g.test(headers[trendIdx].logicStr) ? "Перевёрнутый тренд" : "Стандартный тренд";
+                trendStatus = /Падающая/g.test(lastFilledRow.values[trendIdx].message) ? "Падающая" : "Растущая";
                 trendColumnName = headers[trendIdx].name;
             }
         }
@@ -947,7 +949,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             costumsLines: chartLines,
             dates: dateColumn?.datesArr || [],
             clickFunc: () => {},
-            reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes('@revtrend')),
+            reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
         };
 
         const result: RaportTableInfoI = {
@@ -972,7 +974,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //effects
     useEffect(() => {
         //on select table
-        if (selectedTable == 'clear') {
+        if (selectedTable == "clear") {
             clearStates();
             return;
         }
@@ -1026,7 +1028,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         async function keyDown(event: KeyboardEvent) {
             //console.log(event.key);
             switch (event.key) {
-                case 'ArrowUp': {
+                case "ArrowUp": {
                     setSelectedRow((state) => {
                         const value = state ? state - 1 : state;
                         selectedRowRef.current = value;
@@ -1036,7 +1038,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     selectedItemRef.current = 0;
                     break;
                 }
-                case 'ArrowDown': {
+                case "ArrowDown": {
                     setSelectedRow((state) => {
                         const value = state !== null && state !== rowsCount ? state + 1 : state;
                         selectedRowRef.current = value;
@@ -1046,7 +1048,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     selectedItemRef.current = 0;
                     break;
                 }
-                case 'ArrowRight': {
+                case "ArrowRight": {
                     setSelectedItem((state) => {
                         const value = inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state;
                         selectedItemRef.current = value;
@@ -1054,7 +1056,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     });
                     break;
                 }
-                case 'ArrowLeft': {
+                case "ArrowLeft": {
                     setSelectedItem((state) => {
                         const value = state ? state - 1 : state;
                         selectedItemRef.current = value;
@@ -1062,7 +1064,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     });
                     break;
                 }
-                case 'Enter': {
+                case "Enter": {
                     // //setSelectedItem((state) => (inputsArrRef.current[selectedRow!]?.[state + 1] ? state + 1 : state));
                     // if (inputsArrRef.current[selectedRow!]?.[selectedItem + 1]) {
                     //     setSelectedItem((state) => state + 1);
@@ -1077,11 +1079,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 }
             }
         }
-        document.addEventListener('keydown', keyDown);
+        document.addEventListener("keydown", keyDown);
 
         return () => {
             // alert('reload');
-            document.removeEventListener('keydown', keyDown);
+            document.removeEventListener("keydown", keyDown);
         };
     }, [selectedRow]);
     //при смене выделеного ряда или ячейки
@@ -1114,7 +1116,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     {calcedRows.map((row, rowIndex) => {
                         const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
                         return (
-                            <div className={`${styles.miniBodyRow} ${isCurrentPeriod ? styles.currentPeriod : ''}`}>
+                            <div className={`${styles.miniBodyRow} ${isCurrentPeriod ? styles.currentPeriod : ""}`}>
                                 {row.values.map((item, itemIdx) => {
                                     return (
                                         <div
@@ -1128,10 +1130,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                 //return itemIdx ? item.message || item.value : item.value;
                                                 if (itemIdx) {
                                                     if (item.message) {
-                                                        if (/не определено/.test(item.message)) return '';
+                                                        if (/не определено/.test(item.message)) return "";
                                                         else return item.message;
                                                     } else {
-                                                        if (/❓/.test(String(item.value))) return '';
+                                                        if (/❓/.test(String(item.value))) return "";
                                                         else return item.value;
                                                     }
                                                 } else {
@@ -1158,7 +1160,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         isCreateTableBlock ? (
                             <CreateTableControl onCreateDateColumn={onCreateDateColumn} onCancel={() => setIsCreateTableBlock(false)} />
                         ) : (
-                            selectedTable == 'clear' && (
+                            selectedTable == "clear" && (
                                 <div className={styles.createNewTableBtn} onClick={() => setIsCreateTableBlock(true)}>
                                     создать новую статистику
                                 </div>
@@ -1208,8 +1210,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 <div
                                     key={row.id}
                                     className={`
-                                ${styles.row} ${rows[rowIndex]?.descriptions == 'saved' ? styles.rowSaved : ''}
-                                ${isCurrentPeriod ? styles.currentPeriod : ''}
+                                ${styles.row} ${rows[rowIndex]?.descriptions == "saved" ? styles.rowSaved : ""}
+                                ${isCurrentPeriod ? styles.currentPeriod : ""}
                                 `}
                                 >
                                     {row.values.map((value, itemIndex) => {
@@ -1222,10 +1224,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                 key={value.id}
                                                 className={`
                                             ${styles.item} 
-                                            ${value.descriptions == 'date' ? styles.itemDate : ''}
-                                            ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value === '' ? styles.forInputData : ''}
-                                            ${!headers[itemIndex]?.logicStr && value.descriptions !== 'date' && value.descriptions !== 'saved' && value.value !== '' ? styles.withInputData : ''}
-                                            ${selectedRowRef.current == rowIndex ? styles.selectedRow : ''}
+                                            ${value.descriptions == "date" ? styles.itemDate : ""}
+                                            ${!headers[itemIndex]?.logicStr && value.descriptions !== "date" && value.descriptions !== "saved" && value.value === "" ? styles.forInputData : ""}
+                                            ${!headers[itemIndex]?.logicStr && value.descriptions !== "date" && value.descriptions !== "saved" && value.value !== "" ? styles.withInputData : ""}
+                                            ${selectedRowRef.current == rowIndex ? styles.selectedRow : ""}
                                             `}
                                                 style={{
                                                     width: columnsWidth[itemIndex] + 5,
@@ -1273,7 +1275,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 onChange={(event) => {
                                                                     event.preventDefault();
                                                                     onChangeRowItem(event, rowIndex, value.id, true);
-                                                                    console.log('ROW', selectedRow, selectedRowRef.current);
+                                                                    console.log("ROW", selectedRow, selectedRowRef.current);
                                                                     if (selectedRowRef.current && selectedItemRef.current) {
                                                                         setSelectedRow(() => selectedRowRef.current);
                                                                         setSelectedItem(() => selectedItemRef.current);
@@ -1288,9 +1290,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <div style={{ textAlign: 'center' }} className={styles.itemValue}>
+                                                    <div style={{ textAlign: "center" }} className={styles.itemValue}>
                                                         <span>{value.value}</span>
-                                                        {!!(value.descriptions == 'date') && <div className={styles.itemDescription}>{value.message}</div>}
+                                                        {!!(value.descriptions == "date") && <div className={styles.itemDescription}>{value.message}</div>}
                                                     </div>
                                                 )}
                                             </div>
@@ -1343,7 +1345,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             )}
                             {isAdmin && (
                                 <>
-                                    {(!selectedTable || selectedTable == 'clear' || createdNextPeriod) && (
+                                    {(!selectedTable || selectedTable == "clear" || createdNextPeriod) && (
                                         <div onClick={() => onSaveTable()} className={styles.saveTableBtn}>
                                             сохранить созданную статистику "{tableName}"
                                         </div>
@@ -1389,7 +1391,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         costumsLines: chartLines,
                         dates: dateColumn?.datesArr || [],
                         clickFunc: () => {},
-                        reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes('@revtrend')),
+                        reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
                     }}
                 />
             )}
