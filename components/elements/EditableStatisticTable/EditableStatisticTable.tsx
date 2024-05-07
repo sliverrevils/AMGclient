@@ -17,7 +17,7 @@ import EditableTable from "../EditableTable/EditableTable";
 import useTablePatterns from "@/hooks/useTablePatterns";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { toast } from "react-toastify";
-import { getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
+import { clearStatName, getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
 
@@ -990,6 +990,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             setColumnsWidth(() => selectedTable.columnsWidth);
             setHeaders(selectedTable.headers);
             setRows(selectedTable.rows);
+
+            setCreatedNextPeriod(false);
         }
     }, [selectedTable]);
 
@@ -1189,7 +1191,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     {!!headers.length && (
                         <>
                             <div className={styles.tableNameWrap}>
-                                <input type="text" value={tableName} onChange={(event) => setTableName(event.target.value)} placeholder="название статистики" disabled={createdNextPeriod} />
+                                <input type="text" value={clearStatName(tableName)} onChange={(event) => setTableName(event.target.value.trimStart())} placeholder="название статистики" disabled={selectedTable !== "clear"} />
                             </div>
                         </>
                     )}
@@ -1338,7 +1340,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                     <div >➕</div>
                                 </div>
                             } */}
-                            {!!selectedTable && !createdNextPeriod && (
+                            {!!selectedTable && !createdNextPeriod && typeof selectedTable === "object" && (
                                 <div onClick={onUpdateTable} className={styles.updateTableBtn}>
                                     сохранить изменения
                                 </div>
@@ -1350,7 +1352,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                             сохранить созданную статистику "{tableName}"
                                         </div>
                                     )}
-                                    {!!selectedTable && (
+                                    {!!selectedTable && !createdNextPeriod && (
                                         <div onClick={onDeleteTable} className={styles.deleteTableBtn}>
                                             удалить статистику
                                         </div>
@@ -1377,7 +1379,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             </button> */}
                         </div>
                     )}
-                    {dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
+                    {!createdNextPeriod && dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
                         <div className={styles.createNextPeriodBtn} onClick={onCreateNextPeriodStatistic}>
                             Создать статистику на следующий период
                         </div>

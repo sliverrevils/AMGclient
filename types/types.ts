@@ -282,7 +282,7 @@ export interface DateColumnI {
     periodDayCount: number;
     datesArr: DatesI[];
     lastDayOfDatesArr: number;
-    type: '2 года плюс текущий' | 'Месячный' | '13ти недельный';
+    type: "2 года плюс текущий" | "Месячный" | "13ти недельный";
     autoRenewal: boolean;
     selectedPattern;
     raportInfo?: RaportTableInfoI;
@@ -357,7 +357,7 @@ export interface UserPostsI {
 }
 
 export interface RaportTableInfoI {
-    statFilled: 'full' | 'notFull' | 'clean';
+    statFilled: "full" | "notFull" | "clean";
     lastFilledPeriod: DatesI;
     statLastRowValues?: string[];
     statHeaders?: string[];
@@ -376,9 +376,9 @@ export interface RaportTableInfoI {
 //CHART LIST
 export interface ChartItemI {
     id: number;
-    type: 'office' | 'dep' | 'sec';
+    type: "office" | "dep" | "sec";
     itemName: string;
-    statType: 'main' | 'additional';
+    statType: "main" | "additional";
     leadership: number;
     isClose: boolean;
 }
