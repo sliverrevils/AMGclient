@@ -1,18 +1,18 @@
-import { useSelector } from 'react-redux';
-import styles from './orgflow.module.scss';
-import { StateReduxI } from '@/redux/store';
-import { ActiveItemI, OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData, UserFullI } from '@/types/types';
-import useOrg from '@/hooks/useOrg';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, { Controls, Edge, Node } from 'reactflow';
-import MyNode from './MyNode/MyNode';
-import MyEdge from './MyEdge/MyEdge';
-import 'reactflow/dist/style.css';
-import useTableStatistics from '@/hooks/useTableStatistics';
-import { MultiLinesChart2 } from '@/components/elements/Chart/MultilineChart2';
-import { clearStatName, replaceFio } from '@/utils/funcs';
-import FilterUsers from './FilterUsers/FilterUsers';
-import useUsers from '@/hooks/useUsers';
+import { useSelector } from "react-redux";
+import styles from "./orgflow.module.scss";
+import { StateReduxI } from "@/redux/store";
+import { ActiveItemI, OfficeI, OfficeWithStatsI, OfficeWithStatsTypeI, RaportTableInfoI, ReportItemI, StatInfoWithData, UserFullI } from "@/types/types";
+import useOrg from "@/hooks/useOrg";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ReactFlow, { Controls, Edge, Node } from "reactflow";
+import MyNode from "./MyNode/MyNode";
+import MyEdge from "./MyEdge/MyEdge";
+import "reactflow/dist/style.css";
+import useTableStatistics from "@/hooks/useTableStatistics";
+import { MultiLinesChart2 } from "@/components/elements/Chart/MultilineChart2";
+import { clearStatName, replaceFio } from "@/utils/funcs";
+import FilterUsers from "./FilterUsers/FilterUsers";
+import useUsers from "@/hooks/useUsers";
 
 export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     //VARS
@@ -49,7 +49,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
     const { userByID, getUserPosts } = useUsers();
 
     //SELECTORS
-    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
+    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
 
     const officesWithLatestPeriodStats = useSelector((state: StateReduxI) => {
         const officesWithLatest = state.org.offices.map((office) => {
@@ -59,8 +59,8 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 const currentStat = state.stats.tableStatisticsList.find((stat) => stat.id == id);
 
                 if (currentStat && /@/g.test(currentStat.name)) {
-                    const statName = currentStat.name.split('@')[0].trim();
-                    const statsArr = state.stats.tableStatisticsList.filter((stat) => stat.name.split('@')[0].trim() == statName).toSorted((a, b) => b.id - a.id);
+                    const statName = currentStat.name.split("@")[0].trim();
+                    const statsArr = state.stats.tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
                     if (statsArr.length) {
                         return statsArr[0].id;
                     } else {
@@ -106,7 +106,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             });
 
             const currentPatterns = [...new Set(arrTemp.filter((id) => !!id))];
-            console.log('👍', officesWithLatestPeriodStats, currentPatterns);
+            console.log("👍", officesWithLatestPeriodStats, currentPatterns);
             getReportList(currentPatterns, setReportList);
         }
     }, [officesWithLatestPeriodStats]);
@@ -131,14 +131,14 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 })),
             }));
 
-            console.log('RES', res as OfficeWithStatsI[]);
+            console.log("RES", res as OfficeWithStatsI[]);
             setOrgWithStats(res as OfficeWithStatsI[]);
         }
     }, [reportsList]);
 
     //КОГДА СПИСОК ОРГСХЕМЫ СО СТАТИСТИКАМИ СФОРМИРОВАН, ФОРМИРУЕМ НОДЫ И ЭДЖИ ДЛЯ ФЛОУ
     useEffect(() => {
-        console.log('orgWithStats', orgWithStats);
+        console.log("orgWithStats", orgWithStats);
         if (orgWithStats.length) {
             let nodesTemp: Node[] = [];
             const edgesTemp: Edge[] = [];
@@ -165,7 +165,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                     const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
                     const currentOffId = `off_${office.id}`;
                     const selected = Boolean(selectedUserId && office.leadership === selectedUserId);
-                    addNode({ id: currentOffId, type: 'myNode', position: { x: currentOffPosX, y: 0 }, data: { ...office, type: 'off', setActiveItem, selected, selectedUserId } });
+                    addNode({ id: currentOffId, type: "myNode", position: { x: currentOffPosX, y: 0 }, data: { ...office, type: "off", setActiveItem, selected, selectedUserId } });
 
                     //add departments node
                     let departmentStartX = oficeStartposX;
@@ -174,8 +174,8 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                         .forEach((department, depIdx) => {
                             const currentDepId = `dep_${department.id}`;
                             const selected = Boolean(selectedUserId && department.leadership === selectedUserId);
-                            addNode({ id: currentDepId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: 'dep', setActiveItem, selected, selectedUserId } });
-                            addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'tomato' } });
+                            addNode({ id: currentDepId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: "dep", setActiveItem, selected, selectedUserId } });
+                            addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: "smoothstep", animated: selected, style: { strokeWidth: 2, stroke: "tomato" } });
 
                             //add sections node
                             department.sections
@@ -183,15 +183,15 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                                 .forEach((section, secIdx) => {
                                     const currentSecId = `sec_${section.id}`;
                                     const selected = Boolean(selectedUserId && (section.leadership === selectedUserId || getUserPosts(selectedUserId).workerOnSections.some((sec) => sec.id === section.id)));
-                                    addNode({ id: currentSecId, type: 'myNode', position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: 'sec', setActiveItem, selected, selectedUserId } });
-                                    addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: 'smoothstep', animated: selected, style: { strokeWidth: 2, stroke: 'blue' } });
+                                    addNode({ id: currentSecId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: "sec", setActiveItem, selected, selectedUserId } });
+                                    addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: "smoothstep", animated: selected, style: { strokeWidth: 2, stroke: "blue" } });
                                 });
                         });
 
                     //set next start position
                     oficeStartposX += blocksCount * BOXSIZE_X + 50;
                 });
-            console.log('NODES', nodesTemp);
+            console.log("NODES", nodesTemp);
             setNodesState(nodesTemp);
             setEdgesState(edgesTemp);
         }
@@ -199,18 +199,18 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
 
     // MENU ITEM
     const menuBlock = useMemo(() => {
-        if (activeItem && activeItem.eventType === 'mouseenter' && activeItem.type === 'sec') {
+        if (activeItem && activeItem.eventType === "mouseenter" && activeItem.type === "sec") {
             //alert(JSON.stringify(activeItem.data.administrators, null, 2));
             return (
                 <div className={styles.itemInfo} style={{ top: activeItem.y, left: activeItem.x }} onMouseLeave={() => setActiveItem(null)}>
-                    {activeItem.data.administrators.length ? 'Сотрудники : ' : 'Нет сотрудников.'}
+                    {activeItem.data.administrators.length ? "Сотрудники : " : "Нет сотрудников."}
                     <div className={styles.adminsList}>
                         {activeItem.data.administrators.map((admin) => {
                             // console.log(admin);
                             return (
-                                <div className={`${styles.adminItem} ${admin.user_id === selectedUserId ? styles.adminItemSelected : ''}`}>
+                                <div className={`${styles.adminItem} ${admin.user_id === selectedUserId ? styles.adminItemSelected : ""}`}>
                                     <div className={styles.post}>{admin.descriptions}</div>
-                                    <div className={styles.name}>{replaceFio(userByID(admin.user_id)!?.name || '')}</div>
+                                    <div className={styles.name}>{userByID(admin.user_id)!?.name || ""}</div>
                                 </div>
                             );
                         })}
@@ -218,7 +218,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 </div>
             );
         }
-        if (activeItem && activeItem.eventType === 'contextmenu' && isAdmin) {
+        if (activeItem && activeItem.eventType === "contextmenu" && isAdmin) {
             const { mainPattern, patterns } = activeItem.data;
 
             return (
