@@ -131,14 +131,14 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                 })),
             }));
 
-            console.log("RES", res as OfficeWithStatsI[]);
+            // console.log("RES", res as OfficeWithStatsI[]);
             setOrgWithStats(res as OfficeWithStatsI[]);
         }
     }, [reportsList]);
 
     //КОГДА СПИСОК ОРГСХЕМЫ СО СТАТИСТИКАМИ СФОРМИРОВАН, ФОРМИРУЕМ НОДЫ И ЭДЖИ ДЛЯ ФЛОУ
     useEffect(() => {
-        console.log("orgWithStats", orgWithStats);
+        //console.log("orgWithStats", orgWithStats);
         if (orgWithStats.length) {
             let nodesTemp: Node[] = [];
             const edgesTemp: Edge[] = [];
@@ -191,11 +191,45 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                     //set next start position
                     oficeStartposX += blocksCount * BOXSIZE_X + 50;
                 });
-            console.log("NODES", nodesTemp);
+            // console.log("NODES", nodesTemp);
             setNodesState(nodesTemp);
             setEdgesState(edgesTemp);
         }
     }, [orgWithStats, selectedUserId]);
+
+    //MOUSE
+    //глобальным слушателем проверяем слудим за активным рефом
+    const activeItemRef = useRef<ActiveItemI | null>(null);
+    const listnerRef = useRef(true);
+    useEffect(() => {
+        activeItemRef.current = activeItem ? activeItem : null;
+    }, [activeItem]);
+
+    useEffect(() => {
+        const mouseMove = (event: MouseEvent) => {
+            if (!activeItemRef.current) return;
+
+            const { x, y, width } = activeItemRef.current;
+            const { clientX, clientY } = event;
+
+            if (clientY < y || clientX < x - width) {
+                setActiveItem(null);
+            }
+        };
+
+        if (listnerRef.current) {
+            document.addEventListener("mousemove", mouseMove);
+            listnerRef.current = false;
+        }
+
+        return () => {
+            document.removeEventListener("mousemove", mouseMove);
+            console.log("END");
+            listnerRef.current = true;
+        };
+    }, []);
+
+    //---------MEMO
 
     // MENU ITEM
     const menuBlock = useMemo(() => {
@@ -208,7 +242,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                         {activeItem.data.administrators.map((admin) => {
                             // console.log(admin);
                             return (
-                                <div className={`${styles.adminItem} ${admin.user_id === selectedUserId ? styles.adminItemSelected : ""}`}>
+                                <div key={Math.random()} className={`${styles.adminItem} ${admin.user_id === selectedUserId ? styles.adminItemSelected : ""}`}>
                                     <div className={styles.post}>{admin.descriptions}</div>
                                     <div className={styles.name}>{userByID(admin.user_id)!?.name || ""}</div>
                                 </div>

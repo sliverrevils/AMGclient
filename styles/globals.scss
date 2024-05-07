@@ -76,6 +76,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   scroll-behavior: smooth;
+
 }
 
 body {
@@ -97,31 +98,32 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  
-  
+
+
   cursor: pointer;
 }
-*::-webkit-scrollbar-track{
-  background:rgb(196, 196, 196);
+
+*::-webkit-scrollbar-track {
+  background: rgb(196, 196, 196);
   border-radius: 10px;
- 
-  
+
+
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: #FF8056;
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);  
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
   border-radius: 5px;
   border: 1px solid #f59a7c;
 }
 
 *::-webkit-scrollbar-corner {
-  background: rgba(0,0,0,0);
+  background: rgba(0, 0, 0, 0);
 }
 
 
-textarea{
-  &::-webkit-scrollbar{
+textarea {
+  &::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
@@ -145,8 +147,8 @@ a {
   text-decoration: none;
 }
 
-select{
-  &:focus{
+select {
+  &:focus {
     outline: 0;
   }
 }
@@ -203,12 +205,18 @@ select{
 
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
@@ -235,20 +243,20 @@ select{
     }
   }
 
-//  select {
-//    -webkit-appearance: none;
-//    -moz-appearance: none;
-//    appearance: none;
+  //  select {
+  //    -webkit-appearance: none;
+  //    -moz-appearance: none;
+  //    appearance: none;
 
 
-//  }
+  //  }
 
 
-//   option {
-//     padding: 20px;
+  //   option {
+  //     padding: 20px;
 
-//     color: red;
-//   }
+  //     color: red;
+  //   }
 
 
 

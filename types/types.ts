@@ -135,6 +135,7 @@ export interface OfficeWithStatsTypeI extends OfficeWithStatsI, SectionWithStats
 }
 
 export interface ActiveItemI {
+    width: number;
     type: string;
     x: number;
     y: number;
