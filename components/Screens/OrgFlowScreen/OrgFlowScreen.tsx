@@ -142,6 +142,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
         if (orgWithStats.length) {
             let nodesTemp: Node[] = [];
             const edgesTemp: Edge[] = [];
+            const positionY = 200;
 
             const addNode = (node: Node) => {
                 nodesTemp.push(node);
@@ -152,20 +153,29 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             };
 
             let oficeStartposX = 0;
+            //ГЕНЕРАЛЬНЫЙ ДИРЕКТОР
+            const genDirUserId = 18;
+            const selected = Boolean(selectedUserId && genDirUserId === selectedUserId);
+            const blocksCount = orgWithStats.reduce((acc, office) => acc + office.departments.length, 0); //количество блоков
+            const genDirX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
+            addNode({ id: "genDir", type: "myNode", position: { x: genDirX, y: 0 }, data: { type: "genDir", name: "Генеральный директор", leadership: genDirUserId, setActiveItem, selected, selectedUserId } });
+
+            //ОРГСХЕМА
             orgWithStats
                 .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
                 .forEach((office, offIdx) => {
                     //calc sizes x
                     const blocksArr = [1, office.departments.length];
                     office.departments.forEach((dep) => blocksArr.push(dep.sections.length));
-                    // const blocksCount = Math.max(...blocksArr); //количество блоков
+
                     const blocksCount = office.departments.length; //количество блоков
 
                     //add office node
                     const currentOffPosX = oficeStartposX + ((blocksCount * BOXSIZE_X) / 2 - BOXSIZE_X / 2);
                     const currentOffId = `off_${office.id}`;
                     const selected = Boolean(selectedUserId && office.leadership === selectedUserId);
-                    addNode({ id: currentOffId, type: "myNode", position: { x: currentOffPosX, y: 0 }, data: { ...office, type: "off", setActiveItem, selected, selectedUserId } });
+                    addNode({ id: currentOffId, type: "myNode", position: { x: currentOffPosX, y: positionY }, data: { ...office, type: "off", setActiveItem, selected, selectedUserId } });
+                    addEdge({ id: `genDir-${currentOffId}`, source: "genDir", target: currentOffId, type: "smoothstep", animated: selected, style: { strokeWidth: 3, stroke: "black" } });
 
                     //add departments node
                     let departmentStartX = oficeStartposX;
@@ -174,7 +184,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                         .forEach((department, depIdx) => {
                             const currentDepId = `dep_${department.id}`;
                             const selected = Boolean(selectedUserId && department.leadership === selectedUserId);
-                            addNode({ id: currentDepId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y }, data: { ...department, type: "dep", setActiveItem, selected, selectedUserId } });
+                            addNode({ id: currentDepId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: positionY + BOXSIZE_Y }, data: { ...department, type: "dep", setActiveItem, selected, selectedUserId } });
                             addEdge({ id: `${currentOffId}-${currentDepId}`, source: currentOffId, target: currentDepId, type: "smoothstep", animated: selected, style: { strokeWidth: 2, stroke: "tomato" } });
 
                             //add sections node
@@ -183,7 +193,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                                 .forEach((section, secIdx) => {
                                     const currentSecId = `sec_${section.id}`;
                                     const selected = Boolean(selectedUserId && (section.leadership === selectedUserId || getUserPosts(selectedUserId).workerOnSections.some((sec) => sec.id === section.id)));
-                                    addNode({ id: currentSecId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: "sec", setActiveItem, selected, selectedUserId } });
+                                    addNode({ id: currentSecId, type: "myNode", position: { x: departmentStartX + depIdx * BOXSIZE_X, y: positionY + BOXSIZE_Y * 2 + BOXSIZE_Y * secIdx }, data: { ...section, type: "sec", setActiveItem, selected, selectedUserId } });
                                     addEdge({ id: `${currentDepId}-${currentSecId}`, source: currentDepId, target: currentSecId, type: "smoothstep", animated: selected, style: { strokeWidth: 2, stroke: "blue" } });
                                 });
                         });

@@ -25,8 +25,11 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
     };
 
     return (
-        <div className={`${styles.mainWrap} ${data.selected ? styles.mainWrapSelected : ""}`} style={{ background: BlockStyle[data.type] }} onContextMenu={onMenuOpen} onMouseEnter={onMenuOpen}>
+        <div className={`${styles.mainWrap} ${data.selected ? styles.mainWrapSelected : ""} ${data.type === "genDir" ? styles.genDir : ""}`} style={{ background: BlockStyle[data.type] }} onContextMenu={onMenuOpen} onMouseEnter={onMenuOpen}>
             <div className={styles.seleted}>🚩</div>
+            {data.type == "genDir" && <Handle id={String(Math.random())} type="source" position={Position.Bottom} />}
+
+            {data.type == "off" && <Handle id={String(Math.random())} type="target" position={Position.Top} />}
             {data.type == "off" && <Handle id={String(Math.random())} type="source" position={Position.Bottom} />}
 
             {data.type == "dep" && <Handle id={String(Math.random())} type="target" position={Position.Top} />}

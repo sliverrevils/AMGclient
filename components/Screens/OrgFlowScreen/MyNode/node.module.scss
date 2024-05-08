@@ -87,3 +87,36 @@
 
     .content {}
 }
+
+.genDir {
+    // background: red;
+    outline: 5px solid #FF8056;
+    border: 0;
+    box-shadow: 5px 5px 9px rgb(0, 0, 0);
+    width: 100%;
+    padding: 10px 20px;
+
+
+    .content {
+        max-width: 100%;
+
+        .name {
+            font-size: 15px;
+            color: #FF8056;
+        }
+
+        .leadership {
+            font-size: 15px;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .ckp {
+            display: none;
+        }
+
+        .description {
+            display: none;
+        }
+    }
+}

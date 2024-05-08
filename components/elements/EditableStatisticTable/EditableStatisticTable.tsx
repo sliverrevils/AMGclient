@@ -1208,6 +1208,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     <div className={styles.bodyBlock}>
                         {calcedRows.map((row, rowIndex) => {
                             const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
+                            const isPlane = (index: number): boolean => {
+                                return headers[index].name.toLocaleLowerCase().includes("план");
+                            };
                             return (
                                 <div
                                     key={row.id}
@@ -1286,7 +1289,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 onClick={(event) => onClickItem(event, rowIndex)}
                                                                 disabled={
                                                                     // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
-                                                                    !(isCurrentPeriod || isAdmin)
+                                                                    !(isCurrentPeriod || isAdmin || isPlane(itemIndex))
                                                                 }
                                                             />
                                                         )}
