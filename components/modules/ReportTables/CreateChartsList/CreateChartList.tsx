@@ -414,6 +414,7 @@ export default function CreateChartList() {
         }, [selectStat, scopeStart, scopeEnd]);
 
         if (showStat) {
+            console.log(showStat.dateColumn.raportInfo?.chartProps);
             return (
                 <div className={`${styles.chartItem} ${chartItem.isClose ? styles.chartItemClose : ""} ${styles[chartItem.type]} noselect`} onClick={() => chartItem.isClose && openCloseToggle()}>
                     <div className={styles.btnsBlock}>
