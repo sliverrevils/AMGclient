@@ -219,7 +219,7 @@ export default function CreateChartList() {
         let controledNow = controled || user.userId == item.leadership;
         // console.log("controledNow", item.name, controled, controledNow);
 
-        if (!isAdmin && !item.showBlock) return false; // НЕ ПОКАЗЫВАЕМ ЛИШНИЕ АЙТЕМЫ
+        if (!controled && !isAdmin && !item.showBlock) return false; // НЕ ПОКАЗЫВАЕМ ЛИШНИЕ АЙТЕМЫ
 
         const [checked, setChecked] = useState(type === "sec");
         const stylesObg = {
@@ -271,8 +271,9 @@ export default function CreateChartList() {
                 }}
             >
                 <div className={`${styles.itemName} noselect`}>
-                    <span>{item.name}</span>
+                    <span>{item.name} </span>
                     <span className={styles.check}>{!checked ? "🡄" : "🡇"}</span>
+                    <span className={styles.isControl}>{item.leadership === user.userId ? "✍️" : "🛂"}</span>
                 </div>
 
                 {type !== "sec" && statListHtml}
@@ -696,7 +697,7 @@ export default function CreateChartList() {
                 >
                     ❌
                 </div>
-                <div className={styles.menuTitle}>Добавление нового граффика на экран 📈</div>
+                <div className={styles.menuTitle}>Добавление нового графика на экран 📈</div>
                 {officesWithLatestPeriodStatsAndData.map((office, index) => (
                     <OrgItem item={office} type="office" leadership={office.leadership} />
                 ))}
