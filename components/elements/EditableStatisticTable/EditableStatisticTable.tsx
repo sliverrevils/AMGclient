@@ -81,6 +81,71 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //--funcs
 
+    //GET RAPORT INFO -----------------------------------📄📄📄📄📄📄📄📄📄
+
+    const getRaportInfo = (isAlert = false) => {
+        let statFilled: "full" | "notFull" | "clean" = "full";
+        let lastFilledRow: StatRowI | null = null;
+        let lastRowIndex: number | null = null;
+
+        calcedRows.forEach((row, rowIdx) => {
+            // ИЩЕМ КОЛОНКИ С ТРЕНДОМ И ПО НИМ РАБОТАЕМ
+
+            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith("Растущая") || String(item.message).startsWith("Падающая")) && statFilled !== "clean") {
+                if (!rowIdx) {
+                    statFilled = "clean";
+                } else {
+                    lastFilledRow = calcedRows[rowIdx - 1];
+                    lastRowIndex = rowIdx - 1;
+                    statFilled = "notFull";
+                }
+            }
+        });
+
+        if (statFilled === "full") {
+            lastRowIndex = calcedRows.length - 1;
+            lastFilledRow = calcedRows[lastRowIndex];
+        }
+
+        let trendStatus = "не определено";
+        let trendColumnName = "тренд не найден";
+        let trendType = "не указан";
+
+        if (lastFilledRow && lastRowIndex !== null) {
+            let trendIdx = lastFilledRow.values.findLastIndex((item) => /Падающая/g.test(item.message + "") || /Растущая/g.test(item.message + ""));
+            if (trendIdx >= 0) {
+                trendType = /revtrend/g.test(headers[trendIdx].logicStr) ? "Перевёрнутый тренд" : "Стандартный тренд";
+                trendStatus = /Падающая/g.test(lastFilledRow.values[trendIdx].message) ? "Падающая" : "Растущая";
+                trendColumnName = headers[trendIdx].name;
+            }
+        }
+
+        const chartProps = {
+            costumsLines: chartLines,
+            dates: dateColumn?.datesArr || [],
+            clickFunc: () => {},
+            reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
+        };
+
+        const result: RaportTableInfoI = {
+            statFilled,
+            lastFilledPeriod: dateColumn!?.datesArr[lastRowIndex!] || null,
+            statLastRowValues: lastFilledRow?.values.map((item) => String(item.value)) || [],
+            statHeaders: headers.map((header) => header.name),
+            trendType,
+            trendStatus,
+            trendColumnName,
+            lastRowIndex,
+            chartProps,
+        };
+        if (isAlert) {
+            alert(JSON.stringify(result, null, 2));
+        }
+
+        // console.log(result);
+        return result;
+    };
+
     //headers
     const onAddHeader = () => {
         setColumnsWidth((state) => [...state, 100]);
@@ -389,7 +454,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         } else {
             toast.error("Талица не выбрана");
         }
-    }, [dateColumn, headers, rows]);
+    }, [dateColumn, headers, rows, chartLines]);
     const onDeleteTable = () => {
         if (!confirm(`Вы точно хотите удалить статистику "${tableName}" ?`)) return;
         if (selectedTable !== "clear" && selectedTable?.id) {
@@ -904,71 +969,6 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 10 };
         }
         return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 2 };
-    };
-
-    //GET RAPORT INFO -----------------------------------📄📄📄📄📄📄📄📄📄
-
-    const getRaportInfo = (isAlert = false) => {
-        let statFilled: "full" | "notFull" | "clean" = "full";
-        let lastFilledRow: StatRowI | null = null;
-        let lastRowIndex: number | null = null;
-
-        calcedRows.forEach((row, rowIdx) => {
-            // ИЩЕМ КОЛОНКИ С ТРЕНДОМ И ПО НИМ РАБОТАЕМ
-
-            if (!lastFilledRow && !row.values.some((item) => String(item.message).startsWith("Растущая") || String(item.message).startsWith("Падающая")) && statFilled !== "clean") {
-                if (!rowIdx) {
-                    statFilled = "clean";
-                } else {
-                    lastFilledRow = calcedRows[rowIdx - 1];
-                    lastRowIndex = rowIdx - 1;
-                    statFilled = "notFull";
-                }
-            }
-        });
-
-        if (statFilled === "full") {
-            lastRowIndex = calcedRows.length - 1;
-            lastFilledRow = calcedRows[lastRowIndex];
-        }
-
-        let trendStatus = "не определено";
-        let trendColumnName = "тренд не найден";
-        let trendType = "не указан";
-
-        if (lastFilledRow && lastRowIndex !== null) {
-            let trendIdx = lastFilledRow.values.findLastIndex((item) => /Падающая/g.test(item.message + "") || /Растущая/g.test(item.message + ""));
-            if (trendIdx >= 0) {
-                trendType = /revtrend/g.test(headers[trendIdx].logicStr) ? "Перевёрнутый тренд" : "Стандартный тренд";
-                trendStatus = /Падающая/g.test(lastFilledRow.values[trendIdx].message) ? "Падающая" : "Растущая";
-                trendColumnName = headers[trendIdx].name;
-            }
-        }
-
-        const chartProps = {
-            costumsLines: chartLines,
-            dates: dateColumn?.datesArr || [],
-            clickFunc: () => {},
-            reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
-        };
-
-        const result: RaportTableInfoI = {
-            statFilled,
-            lastFilledPeriod: dateColumn!?.datesArr[lastRowIndex!] || null,
-            statLastRowValues: lastFilledRow?.values.map((item) => String(item.value)) || [],
-            statHeaders: headers.map((header) => header.name),
-            trendType,
-            trendStatus,
-            trendColumnName,
-            lastRowIndex,
-            chartProps,
-        };
-        if (isAlert) {
-            alert(JSON.stringify(result, null, 2));
-        }
-
-        // console.log(result);
-        return result;
     };
 
     //effects
