@@ -1,8 +1,8 @@
-import axiosClient, { axiosError } from '@/app/axiosClient';
-import { setLoadingRedux } from '@/redux/appSlice';
-import { ChartItemI } from '@/types/types';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+import axiosClient, { axiosError } from "@/app/axiosClient";
+import { setLoadingRedux } from "@/redux/appSlice";
+import { ChartItemI } from "@/types/types";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 export default function useChartList(setChartsListsArr: any) {
     const dispatch = useDispatch();
@@ -12,9 +12,9 @@ export default function useChartList(setChartsListsArr: any) {
         dispatch(setLoadingRedux(true));
 
         try {
-            const res = await axiosClient.get('charts-list');
+            const res = await axiosClient.get("charts-list");
 
-            console.log(' GET ALL RES 📊', res.data);
+            console.log(" GET ALL RES 📊", res.data);
             if (res.data?.length) {
                 const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
                 setChartsListsArr(list);
@@ -33,14 +33,14 @@ export default function useChartList(setChartsListsArr: any) {
         try {
             const res = await axiosClient.get(`charts-list/delete/${listId}`);
 
-            console.log(' DELETE RES 📊', res.data);
+            console.log(" DELETE RES 📊", res.data);
             if (res.data?.length) {
                 const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
                 setChartsListsArr(list);
             } else {
                 setChartsListsArr([]);
             }
-            toast.success('Лист удален!');
+            toast.success("Лист удален!");
             dispatch(setLoadingRedux(false));
         } catch (err) {
             setChartsListsArr([]);
@@ -49,7 +49,7 @@ export default function useChartList(setChartsListsArr: any) {
     };
 
     //CREATE
-    const createChartsList = async (name: string, chartsState: ChartItemI[], descriptions: string = '') => {
+    const createChartsList = async (name: string, chartsState: ChartItemI[], descriptions: string = "") => {
         dispatch(setLoadingRedux(true));
         try {
             const res: any = await axiosClient.post(`charts-list/create`, {
@@ -59,8 +59,8 @@ export default function useChartList(setChartsListsArr: any) {
             });
             dispatch(setLoadingRedux(false));
             if (res) {
-                console.log('RES OF CREATE CHART LIST📊', res);
-                toast.success('Лист граффиков успешно сохранен!');
+                console.log("RES OF CREATE CHART LIST📊", res);
+                toast.success("Лист графиков успешно сохранен!");
                 toast.warning(res.data.errorMessage);
                 if (res.data?.length) {
                     const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
@@ -75,7 +75,7 @@ export default function useChartList(setChartsListsArr: any) {
         }
     };
     //UPDATE
-    const updateChartsList = async (listId: number, chartsState: ChartItemI[], descriptions: string = '') => {
+    const updateChartsList = async (listId: number, chartsState: ChartItemI[], descriptions: string = "") => {
         dispatch(setLoadingRedux(true));
         try {
             const res: any = await axiosClient.post(`charts-list/update`, {
@@ -85,13 +85,13 @@ export default function useChartList(setChartsListsArr: any) {
             });
             dispatch(setLoadingRedux(false));
             if (res) {
-                console.log('RES OF UPDATE CHART LIST📊', res);
+                console.log("RES OF UPDATE CHART LIST📊", res);
 
                 if (res.data?.length) {
                     const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
                     setChartsListsArr(list);
                 }
-                toast.success('Лист граффиков успешно обновлен!');
+                toast.success("Лист графиков успешно обновлен!");
                 toast.warning(res.data.errorMessage);
             }
             return true;
@@ -112,7 +112,7 @@ export default function useChartList(setChartsListsArr: any) {
             });
             dispatch(setLoadingRedux(false));
             if (res) {
-                toast.success('График-лист успешно предоставлен пользователю');
+                toast.success("График-лист успешно предоставлен пользователю");
                 toast.warning(res.data.errorMessage);
             }
             return true;
