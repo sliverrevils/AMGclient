@@ -1,11 +1,11 @@
 .mainWrap {
-    background: whitesmoke;
+    background: rgb(255, 255, 255);
     //padding: 10px;
-    border: 1px solid black;
+    outline: 2px solid rgba(0, 0, 0, 0.158);
     border-radius: 5px;
     width: 200px;
     padding: 5px 10px;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.655);
+    box-shadow: 8px 15px 7px rgba(0, 0, 0, 0.37);
 
     position: relative;
 
@@ -24,19 +24,36 @@
         max-width: 200px;
         //border: 1px solid black;
         font-size: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
 
 
         .name {
             color: white;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            //white-space: nowrap;
+            text-decoration: underline;
+            text-align: center;
+
+            // border: 1px solid black;
+            padding: 1px 3px;
+            border-radius: 3px;
+            color: black;
+            background: rgba(255, 255, 255, 0.719);
+            text-decoration: none;
+            font-size: 9px;
+            font-weight: 600;
+            box-shadow: 1px 1px 4px black;
+
 
         }
 
         .leadership {
-            color: white;
+            color: rgba(255, 255, 255, 0.918);
             text-align: right;
+            text-decoration: underline;
         }
 
         .leadershipSelected {
@@ -54,8 +71,16 @@
         }
 
         .ckp {
-            text-transform: lowercase;
+            //text-transform: lowercase;
+            font-size: 8px;
             color: white;
+            color: rgb(75, 65, 7);
+            font-weight: 600;
+            border: 1px solid black;
+            align-self: flex-start;
+            padding: 0px 5px;
+            border-radius: 3px;
+            background: rgb(213, 228, 3);
         }
 
         .description {
@@ -64,17 +89,35 @@
             text-overflow: ellipsis;
             //white-space: nowrap;
             max-height: 50px;
-            border: 1px solid rgba(0, 0, 0, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.342);
             border-radius: 3px;
-            padding: 1px 2px;
+            padding: 1px 5px;
             text-transform: lowercase;
             color: white;
+            box-shadow: 0px 0px 5px black;
 
         }
 
 
     }
 
+}
+
+.mainWrap_off {
+    // background: #FF8056;
+    background: rgb(249, 83, 28);
+    background: linear-gradient(180deg, rgba(249, 83, 28, 1) 0%, rgba(255, 161, 130, 1) 84%);
+}
+
+.mainWrap_dep {
+    background: #4985b6;
+    background: rgb(44, 123, 187);
+    background: linear-gradient(180deg, rgba(44, 123, 187, 1) 0%, rgba(93, 159, 213, 1) 84%);
+}
+
+.mainWrap_sec {
+    background: rgb(28, 124, 65);
+    background: linear-gradient(180deg, rgba(28, 124, 65, 1) 0%, rgba(48, 190, 103, 1) 84%);
 }
 
 .mainWrapSelected {
@@ -90,7 +133,7 @@
 
 .genDir {
     // background: red;
-    outline: 5px solid #FF8056;
+    outline: 3px solid #FF8056;
     border: 0;
     box-shadow: 5px 5px 9px rgb(0, 0, 0);
     width: 100%;
@@ -103,6 +146,7 @@
         .name {
             font-size: 15px;
             color: #FF8056;
+
         }
 
         .leadership {

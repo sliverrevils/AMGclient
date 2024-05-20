@@ -4,12 +4,6 @@ import { ActiveItemI, OfficeWithStatsI, OfficeWithStatsTypeI, SectionWithStatsI 
 import useUsers from "@/hooks/useUsers";
 import { useEffect } from "react";
 
-enum BlockStyle {
-    "off" = "#FF8056",
-    "dep" = "steelblue",
-    "sec" = "rgba(42, 153, 85, 0.8431372549)",
-}
-
 export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
     const id = useNodeId();
     const currentNode = useNodes().find((node) => node.id === id);
@@ -24,8 +18,18 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
         data.setActiveItem({ x: left + width, y: top, width, data, eventType: event.type, type: data.type });
     };
 
+    const leaderName = userByID(data.leadership)?.name;
+
+    //clear name
+    let itemName = data.name;
+    let nameArr = data.name.split(" ");
+    if (!Number.isNaN(Number(nameArr[0]))) {
+        [, ...nameArr] = nameArr;
+        itemName = nameArr.join();
+    }
+
     return (
-        <div className={`${styles.mainWrap} ${data.selected ? styles.mainWrapSelected : ""} ${data.type === "genDir" ? styles.genDir : ""}`} style={{ background: BlockStyle[data.type] }} onContextMenu={onMenuOpen} onMouseEnter={onMenuOpen}>
+        <div className={`${styles.mainWrap} ${styles[`mainWrap_${data.type}`]} ${data.selected ? styles.mainWrapSelected : ""} ${data.type === "genDir" ? styles.genDir : ""}`} onContextMenu={onMenuOpen} onMouseEnter={onMenuOpen}>
             <div className={styles.seleted}>🚩</div>
             {data.type == "genDir" && <Handle id={String(Math.random())} type="source" position={Position.Bottom} />}
 
@@ -38,9 +42,9 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
             {data.type == "sec" && <Handle id={String(Math.random())} type="target" position={Position.Top} />}
 
             <div className={styles.content}>
-                <div className={styles.name}>{data.name}</div>
-                <div className={`${styles.leadership} ${data.selectedUserId === data.leadership ? styles.leadershipSelected : ""}`}>{userByID(data.leadership)?.name} </div>
-                <div className={styles.ckp}>{data.ckp}</div>
+                <div className={styles.name}>{itemName}</div>
+                {leaderName && <div className={`${styles.leadership} ${data.selectedUserId === data.leadership ? styles.leadershipSelected : ""}`}>{leaderName} </div>}
+                {data.ckp && <div className={styles.ckp}>{data.ckp}</div>}
                 <div className={styles.description}>{data.descriptions}</div>
             </div>
         </div>
