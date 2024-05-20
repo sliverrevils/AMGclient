@@ -1103,9 +1103,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 <div className={styles.miniHeaderBlock}>
                     {headers.map((header, headerIdx) => (
                         <div
+                            key={Math.random()}
                             className={styles.miniHeaderItem}
                             style={{
-                                width: columnsWidth[headerIdx] + 5,
+                                width: columnsWidth[headerIdx] || 0 + 5,
                                 // border: selectedRow == rowIndex ? `2px solid black` : '',
                             }}
                         >
@@ -1122,9 +1123,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 {row.values.map((item, itemIdx) => {
                                     return (
                                         <div
+                                            key={Math.random()}
                                             className={styles.miniRowItem}
                                             style={{
-                                                width: columnsWidth[itemIdx] + 5,
+                                                width: columnsWidth[itemIdx] || 0 + 5,
                                                 // border: selectedRow == rowIndex ? `2px solid black` : '',
                                             }}
                                         >

@@ -1,18 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
-import { getChartImage, logicMath } from '@/utils/funcs';
-import Modal from '../Modal/Modal';
-import styles from './chart.module.scss';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, scales } from "chart.js";
+import { Line, Bar } from "react-chartjs-2";
+import { getChartImage, logicMath } from "@/utils/funcs";
+import Modal from "../Modal/Modal";
+import styles from "./chart.module.scss";
 // import faker from 'faker';
-import chartTrendline from 'chartjs-plugin-trendline';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import chartTrendline from "chartjs-plugin-trendline";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 //import chartTrendline from './trend';
-import { CostumLineI } from '@/types/types';
-import { linearRegression } from '@/utils/trend';
-import { useSelector } from 'react-redux';
-import { StateReduxI } from '@/redux/store';
+import { CostumLineI } from "@/types/types";
+import { linearRegression } from "@/utils/trend";
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartTrendline, ChartDataLabels);
 
@@ -23,9 +23,10 @@ export function MultiLinesChart2({
     costumsLines,
     reverseTrend,
     showBtns = true,
-    chartName = '',
+    chartName = "",
     showX = true,
     linesBtns = true,
+    mini = false,
 }: {
     dates: { start: number; end: number }[];
     chartSchema?: any;
@@ -36,6 +37,7 @@ export function MultiLinesChart2({
     chartName?: string;
     showX?: boolean;
     linesBtns?: boolean;
+    mini?: boolean;
 }) {
     //STATE
     const [modal, setModal] = useState(false);
@@ -58,20 +60,23 @@ export function MultiLinesChart2({
         () => (
             <>
                 {!!dates.length && showBtns && (
-                    <div style={{ display: 'flex', gap: 10 }}>
-                        <div className="noselect" onClick={() => setReverse((state) => !state)} style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: 10 }}>
+                        <div className="noselect" onClick={() => setReverse((state) => !state)} style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? "lightblue" : "lightgreen"}`, cursor: "pointer", display: "flex", alignItems: "center" }}>
                             🔀
                         </div>
-                        <div className="noselect" onClick={() => getChartImage(chartSchema.name, true)} style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? 'lightblue' : 'lightgreen'}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        <div className="noselect" onClick={() => getChartImage(chartSchema.name, true)} style={{ padding: 3, borderRadius: 10, border: `2px solid ${reverse ? "lightblue" : "lightgreen"}`, cursor: "pointer", display: "flex", alignItems: "center" }}>
                             🖼️
                         </div>
                     </div>
                 )}
-                <div className={styles.buttonsBlock}>
-                    <div className={styles.pointLabelData} onClick={() => setShowPointData((state) => !state)}>
-                        {showPointData ? `убрать данные координат` : `показать данные координат`}
-                    </div>
-                </div>
+                {!mini ||
+                    (modal && (
+                        <div className={styles.buttonsBlock}>
+                            <div className={styles.pointLabelData} onClick={() => setShowPointData((state) => !state)}>
+                                {showPointData ? `убрать данные координат` : `показать данные координат`}
+                            </div>
+                        </div>
+                    ))}
 
                 <Line
                     className="myChart"
@@ -79,7 +84,7 @@ export function MultiLinesChart2({
                     options={{
                         responsive: true,
                         interaction: {
-                            mode: 'index' as const,
+                            mode: "index" as const,
                             intersect: false,
                         },
 
@@ -97,9 +102,9 @@ export function MultiLinesChart2({
 
                         scales: {
                             y: {
-                                type: 'linear' as const,
+                                type: "linear" as const,
                                 display: true,
-                                position: 'left' as const,
+                                position: "left" as const,
                                 reverse,
                             },
                             // y: {
@@ -108,9 +113,9 @@ export function MultiLinesChart2({
                             //   position: 'left' as const,
                             // },
                             y1: {
-                                type: 'linear' as const,
+                                type: "linear" as const,
                                 display: false,
-                                position: 'right' as const,
+                                position: "right" as const,
                                 grid: {
                                     drawOnChartArea: false,
                                 },
@@ -129,6 +134,7 @@ export function MultiLinesChart2({
                             // },
                             x: {
                                 display: modal || showX,
+                                grid: { color: "lightgray", lineWidth: 1 },
                             },
                         },
                     }}
@@ -137,25 +143,25 @@ export function MultiLinesChart2({
                         //labels: [1,2,3,4],
 
                         datasets: costumsLines.map((line) => ({
-                            type: 'line',
+                            type: "line",
                             label: line.name,
                             borderColor: line.color,
-                            borderWidth: 4,
+                            borderWidth: mini && !modal ? 1 : 4,
                             fill: false,
                             data: line.records,
-                            tension: 0.4, //soft angels
+                            tension: mini && !modal ? 0.1 : 0.4, //soft angels
                             datalabels: {
                                 display: !/тренд/.test(line.name.toLocaleLowerCase()) && showPointData,
-                                color: 'black',
-                                font: { size: 12, weight: 600 },
-                                backgroundColor: 'white',
-                                borderColor: '#FF8056',
+                                color: "black",
+                                font: mini && !modal ? { size: 7, weight: 500 } : { size: 12, weight: 600 },
+                                backgroundColor: "white",
+                                borderColor: "#FF8056",
                                 borderWidth: 2,
                                 borderRadius: 10,
-                                padding: 3,
+                                padding: 2,
                                 clamp: true,
-                                align: 'center',
-                                textAlign: 'center',
+                                align: "center",
+                                textAlign: "center",
                                 opacity: 0.8,
                             },
                         })),

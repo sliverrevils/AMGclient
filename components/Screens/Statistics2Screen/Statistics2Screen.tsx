@@ -1,30 +1,31 @@
-import { MultiLinesChart } from '@/components/elements/Chart/MultilineChart';
-import EditableStatisticTable from '@/components/elements/EditableStatisticTable/EditableStatisticTable';
-import EditableTable from '@/components/elements/EditableTable/EditableTable';
-import useOrg from '@/hooks/useOrg';
-import useTableStatistics from '@/hooks/useTableStatistics';
-import { StateReduxI } from '@/redux/store';
-import { DepartmentI, OfficeI, SectionI, TableStatisticI, TableStatisticListItemI, UserI } from '@/types/types';
-import { nanoid } from '@reduxjs/toolkit';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './stat2.module.scss';
-import { celarPeriodStats, clearStatName } from '@/utils/funcs';
-import useUsers from '@/hooks/useUsers';
-import FilterStat from './FilterPanel/FilterStat';
+import { MultiLinesChart } from "@/components/elements/Chart/MultilineChart";
+import EditableStatisticTable from "@/components/elements/EditableStatisticTable/EditableStatisticTable";
+import EditableTable from "@/components/elements/EditableTable/EditableTable";
+import useOrg from "@/hooks/useOrg";
+import useTableStatistics from "@/hooks/useTableStatistics";
+import { StateReduxI } from "@/redux/store";
+import { DepartmentI, OfficeI, SectionI, TableStatisticI, TableStatisticListItemI, UserI } from "@/types/types";
+import { nanoid } from "@reduxjs/toolkit";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import styles from "./stat2.module.scss";
+import { celarPeriodStats, clearStatName } from "@/utils/funcs";
+import useUsers from "@/hooks/useUsers";
+import FilterStat from "./FilterPanel/FilterStat";
 
 export default function Statistics2Screen() {
+    const { param } = useSelector((state: StateReduxI) => state.content);
     //state
     //const [tablesList,setTablesList] = useState<TableStatisticListItemI[]>([]);
-    const [selectedTable, setSelectedTable] = useState<TableStatisticI | 'clear' | undefined>();
+    const [selectedTable, setSelectedTable] = useState<TableStatisticI | "clear" | undefined>();
     const [tableSelect, setTableSelect] = useState(0);
     const [periodSelect, setPeriodSelect] = useState(0);
     const [statisticList, setStatisticList] = useState<TableStatisticListItemI[]>([]);
     const [periodList, setPeriodList] = useState<TableStatisticListItemI[]>([]);
-    const [userPostSelect, setUserPostSelect] = useState('');
+    const [userPostSelect, setUserPostSelect] = useState("");
     const [userPostList, setUserPostList] = useState<any[]>([]);
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const [postItem, setPostItem] = useState();
 
@@ -37,7 +38,7 @@ export default function Statistics2Screen() {
     const [departmentList, setDepartmentList] = useState<DepartmentI[]>([]);
     const [secList, setSecList] = useState<SectionI[]>([]);
 
-    const [filterStats, setFilterStats] = useState('');
+    const [filterStats, setFilterStats] = useState("");
 
     //hooks
     const { getOrgFullScheme } = useOrg();
@@ -49,14 +50,14 @@ export default function Statistics2Screen() {
 
     //selectors
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
-    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === 'admin');
+    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
     const user = useSelector((state: any) => state.main.user as UserI);
     const { offices } = useSelector((state: StateReduxI) => state.org);
 
     //vars
     const { userDepartments, userOffices, userSections } = getUserPosts(user.userId);
-    const statGrupType = ['Заполняемые', 'Контролируемые'];
-    const statType = ['Главная статистика', 'Дополнительные статистики'];
+    const statGrupType = ["Заполняемые", "Контролируемые"];
+    const statType = ["Главная статистика", "Дополнительные статистики"];
     //funcs
 
     //effects
@@ -70,12 +71,8 @@ export default function Statistics2Screen() {
             //ПОЛЬЗОВАТЕЛЬ
 
             //ЛИСТ ПОСТОВ
-            console.log('USER POSTS⭐⭐⭐⭐');
-            const tempList = [
-                ...userOffices.map((office, officeIdx) => ({ listName: `РО : ${office.name}@${officeIdx}` })),
-                ...userDepartments.map((department, departmentIdx) => ({ listName: `НО : ${department.name}@${departmentIdx}` })),
-                ...userSections.map((section, sectionIdx) => ({ listName: `АС : ${section.name}@${sectionIdx}` })),
-            ];
+            console.log("USER POSTS⭐⭐⭐⭐");
+            const tempList = [...userOffices.map((office, officeIdx) => ({ listName: `РО : ${office.name}@${officeIdx}` })), ...userDepartments.map((department, departmentIdx) => ({ listName: `НО : ${department.name}@${departmentIdx}` })), ...userSections.map((section, sectionIdx) => ({ listName: `АС : ${section.name}@${sectionIdx}` }))];
             setUserPostList(tempList);
         }
     }, [tableStatisticsList, user, isAdmin]);
@@ -83,7 +80,7 @@ export default function Statistics2Screen() {
     //ON USER SELECT POST
 
     useEffect(() => {
-        setError('');
+        setError("");
         //setTableSelect(0);
         //setSelectedTable('clear');
         const userPostsObj = {
@@ -92,12 +89,12 @@ export default function Statistics2Screen() {
             АС: userSections,
         };
         if (userPostSelect) {
-            const postType = userPostSelect.split(':')[0].trim();
-            const itemIndx = userPostSelect.split('@')[1].trim();
+            const postType = userPostSelect.split(":")[0].trim();
+            const itemIndx = userPostSelect.split("@")[1].trim();
             let currentPostItem = userPostsObj[postType][itemIndx];
 
             setPostItem(currentPostItem);
-            console.log('SELECT', userPostsObj[postType][itemIndx]);
+            console.log("SELECT", userPostsObj[postType][itemIndx]);
         }
     }, [userPostSelect]); // листы не ставим
 
@@ -106,17 +103,17 @@ export default function Statistics2Screen() {
         if (tableSelect) {
             const currentTable = tableStatisticsList.find((table) => table.id == tableSelect);
             if (currentTable && /@/g.test(currentTable.name)) {
-                const statName = currentTable.name.split('@')[0].trim();
+                const statName = currentTable.name.split("@")[0].trim();
                 setPeriodList(tableStatisticsList.filter((table) => table.name.includes(`${statName} @`)));
                 setPeriodSelect(0);
-                setSelectedTable('clear');
+                setSelectedTable("clear");
             } else {
                 setPeriodSelect(0);
                 setPeriodList([]);
                 getTableStatisticById(tableSelect).then(setSelectedTable);
             }
         } else {
-            setSelectedTable('clear');
+            setSelectedTable("clear");
             setPeriodSelect(0);
             setPeriodList([]);
         }
@@ -197,15 +194,22 @@ export default function Statistics2Screen() {
         setTableSelect(targetStatSelect);
     }, [targetStatSelect]);
 
+    useEffect(() => {
+        if (param) {
+            console.log("PARAM", param);
+            setTableSelect(param);
+        }
+    }, [param]);
+
     return (
         <div className={styles.stat2Wrap}>
             {!isAdmin && ( // ВЫБОР ПОСТА У ПОЛЬЗОВАТЕЛЯ
                 <div className={styles.userShooseStatBlock}>
                     <select className={styles.postSelect} value={userPostSelect} onChange={(event) => setUserPostSelect(event.target.value)}>
-                        <option value={''}>выбор поста</option>
+                        <option value={""}>выбор поста</option>
                         {userPostList.map((post) => (
                             <option key={Math.random()} value={post.listName}>
-                                {post.listName.split('@')[0]}
+                                {post.listName.split("@")[0]}
                             </option>
                         ))}
                     </select>
@@ -218,7 +222,7 @@ export default function Statistics2Screen() {
                                     postItem,
                                     setTableSelect,
                                     clearTable: () => {
-                                        setSelectedTable('clear');
+                                        setSelectedTable("clear");
                                     },
                                 }}
                             />
@@ -242,13 +246,13 @@ export default function Statistics2Screen() {
                                 placeholder="фильтр по названию"
                             />
                             {!!filterStats.trim().length && (
-                                <div className={styles.close} onClick={() => setFilterStats('')}>
+                                <div className={styles.close} onClick={() => setFilterStats("")}>
                                     ❌
                                 </div>
                             )}
                         </div>
-                        <select ref={statSelectRef} value={tableSelect} onChange={(event) => setTableSelect(+event.target.value)}>
-                            <option value={0}>{filterStats.trim().length ? `статистики по фильтру " ${filterStats.trim()} " : 📉${statisticList.filter((stat) => stat.name.toLowerCase().includes(filterStats.toLowerCase())).length}` : 'выбор из всех статистик '}</option>
+                        <select ref={statSelectRef} value={param || tableSelect} onChange={(event) => setTableSelect(+event.target.value)}>
+                            <option value={0}>{filterStats.trim().length ? `статистики по фильтру " ${filterStats.trim()} " : 📉${statisticList.filter((stat) => stat.name.toLowerCase().includes(filterStats.toLowerCase())).length}` : "выбор из всех статистик "}</option>
                             {statisticList
                                 .filter((stat) => stat.name.toLowerCase().includes(filterStats.toLowerCase()))
                                 .toSorted((a, b) => a.name.trim().localeCompare(b.name.trim()))
@@ -330,14 +334,14 @@ export default function Statistics2Screen() {
                             <option value={0}>выбрать период</option>
                             {periodList.map((table) => (
                                 <option key={nanoid()} value={table.id}>
-                                    {table.name.split('@')[1]}
+                                    {table.name.split("@")[1]}
                                 </option>
                             ))}
                         </select>
                     </div>
                 )
             }
-            <div style={{ color: 'tomato', padding: 10 }}>{error}</div>
+            <div style={{ color: "tomato", padding: 10 }}>{error}</div>
 
             <EditableStatisticTable
                 selectedTable={selectedTable}

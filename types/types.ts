@@ -350,6 +350,19 @@ export interface TableStatisticListItemI {
     dateColumn: DateColumnI;
 }
 
+export interface StatItemReady extends TableStatisticListItemI {
+    filled: boolean;
+    main: boolean;
+    isGrowing: string;
+    periodStr: string;
+}
+
+export interface StatItemReadyWithCoords extends StatItemReady {
+    type: "chart" | "period" | "table";
+    x: number;
+    y: number;
+}
+
 export interface UserPostsI {
     userOffices: OfficeI[];
     userDepartments: DepartmentI[];
@@ -389,4 +402,16 @@ export interface ReportItemI {
     id: number;
     name: string;
     dateColumn: DateColumnI;
+}
+
+// ORG
+export interface IOrgItem {
+    name: string;
+    leadership: number;
+    ckp: string;
+    descriptions: string;
+    id: number;
+    itemType: "office" | "department" | "section";
+    mainPattern: StatItemReady | undefined;
+    patterns: (StatItemReady | undefined)[];
 }

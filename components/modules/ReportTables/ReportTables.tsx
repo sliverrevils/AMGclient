@@ -235,9 +235,9 @@ export default function ReportTables() {
                 //проверяем заполнение прошлой недели
                 const currentDate = new Date();
                 const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
-                console.log(startOfLastWeek);
+                //console.log(startOfLastWeek);
 
-                console.log("LAST", startOfLastWeek);
+                //console.log("LAST", startOfLastWeek);
 
                 if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.end) return true;
                 else return false;
@@ -487,18 +487,9 @@ export default function ReportTables() {
             );
     }, [reportsList, statTypeSelect, infoFilter, filledFilter, filledStatIdArr, notFilledStatIdArr, growingStatIdArr, notGrowingStatIdArr, statTypeFilter, itemFilter, officeIdFilter]);
 
-    //test
-    useEffect(() => {
-        //  console.log('REPORT LIST', reportsList)
-    }, [reportsList]);
-
     if (isCreateRap) {
         return <CreateRaport />;
     }
-
-    // if (isCreateCharts) {
-    //     return <CreateChartList />;
-    // }
 
     return (
         <div className={styles.reportMainWrap}>

@@ -1,0 +1,66 @@
+.styleViewMain {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: white;
+
+    //max-width: 30%;
+
+
+    .onMouseEnterChart {
+        padding: 5px;
+        border-radius: 5px;
+
+        background: rgb(255, 255, 255);
+        border: 2px solid black;
+        position: fixed;
+        transform: translateY(-50%);
+        box-shadow: 5px 5px 15px black;
+    }
+
+    .chartsBlock {
+
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    table {
+        border-spacing: 2px;
+    }
+
+    th,
+    td {
+
+        border: 1px solid black;
+
+        &:nth-child(1) {
+            background: rgb(56, 107, 71);
+            color: rgb(0, 0, 0);
+        }
+    }
+
+    th {
+        font-size: 22px;
+        font-weight: 500;
+        background: tomato;
+    }
+
+    td {
+        font-weight: 600;
+    }
+
+
+
+
+
+
+
+}
+
+.tableView {
+    position: fixed;
+    top: 10px;
+    left: 100px;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px black;
+}
