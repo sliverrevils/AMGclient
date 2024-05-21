@@ -1,4 +1,5 @@
 .styleViewMain {
+    z-index: 100;
     position: fixed;
     left: 0;
     top: 0;
@@ -26,6 +27,7 @@
 
     table {
         border-spacing: 2px;
+        font-size: 10px;
     }
 
     th,
@@ -34,19 +36,23 @@
         border: 1px solid black;
 
         &:nth-child(1) {
+
             background: rgb(56, 107, 71);
-            color: rgb(0, 0, 0);
+            // color: rgb(255, 255, 255);
         }
     }
 
     th {
-        font-size: 22px;
+        //font-size: 22px;
         font-weight: 500;
+        color: white;
         background: tomato;
+        padding: 2px;
     }
 
     td {
         font-weight: 600;
+        text-align: center;
     }
 
 
@@ -58,6 +64,7 @@
 }
 
 .tableView {
+    z-index: 100;
     position: fixed;
     top: 10px;
     left: 100px;
