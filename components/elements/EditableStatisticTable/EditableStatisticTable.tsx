@@ -39,6 +39,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const selectedItemRef = useRef<number>(0);
 
     //--state
+    const [isModal, setIsModal] = useState(false);
     const [headers, setHeaders] = useState<Array<StatHeaderI>>([]);
     const [rows, setRows] = useState<Array<StatRowI>>([]);
     const [calcedRows, setCalcedRows] = useState<Array<StatRowI>>([]);
@@ -1155,8 +1156,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         );
     }
 
-    return (
+    const tableHTML = (
         <div className={styles.blokWrap}>
+            {!!headers.length && (
+                <div className={styles.fullScreenBtn} onClick={() => setIsModal((state) => !state)}>
+                    🪟{isModal ? "отключить полный экран" : "на весь экран"}
+                </div>
+            )}
             {isAdmin && (
                 <>
                     {
@@ -1392,16 +1398,31 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 </div>
             </div>
             {!!chartLines.length && (
-                <MultiLinesChart2
-                    {...{
-                        chartSchema: [],
-                        costumsLines: chartLines,
-                        dates: dateColumn?.datesArr || [],
-                        clickFunc: () => {},
-                        reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
-                    }}
-                />
+                <div style={{ width: isModal ? "60vw" : "100%" }}>
+                    <MultiLinesChart2
+                        {...{
+                            chartSchema: [],
+                            costumsLines: chartLines,
+                            dates: dateColumn?.datesArr || [],
+                            clickFunc: () => {},
+                            reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
+                        }}
+                    />
+                </div>
             )}
         </div>
     );
+
+    if (isModal) {
+        return (
+            <div className={styles.modal}>
+                <div className={styles.closeModalBtn} onClick={() => setIsModal(false)}>
+                    ❌
+                </div>
+                <div className={styles.tableWrap}>{tableHTML}</div>
+            </div>
+        );
+    }
+
+    return tableHTML;
 }

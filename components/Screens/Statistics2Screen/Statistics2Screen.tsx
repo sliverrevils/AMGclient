@@ -12,6 +12,7 @@ import styles from "./stat2.module.scss";
 import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import FilterStat from "./FilterPanel/FilterStat";
+import Modal from "@/components/elements/Modal/Modal";
 
 export default function Statistics2Screen() {
     const { param } = useSelector((state: StateReduxI) => state.content);
@@ -240,7 +241,7 @@ export default function Statistics2Screen() {
                                 type="text"
                                 value={filterStats}
                                 onChange={(event) => {
-                                    setFilterStats(event.target.value.trim());
+                                    setFilterStats(event.target.value.trimStart());
                                     //statSelectRef.current.
                                 }}
                                 placeholder="фильтр по названию"

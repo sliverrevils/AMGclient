@@ -5,6 +5,17 @@
     width: 100%;
     padding: 5px;
 
+    .fullScreenBtn {
+        //background: #56b9ff;
+        border: 2px solid lightblue;
+        padding: 2px 5px;
+        border-radius: 5px;
+        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.671);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
     //border: 2px solid #2a8fd7;
     .createNewTableBtn {
         cursor: pointer;
@@ -277,6 +288,8 @@
                             position: relative;
                             // border: 2px solid #56ff89;
 
+                            .logicInput:focus {}
+
 
                             .logicHelp {
                                 z-index: 100;
@@ -289,9 +302,9 @@
                                 flex-direction: column;
                                 gap: 5px;
                                 position: absolute;
-                                right: 0;
-                                bottom: -70px;
-                                transform: translateX(+100%);
+                                left: 0;
+                                top: 25px;
+
 
                                 .columnsHelp {
                                     display: flex;
@@ -744,4 +757,25 @@
 
 
     }
+}
+
+.modal {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    overflow: auto;
+
+    background: white;
+    padding-top: 70px;
+
+    .closeModalBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
 }
