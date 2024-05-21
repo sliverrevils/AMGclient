@@ -79,6 +79,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const { createTablePattern } = useTablePatterns();
     const { createTableStatistic, updateTableStatistic, deleteTableStatistic } = useTableStatistics();
     const { userPatterns, getUserPosts } = useUsers();
+    const { param } = useSelector((state: StateReduxI) => state.content);
 
     //--funcs
 
@@ -129,6 +130,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         };
 
         const result: RaportTableInfoI = {
+            lastUpdate: new Date().getTime(),
             statFilled,
             lastFilledPeriod: dateColumn!?.datesArr[lastRowIndex!] || null,
             statLastRowValues: lastFilledRow?.values.map((item) => String(item.value)) || [],
@@ -1170,7 +1172,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         isCreateTableBlock ? (
                             <CreateTableControl onCreateDateColumn={onCreateDateColumn} onCancel={() => setIsCreateTableBlock(false)} />
                         ) : (
-                            selectedTable == "clear" && (
+                            selectedTable == "clear" &&
+                            !param && (
                                 <div className={styles.createNewTableBtn} onClick={() => setIsCreateTableBlock(true)}>
                                     создать новую статистику
                                 </div>
@@ -1195,6 +1198,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         <ReactQuill value={about} onChange={setAbout} readOnly={!isAdmin} theme={isAdmin ? "snow" : "bubble"} />
                     </div>
                 } */}
+
                 <div className={styles.tableMain}>
                     {!!headers.length && (
                         <>
@@ -1353,7 +1357,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             } */}
                             {!!selectedTable && !createdNextPeriod && typeof selectedTable === "object" && (
                                 <div onClick={onUpdateTable} className={styles.updateTableBtn}>
-                                    сохранить изменения
+                                    <div> сохранить изменения</div>
                                 </div>
                             )}
                             {isAdmin && (
@@ -1373,19 +1377,19 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
                             {/* <button onClick={() => console.log(inputsArrRef.current)}>InputRefs</button> */}
 
-                            {/* <button onClick={() => getRaportInfo(true)} style={{ alignSelf: 'flex-end' }}>
+                            {/* <button onClick={() => getRaportInfo(true)} style={{ alignSelf: "flex-end" }}>
                                 RAPORT INFO
                             </button>
                             <button
                                 onClick={() => {
                                     alert(JSON.stringify(dateColumn, null, 2));
-                                    console.log('dateColumn', dateColumn);
+                                    console.log("dateColumn", dateColumn);
                                 }}
-                                style={{ alignSelf: 'flex-end' }}
+                                style={{ alignSelf: "flex-end" }}
                             >
                                 current dateColumn
                             </button>
-                            <button onClick={() => alert(JSON.stringify(headers, null, 2))} style={{ alignSelf: 'flex-end' }}>
+                            <button onClick={() => alert(JSON.stringify(headers, null, 2))} style={{ alignSelf: "flex-end" }}>
                                 headers
                             </button> */}
                         </div>

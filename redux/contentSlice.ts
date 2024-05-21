@@ -14,7 +14,8 @@ export const contentSlice = createSlice({
             state.param = action.payload.param;
         },
         contentCurrentClear: (state) => {
-            state = { ...initialState };
+            state.current = initialState.current;
+            state.param = initialState.param;
         },
     },
 });

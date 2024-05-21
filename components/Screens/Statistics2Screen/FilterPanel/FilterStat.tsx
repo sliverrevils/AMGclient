@@ -5,10 +5,15 @@ import useUsers from "@/hooks/useUsers";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { clearStatName } from "@/utils/funcs";
 import { nanoid } from "@reduxjs/toolkit";
+import useOrg from "@/hooks/useOrg";
+import { StateReduxI } from "@/redux/store";
+import { useSelector } from "react-redux";
 
-export default function FilterStat({ postItem, setTableSelect, clearTable }: { postItem: any; setTableSelect: React.Dispatch<React.SetStateAction<number>>; clearTable: () => void }) {
+export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTable }: { isGenDir: boolean; postItem: any; setTableSelect: React.Dispatch<React.SetStateAction<number>>; clearTable: () => void }) {
     //STATE
     const [currentTarget, setCurrentTarget] = useState(postItem);
+    //offices
+    const [officeSelect, setOfficeSelect] = useState(0);
     //depatments
     const [departmentsList, setDepatmentsList] = useState<DepartmentI[]>([]);
     const [departmentSelect, setDepatmentSelect] = useState(0);
@@ -22,6 +27,7 @@ export default function FilterStat({ postItem, setTableSelect, clearTable }: { p
     //HOOKS
     const { userByID } = useUsers();
     const { statNameById } = useTableStatistics();
+    const { offices } = useSelector((state: StateReduxI) => state.org);
 
     //FUNCS
     //create depatments list
@@ -90,6 +96,9 @@ export default function FilterStat({ postItem, setTableSelect, clearTable }: { p
     useEffect(() => {
         //ON CHANGE POST
         if (postItem) {
+            if (postItem === "genDir") {
+                console.log("GENERAL DIRECTOR");
+            }
             clearTable();
             setTableSelect(0);
             setCurrentTarget(postItem);
@@ -98,6 +107,16 @@ export default function FilterStat({ postItem, setTableSelect, clearTable }: { p
         }
         console.log("FILTER UPDATE", postItem?.sections);
     }, [postItem]);
+    // ON OFFICE SELECT
+    useEffect(() => {
+        if (officeSelect) {
+            const currentOffice = offices.find((office) => office.id === officeSelect);
+            setDepatmentsList(currentOffice!?.departments);
+            setCurrentTarget(currentOffice);
+        } else {
+            setDepatmentsList([]);
+        }
+    }, [officeSelect]);
 
     useEffect(() => {
         // ON DEPATMENT SELECT
@@ -153,6 +172,17 @@ export default function FilterStat({ postItem, setTableSelect, clearTable }: { p
         currentTarget && (
             <div className={styles.mainFilterWrap}>
                 <div className={styles.filterBlock}>
+                    {postItem === "genDir" && (
+                        <div className={styles.filterItem}>
+                            <select className={styles.offSelect} value={officeSelect} onChange={(event) => setOfficeSelect(Number(event.target.value))}>
+                                {offices.map((office) => (
+                                    <option key={nanoid()} value={office.id}>
+                                        {office.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     {!!departmentsList.length && (
                         <div className={styles.filterItem}>
                             <select className={styles.depSelect} value={departmentSelect} onChange={(event) => setDepatmentSelect(+event.target.value)}>
@@ -193,47 +223,49 @@ export default function FilterStat({ postItem, setTableSelect, clearTable }: { p
                         </div>
                     )}
                 </div>
-                <div className={`${styles.targetWrap} ${styles[getTargetType()]}`}>
-                    <div className={styles.statStatus}>
-                        {currentTarget?.name == postItem?.name ? (
-                            <div className={styles.fill}>
-                                <span>Заполняемая</span>
-                            </div>
-                        ) : (
-                            <div className={styles.control}>Контролируемая</div>
-                        )}
-                    </div>
-
-                    <div className={styles.targetName}>
-                        <div>{currentTarget.name}</div>
-                    </div>
-
-                    <div className={styles.leadershipBlock}>
-                        <span>{getCurrentPostText()} :</span> <div>{userByID(+currentTarget.leadership)?.name || "не назначен"}</div>
-                    </div>
-
-                    <div className={styles.statsBlock}>
-                        <div className={styles.mainStat}>
-                            <span>Главная статистика</span>
-                            <StatDiv statId={currentTarget.mainPattern} />
-                        </div>
-                        <div className={styles.addStat}>
-                            <span>Дополнительные статистики</span>
-                            {!!additionalStatsList.length ? (
-                                <select value={additionalStatsSelect} onChange={(event) => setAdditionalStatsSelect(+event.target.value)}>
-                                    <option value={0}>Дополнительные статистики</option>
-                                    {additionalStatsList.map((statId) => (
-                                        <option key={nanoid()} value={statId}>
-                                            {clearStatName(statNameById(statId))} 📉
-                                        </option>
-                                    ))}
-                                </select>
+                {currentTarget !== "genDir" && (
+                    <div className={`${styles.targetWrap} ${styles[getTargetType()]}`}>
+                        <div className={styles.statStatus}>
+                            {currentTarget?.name == postItem?.name ? (
+                                <div className={styles.fill}>
+                                    <span>Заполняемая</span>
+                                </div>
                             ) : (
-                                <div>Дополнительные статистики не назначены</div>
+                                <div className={styles.control}>Контролируемая</div>
                             )}
                         </div>
+
+                        <div className={styles.targetName}>
+                            <div>{currentTarget.name}</div>
+                        </div>
+
+                        <div className={styles.leadershipBlock}>
+                            <span>{getCurrentPostText()} :</span> <div>{userByID(+currentTarget.leadership)?.name || "не назначен"}</div>
+                        </div>
+
+                        <div className={styles.statsBlock}>
+                            <div className={styles.mainStat}>
+                                <span>Главная статистика</span>
+                                <StatDiv statId={currentTarget.mainPattern} />
+                            </div>
+                            <div className={styles.addStat}>
+                                <span>Дополнительные статистики</span>
+                                {!!additionalStatsList.length ? (
+                                    <select value={additionalStatsSelect} onChange={(event) => setAdditionalStatsSelect(+event.target.value)}>
+                                        <option value={0}>Дополнительные статистики</option>
+                                        {additionalStatsList.map((statId) => (
+                                            <option key={nanoid()} value={statId}>
+                                                {clearStatName(statNameById(statId))} 📉
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <div>Дополнительные статистики не назначены</div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         )
     );

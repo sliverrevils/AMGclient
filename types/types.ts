@@ -348,6 +348,7 @@ export interface TableStatisticListItemI {
     id: number;
     name: string;
     dateColumn: DateColumnI;
+    lastUpdate: string;
 }
 
 export interface StatItemReady extends TableStatisticListItemI {
@@ -371,6 +372,7 @@ export interface UserPostsI {
 }
 
 export interface RaportTableInfoI {
+    lastUpdate?: number;
     statFilled: "full" | "notFull" | "clean";
     lastFilledPeriod: DatesI;
     statLastRowValues?: string[];

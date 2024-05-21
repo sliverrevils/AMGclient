@@ -45,6 +45,7 @@ export default function StatView({ statView }: { statView: StatItemReadyWithCoor
             return (
                 <div className={styles.styleViewMain}>
                     <div className={styles.onMouseEnterChart} style={{ left: statView.x, top: statView.y + 24 }}>
+                        <div className={styles.lastUpdate}>⏲️{new Date(statView.lastUpdate).toLocaleString()}</div>
                         <table>
                             <thead>
                                 <tr>

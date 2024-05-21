@@ -28,7 +28,7 @@ export default function Statistics2Screen() {
 
     const [error, setError] = useState("");
 
-    const [postItem, setPostItem] = useState();
+    const [postItem, setPostItem] = useState<any>();
 
     const [officeSelect, setOfficeSelect] = useState(0);
     const [depSelect, setDepSelect] = useState(0);
@@ -53,9 +53,10 @@ export default function Statistics2Screen() {
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
     const user = useSelector((state: any) => state.main.user as UserI);
-    const { offices } = useSelector((state: StateReduxI) => state.org);
+    const { offices, generalDirector } = useSelector((state: StateReduxI) => state.org);
 
     //vars
+    const isGenDir = generalDirector === user.userId;
     const { userDepartments, userOffices, userSections } = getUserPosts(user.userId);
     const statGrupType = ["Заполняемые", "Контролируемые"];
     const statType = ["Главная статистика", "Дополнительные статистики"];
@@ -90,6 +91,10 @@ export default function Statistics2Screen() {
             АС: userSections,
         };
         if (userPostSelect) {
+            if (userPostSelect === "genDir") {
+                setPostItem("genDir");
+                return;
+            }
             const postType = userPostSelect.split(":")[0].trim();
             const itemIndx = userPostSelect.split("@")[1].trim();
             let currentPostItem = userPostsObj[postType][itemIndx];
@@ -195,9 +200,10 @@ export default function Statistics2Screen() {
         setTableSelect(targetStatSelect);
     }, [targetStatSelect]);
 
+    //ПРИ ПЕРЕХОДЕ ИЗ ОТЧЕТОВ
     useEffect(() => {
         if (param) {
-            console.log("PARAM", param);
+            // console.log("PARAM", param);
             setTableSelect(param);
         }
     }, [param]);
@@ -208,6 +214,7 @@ export default function Statistics2Screen() {
                 <div className={styles.userShooseStatBlock}>
                     <select className={styles.postSelect} value={userPostSelect} onChange={(event) => setUserPostSelect(event.target.value)}>
                         <option value={""}>выбор поста</option>
+                        {isGenDir && <option value="genDir">⭐Генеральный директор</option>}
                         {userPostList.map((post) => (
                             <option key={Math.random()} value={post.listName}>
                                 {post.listName.split("@")[0]}
@@ -220,6 +227,7 @@ export default function Statistics2Screen() {
                         !!userPostSelect.length && (
                             <FilterStat
                                 {...{
+                                    isGenDir,
                                     postItem,
                                     setTableSelect,
                                     clearTable: () => {

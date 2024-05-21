@@ -639,6 +639,14 @@
                     align-self: flex-end;
                     opacity: 1;
                     box-shadow: 3px 3px 4px black;
+                    display: flex;
+                    flex-direction: column;
+
+                    span {
+                        align-self: flex-end;
+                        font-size: 13px;
+                        opacity: .7;
+                    }
 
                     &:hover {
                         transition: transform 100ms ease-in-out;

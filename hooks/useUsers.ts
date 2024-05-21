@@ -1,6 +1,6 @@
-import { StateReduxI } from '@/redux/store';
-import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from '@/types/types';
-import { useSelector } from 'react-redux';
+import { StateReduxI } from "@/redux/store";
+import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from "@/types/types";
+import { useSelector } from "react-redux";
 
 export default function useUsers() {
     const { offices } = useSelector((state: StateReduxI) => state.org);
@@ -97,7 +97,7 @@ export default function useUsers() {
             accessPatterns[field] = patterns.filter((pattern) => accessPatternsIds[field].includes(pattern.id));
         });
 
-        console.log('ACCESS 🔐\n', accessPatterns);
+        console.log("ACCESS 🔐\n", accessPatterns);
 
         return accessPatterns;
 
@@ -110,6 +110,8 @@ export default function useUsers() {
     };
 
     const getUserPosts = (userId: number): UserPostsI => {
+        //GEN DIR
+
         // OFFICES SERACH
         const userOffices = offices.filter((office) => office.leadership == userId);
 

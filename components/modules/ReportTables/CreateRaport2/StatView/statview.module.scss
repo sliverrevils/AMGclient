@@ -17,6 +17,11 @@
         position: fixed;
         transform: translateY(-50%);
         box-shadow: 5px 5px 15px black;
+
+        .lastUpdate {
+            font-weight: 600;
+            text-align: right;
+        }
     }
 
     .chartsBlock {
