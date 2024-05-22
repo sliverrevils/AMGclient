@@ -177,6 +177,7 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                             <select className={styles.offSelect} value={officeSelect} onChange={(event) => setOfficeSelect(Number(event.target.value))}>
                                 {offices.map((office) => (
                                     <option key={nanoid()} value={office.id}>
+                                        <option>Выбор отделения</option>
                                         {office.name}
                                     </option>
                                 ))}

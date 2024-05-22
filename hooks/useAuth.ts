@@ -1,11 +1,11 @@
-import axiosClient, { axiosError } from '@/app/axiosClient';
-import { userLogOut } from '@/app/usersClent';
-import { logInRedux, logOutRedux } from '@/redux/mainSlice';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { setLoadingRedux } from '@/redux/appSlice';
-import { UserFullI } from '@/types/types';
-import { contentCurrentClear } from '@/redux/contentSlice';
+import axiosClient, { axiosError } from "@/app/axiosClient";
+import { userLogOut } from "@/app/usersClent";
+import { logInRedux, logOutRedux } from "@/redux/mainSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { setLoadingRedux } from "@/redux/appSlice";
+import { UserFullI } from "@/types/types";
+import { contentCurrentClear } from "@/redux/contentSlice";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -16,14 +16,14 @@ export const useAuth = () => {
         userLogOut()
             .then((message) => {
                 toast.warn(message, {
-                    position: 'top-right',
+                    position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                     progress: undefined,
-                    theme: 'light',
+                    theme: "light",
                 });
             })
             .finally(() => {
@@ -35,24 +35,24 @@ export const useAuth = () => {
     const singIn = (loginEmail: string, loginPassword: string) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/login', {
+            .post("users/login", {
                 username: loginEmail,
                 password: loginPassword,
             })
             .then(({ data }) => {
-                console.log('LOGIN DATA', data);
+                console.log("LOGIN DATA", data);
                 if (data.user) {
                     // notifyMsg(data.user.email);
                     // toast(data.message);
                     toast.success(data.message, {
-                        position: 'top-right',
+                        position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     dispatch(logInRedux(data.user));
                 }
@@ -64,14 +64,14 @@ export const useAuth = () => {
     const singUp = async (name: string, post: string, loginEmail: string, loginPassword: string, toggleFunc: any) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/signup', {
+            .post("users/signup", {
                 email: loginEmail,
                 password: loginPassword,
                 post: post,
                 name,
             })
             .then(({ data }) => {
-                console.log('SING UP DATA', data);
+                console.log("SING UP DATA", data);
                 if (data) {
                     // notifyMsg(data.user.email);
                     // toast(data.message);
@@ -82,14 +82,14 @@ export const useAuth = () => {
                     toggleFunc();
 
                     toast.success(`Поздравляем ! Вы успешно зарегистрировались! Дождитесь верификации администратора`, {
-                        position: 'top-right',
+                        position: "top-right",
                         autoClose: 10000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     dispatch(logInRedux(data.user));
                 }
@@ -100,14 +100,14 @@ export const useAuth = () => {
     const createUser = async (name: string, post: string, loginEmail: string, loginPassword: string, toggleFunc: any) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/signup', {
+            .post("users/signup", {
                 email: loginEmail,
                 password: loginPassword,
                 post: post,
                 name,
             })
             .then(({ data }) => {
-                console.log('SING UP DATA', data);
+                console.log("SING UP DATA", data);
                 if (data) {
                     if (data.warningMessage) {
                         toast.error(data.warningMessage);
@@ -116,14 +116,14 @@ export const useAuth = () => {
                     toggleFunc();
 
                     toast.success(`Пользователь ${loginEmail} успешно создан`, {
-                        position: 'top-right',
+                        position: "top-right",
                         autoClose: 10000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     // dispatch(logInRedux(data.user));
                 }
@@ -134,7 +134,7 @@ export const useAuth = () => {
     const updateUser = async (id: number, name: string, login: string, updater?: () => void) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/update', {
+            .post("users/update", {
                 id,
                 name,
                 login,
@@ -144,14 +144,14 @@ export const useAuth = () => {
                     toast.error(data.errorMessage);
 
                     toast.success(data.message, {
-                        position: 'top-left',
+                        position: "top-left",
                         autoClose: 10000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     updater && updater();
                 }
@@ -170,14 +170,14 @@ export const useAuth = () => {
                     toast.error(data.errorMessage);
 
                     toast.success(data.message, {
-                        position: 'top-left',
+                        position: "top-left",
                         autoClose: 10000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     updater && updater();
                 }
@@ -187,10 +187,10 @@ export const useAuth = () => {
             .finally(() => dispatch(setLoadingRedux(false)));
     };
 
-    const changeUserPass = async (id: number, password: string, updater: () => void, oldPassword: string = '') => {
+    const changeUserPass = async (id: number, password: string, updater: () => void, oldPassword: string = "") => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/change-pass', {
+            .post("users/change-pass", {
                 id,
                 password,
                 oldPassword,
@@ -200,14 +200,14 @@ export const useAuth = () => {
                     toast.error(data.errorMessage);
 
                     toast.success(data.message, {
-                        position: 'top-left',
+                        position: "top-left",
                         autoClose: 10000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: 'light',
+                        theme: "light",
                     });
                     updater && updater();
                 }
@@ -220,7 +220,7 @@ export const useAuth = () => {
     const allUsers = async (setUsersFunc: any) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .get('users/all-users')
+            .get("users/all-users")
             .then(({ data }: { data: UserFullI[] }) => {
                 setUsersFunc(data);
             })
@@ -230,17 +230,37 @@ export const useAuth = () => {
     const verificateUser = async (id: number, setUsersFunc: any = false) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/verificate-user', { id })
+            .post("users/verificate-user", { id })
             .then(({ data }) => {
                 toast.success(data.message, {
-                    position: 'top-right',
+                    position: "top-right",
                     autoClose: 10000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                     progress: undefined,
-                    theme: 'light',
+                    theme: "light",
+                });
+                if (setUsersFunc) allUsers(setUsersFunc);
+            })
+            .catch(axiosError)
+            .finally(() => dispatch(setLoadingRedux(false)));
+    };
+    const adminToggle = async (id: number, setUsersFunc: any = false) => {
+        dispatch(setLoadingRedux(true));
+        axiosClient
+            .post("users/role_toggle", { id })
+            .then(({ data }) => {
+                toast.success(data.message, {
+                    position: "top-right",
+                    autoClose: 10000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
                 });
                 if (setUsersFunc) allUsers(setUsersFunc);
             })
@@ -251,22 +271,22 @@ export const useAuth = () => {
     const blockUserToggle = async (id: number, setUsersFunc: any = false) => {
         dispatch(setLoadingRedux(true));
         axiosClient
-            .post('users/block-user', { id })
+            .post("users/block-user", { id })
             .then(({ data }) => {
                 toast.success(data.message, {
-                    position: 'top-right',
+                    position: "top-right",
                     autoClose: 10000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                     progress: undefined,
-                    theme: 'light',
+                    theme: "light",
                 });
                 if (setUsersFunc) allUsers(setUsersFunc);
             })
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
-    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass, deleteUser };
+    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass, deleteUser, adminToggle };
 };

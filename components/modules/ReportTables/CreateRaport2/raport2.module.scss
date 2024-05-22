@@ -206,6 +206,28 @@
                     color: rgb(0, 0, 0);
                     background-color: rgba(255, 99, 71, 0.473);
 
+                    .timeBlock {
+                        display: flex;
+                        flex-direction: column;
+
+                        .lastUpdate {
+                            align-self: flex-end;
+                            font-size: 8px;
+                            display: flex;
+                            gap: 3px;
+
+                            .date {}
+
+                            .time {
+                                padding: 0px 2px;
+                                background: rgba(255, 255, 255, 0.651);
+                                border-radius: 2px;
+                            }
+                        }
+                    }
+
+
+
                 }
 
                 .timeCell_filled {
@@ -242,6 +264,23 @@
                     //border: 2px solid rgb(194, 97, 64);
                     letter-spacing: .9px;
                     border-radius: 5px;
+
+                    .periodColumnBlock {
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        .isLastUpdate_true {
+                            opacity: 1;
+                            cursor: pointer;
+                        }
+
+                        .isLastUpdate_false {
+                            opacity: .5;
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
 
@@ -458,6 +497,8 @@
 }
 
 .btnsBlock {
+    z-index: 10;
+    background: white;
     position: fixed;
     right: 0;
     top: 50%;

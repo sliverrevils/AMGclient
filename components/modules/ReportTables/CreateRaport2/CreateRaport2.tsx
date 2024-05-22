@@ -69,6 +69,7 @@ const saveTableToExcel = (headers: string[], tableData: string[][]) => {
 
 export default function CreateRaport2() {
     //STATE
+    const [isShowLastUpdate, setIsShowLastUpdate] = useState<boolean>(JSON.parse(localStorage.getItem("showLastUpdate") || `false`));
     const [isShowFilteredOrg, setIsShowFilteredOrg] = useState(false);
     const [isSelectedAllOrgChildren, setIsSelectedAllOrgChildren] = useState(true);
     const [selectedStats, setSelectedStats] = useState<number[]>(JSON.parse(localStorage.getItem("selectedStats") || `[]`));
@@ -237,6 +238,8 @@ export default function CreateRaport2() {
 
                 const trendType = item.dateColumn.raportInfo?.trendType.toLowerCase().replace("тренд", "").replace("не указан", "");
                 const trendStatus = /не определено/.test(item.isGrowing) ? "" : item.isGrowing;
+                const isFilledPeriod = !/не заполнена/.test(item.periodStr);
+                console.log(item);
 
                 const lineStyle = `${styles.statLine} ${selectedStats.includes(item.id) ? styles.statLine_selected : ""}`;
                 return (
@@ -254,7 +257,15 @@ export default function CreateRaport2() {
                             }}
                             onMouseLeave={() => setStatToView(null)}
                         >
-                            {item.periodStr}
+                            <div className={styles.timeBlock}>
+                                <span>{item.periodStr}</span>
+                                {isShowLastUpdate && isFilledPeriod && (
+                                    <span className={styles.lastUpdate}>
+                                        <span className={styles.date}>{new Date(item.lastUpdate).toLocaleDateString()}</span>
+                                        <span className={styles.time}>{new Date(item.lastUpdate).toLocaleTimeString()}</span>
+                                    </span>
+                                )}
+                            </div>
                         </td>
                         <td
                             onMouseEnter={(event) => {
@@ -319,7 +330,7 @@ export default function CreateRaport2() {
 
             return { listHtml };
         }
-    }, [filteredOrgItems, selectedStats]);
+    }, [filteredOrgItems, selectedStats, isShowLastUpdate]);
 
     //EFFECTS TEST
     //при отключении сортировки орг схемы убираем показываемые списки
@@ -330,9 +341,12 @@ export default function CreateRaport2() {
             setIsSectionListShow(false);
         }
     }, [isShowFilteredOrg]);
+
+    //LOCAL STORAGE
     useEffect(() => {
         localStorage.setItem("selectedStats", JSON.stringify(selectedStats));
-    }, [selectedStats]);
+        localStorage.setItem("showLastUpdate", JSON.stringify(isShowLastUpdate));
+    }, [selectedStats, isShowLastUpdate]);
 
     const selectedFilterStyle = (selected: boolean): CSSProperties => ({ border: selected ? `2px solid black` : `2px solid transparent` });
     const selectedOrgFilterClass = (type: (typeof filters.orgTypeFilter)[0]) => (filters.orgTypeFilter.includes(type) ? `${styles.selectedFilter} noselect` : `${styles.notSelectedFilter} noselect`);
@@ -530,7 +544,14 @@ export default function CreateRaport2() {
                     <thead>
                         <tr>
                             <th className={styles.mainColumn}></th>
-                            <th className={styles.mainColumn}>Период</th>
+                            <th className={styles.mainColumn}>
+                                <div className={styles.periodColumnBlock}>
+                                    <span>Период</span>
+                                    <span className={styles[`isLastUpdate_${isShowLastUpdate}`]} onClick={() => setIsShowLastUpdate((state) => !state)}>
+                                        ⏲️
+                                    </span>
+                                </div>
+                            </th>
                             <th className={styles.mainColumn}>Название статистики</th>
                             {/* <th className={styles.mainColumn} title={"вид тренда:\n📉 - стандартный\n📈 - перевернуты "}>
                             Тип

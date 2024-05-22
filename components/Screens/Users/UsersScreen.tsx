@@ -1,43 +1,47 @@
-import { useAuth } from '@/hooks/useAuth';
-import { UserFullI } from '@/types/types';
-import { useEffect, useRef, useState } from 'react';
-import styles from './usersScreen.module.scss';
-import useOrg from '@/hooks/useOrg';
-import { replaceFio } from '@/utils/funcs';
+import { useAuth } from "@/hooks/useAuth";
+import { UserFullI, UserI } from "@/types/types";
+import { useEffect, useRef, useState } from "react";
+import styles from "./usersScreen.module.scss";
+import useOrg from "@/hooks/useOrg";
+import { replaceFio } from "@/utils/funcs";
+import { useSelector } from "react-redux";
+import { StateReduxI } from "@/redux/store";
 
 export default function UsersScreen() {
     const [users, setUsers] = useState<UserFullI[]>([]);
-    const { allUsers, verificateUser, blockUserToggle } = useAuth();
+    const { allUsers, verificateUser, blockUserToggle, adminToggle } = useAuth();
     let { current: init } = useRef(true);
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
 
     const { createUser, updateUser, changeUserPass, deleteUser } = useAuth();
 
-    const [newUserName, setNewUserName] = useState('');
-    const [newUserSurname, setNewUserSurname] = useState('');
-    const [newUserPatronymic, setNewUserPatronymic] = useState('');
-    const [newUserEmail, setNewUserEmail] = useState('');
-    const [newUserPassword, setNewUserPassword] = useState('');
+    const [newUserName, setNewUserName] = useState("");
+    const [newUserSurname, setNewUserSurname] = useState("");
+    const [newUserPatronymic, setNewUserPatronymic] = useState("");
+    const [newUserEmail, setNewUserEmail] = useState("");
+    const [newUserPassword, setNewUserPassword] = useState("");
     // const [newUser,setNewUser]=useState('');
     // const [newUser,setNewUser]=useState('');
 
-    const [filterName, setFilterName] = useState('');
+    const [filterName, setFilterName] = useState("");
+
+    const user = useSelector((state: any) => state.main.user) as UserI;
 
     //EDIT PROFILE
-    const [editUserName, setEditUserName] = useState('');
-    const [editUserSurname, setEditUserSurname] = useState('');
-    const [editUserPatronymic, setEditUserPatronymic] = useState('');
-    const [editUserLogin, setEditUserLogin] = useState('');
-    const [editChangePass, setEditChangePass] = useState('');
+    const [editUserName, setEditUserName] = useState("");
+    const [editUserSurname, setEditUserSurname] = useState("");
+    const [editUserPatronymic, setEditUserPatronymic] = useState("");
+    const [editUserLogin, setEditUserLogin] = useState("");
+    const [editChangePass, setEditChangePass] = useState("");
 
     const singInHandle = () => {
-        createUser(`${newUserName} ${newUserPatronymic} ${newUserSurname}`, '', newUserEmail, newUserPassword, () => allUsers(setUsers));
+        createUser(`${newUserName} ${newUserPatronymic} ${newUserSurname}`, "", newUserEmail, newUserPassword, () => allUsers(setUsers));
     };
 
     const updateProfile = () => {
         users.filter((user) => user.email === editUserLogin);
-        updateUser(currentUser!.id, [editUserName, editUserPatronymic, editUserSurname].join(' '), editUserLogin, () => {
+        updateUser(currentUser!.id, [editUserName, editUserPatronymic, editUserSurname].join(" "), editUserLogin, () => {
             setCurrentUser(null);
             allUsers(setUsers);
         });
@@ -51,7 +55,7 @@ export default function UsersScreen() {
     };
 
     const changePassword = () => {
-        changeUserPass(currentUser!?.id, editChangePass, () => setEditChangePass(''));
+        changeUserPass(currentUser!?.id, editChangePass, () => setEditChangePass(""));
     };
 
     useEffect(() => {
@@ -64,17 +68,17 @@ export default function UsersScreen() {
 
     useEffect(() => {
         if (currentUser) {
-            const nameArr = currentUser.name.split(' ').filter((str) => !!str);
+            const nameArr = currentUser.name.split(" ").filter((str) => !!str);
             //console.log('NAME', nameArr);
             setEditUserName(nameArr[0]);
             setEditUserSurname(nameArr[2]);
             setEditUserPatronymic(nameArr[1]);
             setEditUserLogin(currentUser.email);
         } else {
-            setEditUserName('');
-            setEditUserSurname('');
-            setEditUserPatronymic('');
-            setEditUserLogin('');
+            setEditUserName("");
+            setEditUserSurname("");
+            setEditUserPatronymic("");
+            setEditUserLogin("");
         }
     }, [currentUser]);
 
@@ -91,6 +95,7 @@ export default function UsersScreen() {
                         <span>Имя</span>
                         <input value={editUserName} onChange={(event) => setEditUserName(event.target.value)} placeholder="имя" />
                     </div>
+
                     <div className={styles.editebleField}>
                         <span>Фамилия</span>
                         <input value={editUserSurname} onChange={(event) => setEditUserSurname(event.target.value)} placeholder="фамилия" />
@@ -99,31 +104,35 @@ export default function UsersScreen() {
                         <span>Отчество</span>
                         <input value={editUserPatronymic} onChange={(event) => setEditUserPatronymic(event.target.value)} placeholder="отчество" />
                     </div>
-                    <div className={styles.editebleField}>
-                        <span>Логин для авторизации</span>
-                        <input value={editUserLogin} onChange={(event) => setEditUserLogin(event.target.value)} placeholder="логин для авторизации" />
-                    </div>
-
-                    <div className={styles.editebleField}>
-                        <span>Смена пароля</span>
-                        <div className={styles.changePassBlock}>
-                            <input value={editChangePass} onChange={(event) => setEditChangePass(event.target.value)} placeholder="укажиите новый пароль" />
-                            {editChangePass.length >= 5 && (
-                                <div className={styles.changePassBtn} onClick={changePassword}>
-                                    <span>Сменить пароль</span>
-                                </div>
-                            )}
+                    {currentUser.email !== "admin@admin.com" && (
+                        <div className={styles.editebleField}>
+                            <span>Логин для авторизации</span>
+                            <input value={editUserLogin} onChange={(event) => setEditUserLogin(event.target.value)} placeholder="логин для авторизации" />
                         </div>
-                    </div>
+                    )}
+
+                    {currentUser.email !== "admin@admin.com" && (
+                        <div className={styles.editebleField}>
+                            <span>Смена пароля</span>
+                            <div className={styles.changePassBlock}>
+                                <input value={editChangePass} onChange={(event) => setEditChangePass(event.target.value)} placeholder="укажиите новый пароль" />
+                                {editChangePass.length >= 5 && (
+                                    <div className={styles.changePassBtn} onClick={changePassword}>
+                                        <span>Сменить пароль</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* <span className={styles.infoLine}>Логин : {currentUser.email}</span> */}
                     {/* <span className={styles.infoLine}>Пост : {currentUser.post}</span> */}
-                    <span className={styles.infoLine}>Верификация : {currentUser.is_verificated ? 'верифицирован' : 'не верифицирован'}</span>
-                    <span className={styles.infoLine}>Блокировка : {currentUser.is_blocked ? 'заблокирован' : 'не заблокирован'}</span>
+                    <span className={styles.infoLine}>Верификация : {currentUser.is_verificated ? "верифицирован" : "не верифицирован"}</span>
+                    <span className={styles.infoLine}>Блокировка : {currentUser.is_blocked ? "заблокирован" : "не заблокирован"}</span>
                     <span className={styles.infoLine}>Дата регистрации : {new Date(currentUser.createdAt).toLocaleString()}</span>
                     <span className={styles.infoLine}>Дата обновления : {new Date(currentUser.updatedAt).toLocaleString()}</span>
                     <div className={styles.controlBtns}>
-                        {currentUser.role !== 'admin' && (
+                        {currentUser.role !== "admin" && (
                             <>
                                 <div
                                     className="btn"
@@ -131,15 +140,16 @@ export default function UsersScreen() {
                                         blockUserToggle(currentUser.id, setUsers), setCurrentUser(null);
                                     }}
                                 >
-                                    {currentUser.is_blocked ? 'Разблокировать' : 'Заблокировать'}
+                                    {currentUser.is_blocked ? "Разблокировать" : "Заблокировать"}
                                 </div>
-                                {currentUser.role !== 'admin' && (
+                                {currentUser.role !== "admin" && (
                                     <div className="btn" onClick={() => confirm(`Вы точно хотите удалить пользователя ${currentUser.name} ?`) && deleteUserHandle()}>
                                         Удалить пользователя
                                     </div>
                                 )}
                             </>
                         )}
+
                         {!currentUser.is_verificated && (
                             <div
                                 className="btn"
@@ -150,8 +160,20 @@ export default function UsersScreen() {
                                 Верифицировать
                             </div>
                         )}
-                        {[editUserName, editUserPatronymic, editUserSurname].join(' ') !== currentUser.name && (
-                            <div className="btn" onClick={updateProfile} style={{ background: '#339966' }}>
+
+                        {user.email === "admin@admin.com" && currentUser.email !== "admin@admin.com" && (
+                            <div
+                                className="btn"
+                                onClick={() => {
+                                    adminToggle(currentUser.id, setUsers), setCurrentUser(null);
+                                }}
+                            >
+                                {currentUser.role === "user" ? "Сделать пользователя администратором" : "Снять права администратора"}
+                            </div>
+                        )}
+
+                        {[editUserName, editUserPatronymic, editUserSurname].join(" ") !== currentUser.name && (
+                            <div className="btn" onClick={updateProfile} style={{ background: "#339966" }}>
                                 Обновить
                             </div>
                         )}
@@ -191,18 +213,18 @@ export default function UsersScreen() {
                         <img src="svg/org/close_field.svg" onClick={() => setAddUserField(false)} className={styles.close} />
                     </div>
                 ) : (
-                    <div className="btn" onClick={() => setAddUserField(true)} style={{ width: 330, textAlign: 'center' }}>
+                    <div className="btn" onClick={() => setAddUserField(true)} style={{ width: 330, textAlign: "center" }}>
                         Добавить новго пользователя
                     </div>
                 )}
 
                 <input type="text" value={filterName} onChange={(event) => setFilterName(event.target.value.trim())} placeholder="поиск" />
-                {!!filterName.length && <span onClick={() => setFilterName('')}>❌</span>}
+                {!!filterName.length && <span onClick={() => setFilterName("")}>❌</span>}
 
                 <table>
                     <thead>
                         <tr>
-                            <th style={{ color: 'tomato' }}>№</th>
+                            <th style={{ color: "tomato" }}>№</th>
                             <th>Имя</th>
                             <th>Логин</th>
 
@@ -217,16 +239,16 @@ export default function UsersScreen() {
                             .toSorted((a, b) => replaceFio(a.name).localeCompare(replaceFio(b.name)))
                             .filter((user) => user.name.toLowerCase().includes(filterName.toLowerCase()))
                             .map((user, index) => (
-                                <tr key={user.id + 'users_list'} onClick={() => setCurrentUser(user)}>
-                                    <td style={{ color: 'tomato' }}>
+                                <tr key={user.id + "users_list"} onClick={() => setCurrentUser(user)}>
+                                    <td style={{ color: "tomato" }}>
                                         <b>{index + 1}</b>
                                     </td>
                                     <td>{replaceFio(user.name)}</td>
                                     <td>{user.email}</td>
-                                    <td>{user.role}</td>
+                                    <td>{user.role === "admin" ? "👑" : "👤"}</td>
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                    <td>{user.is_verificated ? '✅' : '🆕'}</td>
-                                    <td>{user.is_blocked ? '🚫' : '🆗'}</td>
+                                    <td>{user.is_verificated ? "✅" : "🆕"}</td>
+                                    <td>{user.is_blocked ? "🚫" : "🆗"}</td>
                                 </tr>
                             ))}
                     </tbody>
