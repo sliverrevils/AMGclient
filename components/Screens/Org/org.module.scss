@@ -10,7 +10,24 @@
 
     border-radius: 10px 10px 0 0;
 
+    .fullOrgBtn {
+        border: 3px solid white;
+        padding: 2px 15px;
+        border-radius: 10px;
+        margin-left: 20px;
+        color: white;
+        font-weight: 600;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.733);
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(110%);
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.733);
+        }
+    }
+
     .orgHead {
+        margin-top: 20px;
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -35,7 +52,7 @@
     font-size: 14px;
     display: flex;
     align-items: center;
-    gap: 5px;    
+    gap: 5px;
     outline: 1px solid rgba(0, 0, 0, 0.055);
     border-radius: 10px;
     padding: 2px 3px;
@@ -85,6 +102,7 @@
 .hideField {
     display: block;
 }
+
 .hideFieldFlex {
     display: flex;
 }
@@ -369,10 +387,11 @@
 
         &:hover {
             .hideField {
-                display: block;               
+                display: block;
                 animation: fildsOpen 500ms ease-in;
             }
-            .hideFieldFlex{
+
+            .hideFieldFlex {
                 display: flex;
                 align-items: center;
                 animation: fildsOpen 500ms ease-in;
@@ -564,7 +583,8 @@
             display: block;
             animation: fildsOpen 300ms ease-in;
         }
-        .hideFieldFlex{
+
+        .hideFieldFlex {
             display: flex;
             align-items: center;
             animation: fildsOpen 500ms ease-in;
@@ -747,7 +767,8 @@
                 display: block;
                 animation: fildsOpen 300ms ease-in;
             }
-            .hideFieldFlex{
+
+            .hideFieldFlex {
                 display: flex;
                 align-items: center;
                 animation: fildsOpen 500ms ease-in;
@@ -1012,11 +1033,11 @@
         font-size: 12px;
         opacity: .8;
         margin-left: 10px;
-        
+
     }
 
     .patternsList {
-       
+
         font-size: 12px;
         display: flex;
         flex-direction: column;
@@ -1025,7 +1046,7 @@
         border-radius: 5px;
 
         &>div {
-           // background-color: rgba(128, 128, 128, 0.301);
+            // background-color: rgba(128, 128, 128, 0.301);
             border: 1px solid rgba(128, 128, 128, 0.301);
             border-radius: 5px;
             display: flex;

@@ -51,7 +51,7 @@ export default function Statistics2Screen() {
 
     //selectors
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
-    const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
+    const isAdmin: boolean = useSelector((state: any) => state.main.user.email === "admin@admin.com");
     const user = useSelector((state: any) => state.main.user as UserI);
     const { offices, generalDirector } = useSelector((state: StateReduxI) => state.org);
 

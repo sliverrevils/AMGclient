@@ -70,6 +70,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //---SELECTORS
 
     const isAdmin: boolean = useSelector((state: any) => state.main.user.role === "admin");
+    const isMainAdmin: boolean = useSelector((state: any) => state.main.user.email === "admin@admin.com");
     const user = useSelector((state: any) => state.main.user as UserI);
 
     const { tablePatterns } = useSelector((state: StateReduxI) => state.patterns);
@@ -184,7 +185,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         if (item.id !== id) return item;
                         return {
                             ...item,
-                            value: event.target.value.trim(),
+                            value: event.target.value[onlyNumbers ? "trim" : "trimStart"](),
                         };
                     }),
                 };
@@ -665,25 +666,6 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     logicStr = headers?.[itemIndex]?.logicStr || "";
                     const calcedItemTemp = calcRowItem(rowIndex, itemIndex);
 
-                    // //TREND 📈
-                    // if (/@trend/.test(logicStr) || /@revtrend/.test(logicStr)) {
-                    //     if (!isNaN(calcedItemTemp.result)) {
-                    //         trendsObj[itemIndex] = [...(trendsObj?.[itemIndex] || []), calcedItemTemp.result];
-                    //     }
-
-                    //     //  console.log('trends', trendsObj);
-                    //     const trendType = /@trend/.test(logicStr); // trend || revtrend
-
-                    //     // return {
-                    //     //     ...item,
-                    //     //     value: calcedItemTemp.result,
-                    //     //     expression: calcedItemTemp.logicStrWithDecorValues,
-                    //     //     message: trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex),
-                    //     // };
-
-                    //     item.message = trendStatus(trendType, calcedItemTemp.result, itemIndex, rowIndex);
-                    // }
-
                     //SUM
                     if (logicStr && /@sum/.test(logicStr)) {
                         if (/❓/g.test(calcedItemTemp.result)) {
@@ -758,59 +740,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             };
         });
 
-        // headers.forEach((header,headerIndex)=>{
-        //     if()
-        // })
-
-        // headers.forEach((header, headerIdx) => {
-        //     if (/@trend/g.test(header.logicStr)) {
-        //         const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
-        //         const trend = linearRegression(
-        //             trendRow.map((_, index) => index + 1),
-        //             trendRow
-        //         );
-
-        //         calcedTemp = calcedTemp.map((row, rowIdx) => ({
-        //             ...row,
-        //             values: row.values.map((column, columnIdx) => ({
-        //                 ...column,
-        //                 message: columnIdx != headerIdx ? column.message : !/❓/g.test(column.value + '') ? (trend.slopeArr[rowIdx] >= 0 ? 'Растущая↗️' : 'Падающая🔻') : '❓',
-        //             })),
-        //         }));
-        //     }
-        // });
-
-        // const trendStatus = ({ revTrend = false, rowIdx, trend }: { revTrend?: boolean; rowIdx: number; trend: ILinearRes }): 'Падающая🔻' | 'Растущая↗️' => {
-        //     if (revTrend) {
-        //     } else {
-        //     }
-        // };
-
-        // headers.forEach((header, headerIdx) => {
-        //     if (/@revtrend/g.test(header.logicStr)) {
-        //         const trendRow = calcedTemp.map((row) => row.values[headerIdx].value);
-        //         const trend = linearRegression(
-        //             trendRow.map((_, index) => index + 1),
-        //             trendRow
-        //         );
-
-        //         console.log('TREND ✅✅✅✅', trend);
-
-        //         calcedTemp = calcedTemp.map((row, rowIdx) => ({
-        //             ...row,
-        //             values: row.values.map((column, columnIdx) => ({
-        //                 ...column,
-        //                 message: columnIdx != headerIdx ? column.message : !/❓/g.test(column.value + '') ? (trend.slopeArr[rowIdx] >= 0 ? 'Падающая🔻' : 'Растущая↗️') : '❓',
-        //             })),
-        //         }));
-        //     }
-        // });
-
         setCalcedRows(calcedTemp);
     };
-
-    //? trend.slopeArr[rowIdx] > 0||Number(column.value)>=0 ? "Падающая🔻" : "Растущая↗️"
-    //   (rowIdx && trend.slopeArr[rowIdx] > trend.slopeArr[0]) || trend.slopeArr[rowIdx] > 0
 
     //--------------------------------------------------------------------------------- CREATE DATES COLUMNS ⭐⭐⭐⭐⭐⭐⭐
 
@@ -1165,7 +1096,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     🪟{isModal ? "отключить полный экран" : "на весь экран"}
                 </div>
             )}
-            {isAdmin && (
+            {isMainAdmin && (
                 <>
                     {
                         //true
@@ -1222,6 +1153,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
                             const isPlane = (index: number): boolean => {
                                 return headers[index].name.toLocaleLowerCase().includes("план");
+                            };
+                            const isComent = (index: number): boolean => {
+                                return headers[index].name.toLocaleLowerCase().includes("коммент");
                             };
                             return (
                                 <div
@@ -1291,7 +1225,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 value={value.value}
                                                                 onChange={(event) => {
                                                                     event.preventDefault();
-                                                                    onChangeRowItem(event, rowIndex, value.id, true);
+                                                                    onChangeRowItem(event, rowIndex, value.id, !isComent(itemIndex));
                                                                     console.log("ROW", selectedRow, selectedRowRef.current);
                                                                     if (selectedRowRef.current && selectedItemRef.current) {
                                                                         setSelectedRow(() => selectedRowRef.current);
@@ -1301,7 +1235,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 onClick={(event) => onClickItem(event, rowIndex)}
                                                                 disabled={
                                                                     // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
-                                                                    !(isCurrentPeriod || isAdmin || isPlane(itemIndex))
+                                                                    !(isCurrentPeriod || isAdmin || isPlane(itemIndex) || isComent(itemIndex))
                                                                 }
                                                             />
                                                         )}

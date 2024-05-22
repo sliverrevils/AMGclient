@@ -568,6 +568,13 @@ export default function CreateChartList() {
         getAllUseresLists();
     }, []);
 
+    //подгружаем выбор
+    useEffect(() => {
+        if (tableStatisticsList.length) {
+            setSelectedListID(Number(localStorage.getItem("statListId") || 0));
+        }
+    }, [tableStatisticsList]);
+
     useEffect(() => {
         if (!selectedListId) {
             setSelectedStatsIdArr([]);
@@ -576,8 +583,14 @@ export default function CreateChartList() {
 
         const selectedList = chartsListsArr.find((list) => list.id == selectedListId);
         if (selectedList) {
+            console.log("SET LKIST");
             setSelectedStatsIdArr(selectedList.charts);
         }
+    }, [selectedListId, chartsListsArr]);
+
+    //LS SAVE
+    useEffect(() => {
+        if (selectedListId) localStorage.setItem("statListId", JSON.stringify(selectedListId));
     }, [selectedListId]);
 
     //❗❗❗❗❗СОХРАНЯЕМ МАССИВ ВЫБРАННЫХ СТАТИСТИК С ИНФОРМАЦИЕ ОТКУДА ОНИ (ПОСЛЕДНИЕ ПОДГРУЖАЮТСЯ ДЛЯ ОТОБРАЖЕНИЯ АВТОМАТИЧЕСКИ - НАХОДИМ В РЕДАКСЕ ПО ИМЕНИ)
@@ -592,8 +605,8 @@ export default function CreateChartList() {
             {
                 //CHARTS LIST SELECT
                 !!chartsListsArr.length && !isSaveField && (
-                    <select className={styles.listsSelect} onChange={(event) => setSelectedListID(Number(event.target.value))}>
-                        <option value={0}> {!selectedListId ? "выбор листа" : "создать новый лист"}</option>
+                    <select className={styles.listsSelect} onChange={(event) => setSelectedListID(Number(event.target.value))} defaultValue={selectedListId}>
+                        <option value={0}> {!selectedListId ? "создание нового листа графиков" : "создать новый лист"}</option>
                         {chartsListsArr.map((listItem) => (
                             <option value={listItem.id}>{listItem.name}</option>
                         ))}
@@ -618,7 +631,7 @@ export default function CreateChartList() {
                 ) : (
                     // блок с кнопками
                     <div className={styles.topBtnsWrap}>
-                        <div onClick={(event) => onOpenListMenu(event)}>добавить график</div>
+                        <div onClick={(event) => onOpenListMenu(event)}>добавить график {selectedListId ? "в текущий лист" : "в новый лист"}</div>
 
                         {!!selectedStatsIdArr.length && (
                             <>
@@ -641,7 +654,7 @@ export default function CreateChartList() {
                                 )}
 
                                 {!!selectedListId ? (
-                                    <div className={styles.del} onClick={() => onDeleteList(selectedListId)}>
+                                    <div className={styles.del} onClick={() => confirm("Полностью удалить лист из списка ?") && onDeleteList(selectedListId)}>
                                         Удалить лист
                                     </div>
                                 ) : (

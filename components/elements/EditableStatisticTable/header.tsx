@@ -55,6 +55,11 @@ export default function TableHeader({
         setHeaders((state) => state.map((header) => (header.id == id ? { ...header, onChart: !header.onChart } : header)));
     };
 
+    //is comment column ?
+    const isComent = (name: string): boolean => {
+        return name.toLocaleLowerCase().includes("коммент");
+    };
+
     //resize
     useEffect(() => {
         if (initRef.current) initRef.current = false;
@@ -67,54 +72,59 @@ export default function TableHeader({
         <div className={`${styles.headerItem} ${headerIndex > 0 && selectedHeaderPattern ? styles.selectPattern : ""}`} ref={ref}>
             <div className={styles.clientHeader} style={{ width: colWidth }}>
                 <div>{header.name}</div>
-                {isAdmin && !!!header.logicStr && !/период/g.test(header.name) && <div className={styles.headerDecor}>{`@${headerIndex + 1}`}</div>}
+                {!isComent(header.name) && isAdmin && !!!header.logicStr && !/период/g.test(header.name) && <div className={styles.headerDecor}>{`@${headerIndex + 1}`}</div>}
             </div>
 
             {header.showControl && isAdmin && (
                 <div className={styles.adminHeader}>
-                    {!!!header.logicStr && !/период/g.test(header.name) && <div className={styles.headerDecor}>{`@${headerIndex + 1}`}</div>}
+                    {!isComent(header.name) && !!!header.logicStr && !/период/g.test(header.name) && <div className={styles.headerDecor}>{`@${headerIndex + 1}`}</div>}
                     <input type="text" value={header.name} onChange={(event) => onChangeHeaderName(event, header.id)} disabled={!isAdmin} placeholder="название колонки" />
-                    <div className={styles.logicWrap}>
-                        <input type="text" className={styles.logicInput} value={header.logicStr} onChange={(event) => onChangeHeaderLogic(event, header.id)} placeholder="логика" />
-                        <div className={styles.logicHelp}>
-                            <div className={styles.columnsHelp}>
-                                {headers.map(
-                                    (headerHelp, idx) =>
-                                        !headerHelp.logicStr &&
-                                        headerHelp.showControl &&
-                                        headerIndex != idx && (
-                                            <div key={Math.random()} className={styles.columnHelpItem}>
-                                                <div className={styles.columnHelpLast} onClick={() => onChangeHeaderLogic(null, header.id, `@@${idx + 1}`)}>
-                                                    ⤴️
+                    {!isComent(header.name) && (
+                        <div className={styles.logicWrap}>
+                            <input type="text" className={styles.logicInput} value={header.logicStr} onChange={(event) => onChangeHeaderLogic(event, header.id)} placeholder="логика" />
+                            <div className={styles.logicHelp}>
+                                <div className={styles.columnsHelp}>
+                                    {headers.map(
+                                        (headerHelp, idx) =>
+                                            !isComent(headerHelp.name) &&
+                                            !headerHelp.logicStr &&
+                                            headerHelp.showControl &&
+                                            headerIndex != idx && (
+                                                <div key={Math.random()} className={styles.columnHelpItem}>
+                                                    <div className={styles.columnHelpLast} onClick={() => onChangeHeaderLogic(null, header.id, `@@${idx + 1}`)}>
+                                                        ⤴️
+                                                    </div>
+                                                    <div className={styles.columnHelpCurrent} onClick={() => onChangeHeaderLogic(null, header.id, `@${idx + 1}`)}>
+                                                        {headerHelp.name}
+                                                    </div>
                                                 </div>
-                                                <div className={styles.columnHelpCurrent} onClick={() => onChangeHeaderLogic(null, header.id, `@${idx + 1}`)}>
-                                                    {headerHelp.name}
-                                                </div>
-                                            </div>
-                                        )
-                                )}
-                            </div>
-                            <div className={styles.mathHelp}>
-                                <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@sum")}>
-                                    суммировать
+                                            )
+                                    )}
                                 </div>
-                                <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@trend")}>
-                                    тренд
-                                </div>
-                                <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@revtrend")}>
-                                    перевернутый тренд
-                                </div>
-                                <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@init")}>
-                                    нулевое значение
+                                <div className={styles.mathHelp}>
+                                    <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@sum")}>
+                                        суммировать
+                                    </div>
+                                    <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@trend")}>
+                                        тренд
+                                    </div>
+                                    <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@revtrend")}>
+                                        перевернутый тренд
+                                    </div>
+                                    <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@init")}>
+                                        нулевое значение
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <input type="number" onChange={(event) => onChangeHeaderInitValue(event, header.id)} placeholder="нулевое значене" />
-                    <label style={{ display: "flex" }} className={styles.displayOChart}>
-                        <span>отобразить на графике</span>
-                        <input type="checkbox" onChange={(event) => onChangeHeaderOnChart(event, header.id)} />
-                    </label>
+                    )}
+                    {!isComent(header.name) && <input type="number" onChange={(event) => onChangeHeaderInitValue(event, header.id)} placeholder="нулевое значене" />}
+                    {!isComent(header.name) && (
+                        <label style={{ display: "flex" }} className={styles.displayOChart}>
+                            <span>отобразить на графике</span>
+                            <input type="checkbox" onChange={(event) => onChangeHeaderOnChart(event, header.id)} />
+                        </label>
+                    )}
                     <div onClick={() => onDelHeader(headerIndex, header.id)}>удалить колонку❌</div>
                 </div>
             )}
