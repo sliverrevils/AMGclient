@@ -417,3 +417,5 @@ export interface IOrgItem {
     mainPattern: StatItemReady | undefined;
     patterns: (StatItemReady | undefined)[];
 }
+
+export type IMainStyle = "row" | "column";

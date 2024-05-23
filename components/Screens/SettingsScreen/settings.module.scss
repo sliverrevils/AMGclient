@@ -10,6 +10,24 @@
         color: #fa6e40;
     }
 
+    .changeMenuStyleBtn {
+        align-self: flex-start;
+        border: 2px solid rgba(0, 0, 0, 0.199);
+        border-radius: 3px;
+        padding: 2px 10px;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 12px;
+
+        &>span:nth-child(1) {
+            opacity: .7;
+        }
+
+        &>span:nth-child(2) {
+            font-weight: 600;
+        }
+    }
+
     .propBlock {
         display: flex;
         flex-direction: column;

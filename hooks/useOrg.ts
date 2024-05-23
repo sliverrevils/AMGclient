@@ -51,7 +51,7 @@ export default function useOrg() {
                 }
 
                 if (tableStatistics) {
-                    console.log("TABELS📅", tableStatistics);
+                    // console.log("TABELS📅", tableStatistics);
                     dispatch(setTableStatisticsListRedux(tableStatistics));
                 }
             })
