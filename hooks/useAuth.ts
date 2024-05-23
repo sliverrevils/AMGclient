@@ -40,7 +40,7 @@ export const useAuth = () => {
                 password: loginPassword,
             })
             .then(({ data }) => {
-                console.log("LOGIN DATA", data);
+                //console.log("LOGIN DATA", data);
                 if (data.user) {
                     // notifyMsg(data.user.email);
                     // toast(data.message);
@@ -71,7 +71,7 @@ export const useAuth = () => {
                 name,
             })
             .then(({ data }) => {
-                console.log("SING UP DATA", data);
+                //console.log("SING UP DATA", data);
                 if (data) {
                     // notifyMsg(data.user.email);
                     // toast(data.message);
@@ -107,7 +107,7 @@ export const useAuth = () => {
                 name,
             })
             .then(({ data }) => {
-                console.log("SING UP DATA", data);
+                // console.log("SING UP DATA", data);
                 if (data) {
                     if (data.warningMessage) {
                         toast.error(data.warningMessage);

@@ -21,7 +21,7 @@ export default function StatView({ statView }: { statView: StatItemReadyWithCoor
 
             return () => {
                 clearTimeout(timeOut);
-                console.log("DESTROY");
+                // console.log("DESTROY");
                 setTable(undefined);
             };
         }

@@ -323,7 +323,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 // CALC END FOR MONTH
 
                 dateEnd = new Date(new Date(secStart).getFullYear(), new Date(secStart).getMonth() + 1, 0).getTime();
-                console.log("DATE END➡️ ", new Date(dateEnd).toDateString());
+                //console.log("DATE END➡️ ", new Date(dateEnd).toDateString());
             }
 
             if (dateColumn.type == "2 года плюс текущий" && yearsArr) {
@@ -332,8 +332,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             }
 
             for (let i = secStart, periodEnd = 0, monthStr = ""; i <= dateEnd + daySec; i += daySec) {
-                console.log("VARS", i + daySec, "<=", dateEnd);
-                console.log("❤️❤️❤️", new Date(dateEnd).getDate(), new Date(i).getDate(), getDayOfWeek(i) === dateColumn.firstWeekDay);
+                // console.log("VARS", i + daySec, "<=", dateEnd);
+                // console.log("❤️❤️❤️", new Date(dateEnd).getDate(), new Date(i).getDate(), getDayOfWeek(i) === dateColumn.firstWeekDay);
                 if (periodEnd <= i + daySec) {
                     if (dateColumn?.type == "Месячный" && getDayOfWeek(i) === dateColumn.firstWeekDay) {
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
@@ -375,7 +375,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         //CALC MONTH
                         let currentMonth = getMonthStr(i);
                         if (monthStr != currentMonth) {
-                            console.log(getMonthStr(i));
+                            //console.log(getMonthStr(i));
                             newRows = [
                                 ...newRows,
                                 {
@@ -452,7 +452,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             dateColumn: dateColumn ? { ...dateColumn, raportInfo: getRaportInfo() } : undefined,
             about,
         };
-        console.log(createdTable);
+        //console.log(createdTable);
         if (selectedTable !== "clear" && selectedTable?.id) {
             await updateTableStatistic(selectedTable.id, createdTable);
         } else {
@@ -1226,7 +1226,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 onChange={(event) => {
                                                                     event.preventDefault();
                                                                     onChangeRowItem(event, rowIndex, value.id, !isComent(itemIndex));
-                                                                    console.log("ROW", selectedRow, selectedRowRef.current);
+                                                                    //console.log("ROW", selectedRow, selectedRowRef.current);
                                                                     if (selectedRowRef.current && selectedItemRef.current) {
                                                                         setSelectedRow(() => selectedRowRef.current);
                                                                         setSelectedItem(() => selectedItemRef.current);

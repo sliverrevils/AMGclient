@@ -14,7 +14,7 @@ export default function useChartList(setChartsListsArr: any) {
         try {
             const res = await axiosClient.get("charts-list");
 
-            console.log(" GET ALL RES 📊", res.data);
+            //console.log(" GET ALL RES 📊", res.data);
             if (res.data?.length) {
                 const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
                 setChartsListsArr(list);
@@ -33,7 +33,7 @@ export default function useChartList(setChartsListsArr: any) {
         try {
             const res = await axiosClient.get(`charts-list/delete/${listId}`);
 
-            console.log(" DELETE RES 📊", res.data);
+            //console.log(" DELETE RES 📊", res.data);
             if (res.data?.length) {
                 const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));
                 setChartsListsArr(list);
@@ -59,7 +59,7 @@ export default function useChartList(setChartsListsArr: any) {
             });
             dispatch(setLoadingRedux(false));
             if (res) {
-                console.log("RES OF CREATE CHART LIST📊", res);
+                //console.log("RES OF CREATE CHART LIST📊", res);
                 toast.success("Лист графиков успешно сохранен!");
                 toast.warning(res.data.errorMessage);
                 if (res.data?.length) {
@@ -85,7 +85,7 @@ export default function useChartList(setChartsListsArr: any) {
             });
             dispatch(setLoadingRedux(false));
             if (res) {
-                console.log("RES OF UPDATE CHART LIST📊", res);
+                //console.log("RES OF UPDATE CHART LIST📊", res);
 
                 if (res.data?.length) {
                     const list = res.data.map((item) => ({ ...item, charts: JSON.parse(item.charts) }));

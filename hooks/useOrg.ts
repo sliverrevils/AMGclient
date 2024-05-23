@@ -99,7 +99,7 @@ export default function useOrg() {
             // console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
-                console.log("CREATED OFFICE", created);
+                //console.log("CREATED OFFICE", created);
                 toast.success(`Отделение "${created.data.name}" успешно обновлено`);
                 updateFunc && updateFunc();
             }

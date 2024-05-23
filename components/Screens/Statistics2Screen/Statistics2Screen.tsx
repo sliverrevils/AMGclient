@@ -73,7 +73,7 @@ export default function Statistics2Screen() {
             //ПОЛЬЗОВАТЕЛЬ
 
             //ЛИСТ ПОСТОВ
-            console.log("USER POSTS⭐⭐⭐⭐");
+            // console.log("USER POSTS⭐⭐⭐⭐");
             const tempList = [...userOffices.map((office, officeIdx) => ({ listName: `РО : ${office.name}@${officeIdx}` })), ...userDepartments.map((department, departmentIdx) => ({ listName: `НО : ${department.name}@${departmentIdx}` })), ...userSections.map((section, sectionIdx) => ({ listName: `АС : ${section.name}@${sectionIdx}` }))];
             setUserPostList(tempList);
         }
@@ -100,7 +100,7 @@ export default function Statistics2Screen() {
             let currentPostItem = userPostsObj[postType][itemIndx];
 
             setPostItem(currentPostItem);
-            console.log("SELECT", userPostsObj[postType][itemIndx]);
+            //console.log("SELECT", userPostsObj[postType][itemIndx]);
         }
     }, [userPostSelect]); // листы не ставим
 

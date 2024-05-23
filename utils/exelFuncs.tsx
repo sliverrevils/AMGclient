@@ -3,7 +3,7 @@ import * as ExelJs from "exceljs";
 import { getChartImage } from "./funcs";
 
 export function createExelFile({ columns, rows, fileName, user, columnSizeArr }: { columns: ColumnI[]; rows: RowI[][]; fileName: string; user: UserI; columnSizeArr: number[] }) {
-    console.log("EXEL", columns, rows);
+    //console.log("EXEL", columns, rows);
 
     const workbook = new ExelJs.Workbook();
     const sheet = workbook.addWorksheet(fileName);
@@ -60,14 +60,14 @@ export function createExelFile({ columns, rows, fileName, user, columnSizeArr }:
         const rowTemp = row.reduce((acc, field, fieldIndex) => ({ ...acc, [fieldIndex + "_column"]: field.value }), {});
         sheet.addRow(rowTemp);
     });
-    console.log("SHEET", sheet);
+    //console.log("SHEET", sheet);
 
     workbook.xlsx.writeBuffer().then((data) => {
         const blob = new Blob([data], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
         });
         const url = window.URL.createObjectURL(blob);
-        console.log("URL", url);
+        //console.log("URL", url);
         const a = document.createElement("a");
         a.href = url;
         a.download = fileName + ".xlsx";
@@ -76,7 +76,7 @@ export function createExelFile({ columns, rows, fileName, user, columnSizeArr }:
     });
 }
 export function createExelFileNew({ columns, rows, fileName }: { columns: string[]; rows: (string | number)[][]; fileName: string }) {
-    console.log("EXEL", columns, rows);
+    //console.log("EXEL", columns, rows);
 
     const workbook = new ExelJs.Workbook();
     const sheet = workbook.addWorksheet(fileName);
@@ -133,14 +133,14 @@ export function createExelFileNew({ columns, rows, fileName }: { columns: string
         const rowTemp = row.reduce((acc, cellValue, fieldIndex) => ({ ...acc, [fieldIndex + "_column"]: cellValue }), {});
         sheet.addRow(rowTemp);
     });
-    console.log("SHEET", sheet);
+    // console.log("SHEET", sheet);
 
     workbook.xlsx.writeBuffer().then((data) => {
         const blob = new Blob([data], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
         });
         const url = window.URL.createObjectURL(blob);
-        console.log("URL", url);
+        //console.log("URL", url);
         const a = document.createElement("a");
         a.href = url;
         a.download = fileName + ".xlsx";

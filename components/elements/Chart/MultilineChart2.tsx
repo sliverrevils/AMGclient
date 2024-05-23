@@ -69,14 +69,13 @@ export function MultiLinesChart2({
                         </div>
                     </div>
                 )}
-                {!mini ||
-                    (modal && (
-                        <div className={styles.buttonsBlock}>
-                            <div className={styles.pointLabelData} onClick={() => setShowPointData((state) => !state)}>
-                                {showPointData ? `убрать данные координат` : `показать данные координат`}
-                            </div>
+                {(!mini || modal) && (
+                    <div className={styles.buttonsBlock}>
+                        <div className={styles.pointLabelData} onClick={() => setShowPointData((state) => !state)}>
+                            {showPointData ? `убрать данные координат` : `показать данные координат`}
                         </div>
-                    ))}
+                    </div>
+                )}
 
                 <Line
                     className="myChart"
@@ -191,7 +190,7 @@ export function MultiLinesChart2({
     return (
         <>
             {modal ? (
-                <Modal fullWidth={true} closeModalFunc={() => setModal(false)} black={false} zIndex={999}>
+                <Modal fullWidth={true} closeModalFunc={() => setModal(false)} black={false} zIndex={999989}>
                     {currentChart}
                 </Modal>
             ) : (

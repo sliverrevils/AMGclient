@@ -44,7 +44,7 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
 
     //create sections list
     const createSectionsList = (sectionProp: SectionI[] | undefined): boolean => {
-        console.log("sectionProp", sectionProp);
+        //console.log("sectionProp", sectionProp);
         setSectionSelect(0);
         if (sectionProp?.length) {
             setSectionsList(sectionProp);
@@ -97,7 +97,7 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
         //ON CHANGE POST
         if (postItem) {
             if (postItem === "genDir") {
-                console.log("GENERAL DIRECTOR");
+                //console.log("GENERAL DIRECTOR");
             }
             clearTable();
             setTableSelect(0);
@@ -105,7 +105,7 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
             createDepatmentsList(postItem?.departments);
             createSectionsList(postItem?.sections);
         }
-        console.log("FILTER UPDATE", postItem?.sections);
+        //console.log("FILTER UPDATE", postItem?.sections);
     }, [postItem]);
     // ON OFFICE SELECT
     useEffect(() => {

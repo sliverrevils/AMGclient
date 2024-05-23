@@ -97,7 +97,7 @@ export default function useUsers() {
             accessPatterns[field] = patterns.filter((pattern) => accessPatternsIds[field].includes(pattern.id));
         });
 
-        console.log("ACCESS 🔐\n", accessPatterns);
+        //console.log("ACCESS 🔐\n", accessPatterns);
 
         return accessPatterns;
 

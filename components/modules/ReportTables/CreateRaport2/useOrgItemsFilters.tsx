@@ -189,15 +189,15 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
         //удаляем айтемы без статистик
         filtered = filtered.filter((item) => item.mainPattern || item.patterns.length);
 
-        console.log({
-            fillledStatsCount, // количество заполненных
-            notFillledStatsCount, // количество не заполненных
-            growingStatsCount,
-            notGrowingStatsCount,
-            noDataGrowingStatsCount,
-            mainStatCount,
-            additionalStatCount,
-        });
+        // console.log({
+        //     fillledStatsCount, // количество заполненных
+        //     notFillledStatsCount, // количество не заполненных
+        //     growingStatsCount,
+        //     notGrowingStatsCount,
+        //     noDataGrowingStatsCount,
+        //     mainStatCount,
+        //     additionalStatCount,
+        // });
         //сохраняем результат
         setFilteredOrgItems(() => filtered);
     }, [isShowFilteredOrg, orgTypeFilter, selectedStatType, growingFilter, fallingFilter, filledFilter, notFilledFilter, emptyFilter, officesSelectedList, departmentsSelectedList, sectionsSelectedList, isSelectedAllOrgChildren]);

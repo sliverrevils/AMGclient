@@ -106,7 +106,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             });
 
             const currentPatterns = [...new Set(arrTemp.filter((id) => !!id))];
-            console.log("👍", officesWithLatestPeriodStats, currentPatterns);
+            //console.log("👍", officesWithLatestPeriodStats, currentPatterns);
             getReportList(currentPatterns, setReportList);
         }
     }, [officesWithLatestPeriodStats]);
@@ -234,7 +234,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
 
         return () => {
             document.removeEventListener("mousemove", mouseMove);
-            console.log("END");
+            //console.log("END");
             listnerRef.current = true;
         };
     }, []);

@@ -329,7 +329,7 @@ export default function CreateChartList() {
                 let recordsAll: any = [[], []];
                 let datesAll: DatesI[] = [];
 
-                console.log("All", allStats);
+                //console.log("All", allStats);
                 //setScopeEnd(allStats.length - 1);
                 allStats.forEach((table, tableIDx) => {
                     if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
@@ -378,7 +378,7 @@ export default function CreateChartList() {
                                 lineTrend.map((_, index) => index + 1),
                                 lineTrend
                             );
-                            console.log("TREND ℹ👍", lineTrend);
+                            // console.log("TREND ℹ👍", lineTrend);
                             trendLineRecords = result;
                         }
                         return {
@@ -387,7 +387,7 @@ export default function CreateChartList() {
                         };
                     });
 
-                    console.log("ALL LINES", allStatsLines);
+                    //console.log("ALL LINES", allStatsLines);
                     setShowStat({
                         ...actualStat,
                         dateColumn: {
@@ -583,12 +583,14 @@ export default function CreateChartList() {
 
         const selectedList = chartsListsArr.find((list) => list.id == selectedListId);
         if (selectedList) {
-            console.log("SET LKIST");
-            setSelectedStatsIdArr(selectedList.charts);
+            if (JSON.stringify(selectedStatsIdArr) !== JSON.stringify(selectedList.charts)) {
+                console.log("SET LKIST");
+                setSelectedStatsIdArr(selectedList.charts);
+            }
         }
     }, [selectedListId, chartsListsArr]);
 
-    //LS SAVE
+    //сохраняем выбор
     useEffect(() => {
         if (selectedListId) localStorage.setItem("statListId", JSON.stringify(selectedListId));
     }, [selectedListId]);

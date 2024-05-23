@@ -239,7 +239,7 @@ export default function CreateRaport2() {
                 const trendType = item.dateColumn.raportInfo?.trendType.toLowerCase().replace("тренд", "").replace("не указан", "");
                 const trendStatus = /не определено/.test(item.isGrowing) ? "" : item.isGrowing;
                 const isFilledPeriod = !/не заполнена/.test(item.periodStr);
-                console.log(item);
+                //console.log(item);
 
                 const lineStyle = `${styles.statLine} ${selectedStats.includes(item.id) ? styles.statLine_selected : ""}`;
                 return (
@@ -275,7 +275,7 @@ export default function CreateRaport2() {
                             }}
                             onMouseLeave={() => setStatToView(null)}
                             onContextMenu={(event) => {
-                                console.log("CLICK");
+                                //console.log("CLICK");
                                 event.preventDefault();
                                 // window.location.search = `statId=${item.id}`;
                                 tabelsRoute.clickFunc(item.id);
