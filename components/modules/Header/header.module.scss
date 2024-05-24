@@ -3,55 +3,156 @@
     box-shadow: 0px 1px 3px rgba(151, 151, 151, 0.12), 0px 1px 2px rgba(151, 151, 151, 0.24);
     width: 100%;
     height: 80px;
+    padding: 5px;
 
-    .container{
+
+    .container {
         height: 100%;
         display: flex;
         justify-content: space-between;
+
         //border: 1px solid black;
-        img{
+        img {
             height: 100%;
         }
 
-        .userInfo{
-            padding: 2px 10px 2px 10px;
-            //border:1px solid black;
-            border-radius: 10px;
-            margin: 2px 10px;
-            background: linear-gradient(90deg, rgba(249,249,249,0) 0%, rgb(226, 113, 75) 100%);
-          
-            display: flex;            
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 2px;
-            opacity: 1;
+        .mainText {
+            font-size: 30px;
+            font-weight: 700;
+            // border: 1px solid black;
+            display: flex;
+            align-items: center;
+            color: #FF8056;
+            letter-spacing: .7px;
+            gap: 20px;
 
-            img{
-                width: 18px;
+            .amg {}
+
+            .stat {
+                color: rgba(128, 128, 128, 0.267);
             }
-            
-            div{
+        }
+
+        .userBlock {
+            display: flex;
+            flex-direction: column;
+            border: 3px solid rgba(0, 0, 0, 0.048);
+            outline: 1px solid rgba(0, 0, 0, 0.356);
+            align-items: center;
+            border-radius: 20px;
+            padding: 0px 10px;
+            opacity: .5;
+            transition: all 150ms linear;
+
+            &:hover {
+                opacity: 1;
+                border: 3px solid #ff805657;
+                box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.479);
+            }
+
+            .firstRow {
                 display: flex;
-                align-items: center;
-                gap:4px;
-                font-size: 13px;
-                letter-spacing: 2px;
-                span{
-                    //border: 1px solid black;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                gap: 3px;
+
+                .mainInfo {
+                    border-radius: 10px;
+                    //padding: 5px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1px;
+
+                    // justify-content: flex-end;
+                    .roleText {
+                        font-size: 12px;
+                        opacity: .3;
+                        align-self: flex-end;
+                    }
+
+                    .userLogin {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        cursor: pointer;
+
+
+                        .key {}
+
+                        .name {
+                            // text-decoration: underline;
+                        }
+                    }
+
+
+                }
+
+                .settings_ {
+                    font-size: 30px;
+                    cursor: pointer;
+                    opacity: .5;
+                    transition: all 150ms linear;
+                    filter: grayscale(0%);
+
+                    &:hover {
+                        opacity: .8;
+                        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.651));
+                    }
+                }
+
+                .settings_active {
+                    font-size: 30px;
+                    cursor: pointer;
+                    opacity: 1;
+                    transition: all 150ms linear;
+                    filter: invert(100%);
+                    animation: rotate 8s infinite linear;
+
+                    &:hover {
+                        opacity: .8;
+                        filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.342));
+                    }
+                }
+
+            }
+
+            .secondRow {
+                align-self: flex-end;
+
+                .exit {
+                    align-self: flex-end;
+                    border: 1px solid gray;
                     border-radius: 5px;
-                    padding: 0px 5px;                   
-                    background: #ffffff;
-                    color: rgb(226, 113, 75);
-                    font-weight: 600;
-                    //text-shadow: 1px 1px 2px #0000006e;
+                    font-size: 12px;
+                    opacity: .6;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 150ms linear;
+                    //width: 175px;
+                    text-align: right;
+                    padding: 2px 5px;
+                    box-shadow: 1px 1px 3px black;
+
+                    &:hover {
+                        opacity: 1;
+                        box-shadow: 0;
+
+                    }
                 }
             }
 
-            .userLogin{
 
-            }
         }
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }

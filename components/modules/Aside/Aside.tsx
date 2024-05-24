@@ -27,10 +27,10 @@ export default function Aside() {
                                 {el.title}
                             </li>
                         ))}
-                    <li className={`${settingsMenu.active} noselect`} onClick={() => settingsMenu.clickFunc()}>
+                    {/* <li className={`${settingsMenu.active} noselect`} onClick={() => settingsMenu.clickFunc()}>
                         {settingsMenu.title}
-                    </li>
-                    <li onClick={logout}>Выход</li>
+                    </li> */}
+                    {/* <li onClick={logout}>Выход</li> */}
                 </ul>
             </aside>
         );
