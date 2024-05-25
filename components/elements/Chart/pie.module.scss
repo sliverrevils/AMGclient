@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 20px;
     align-items: center;
+    // outline: 1px solid rgba(128, 128, 128, 0.253);
 
     .statSelect {
         border: 2px solid rgba(0, 0, 0, 0.096);
@@ -30,7 +31,7 @@
 
     .chartWrap {
         //border: 1px solid black;
-        width: 60vw;
+        width: 100%;
         height: 60vh;
         display: flex;
         justify-content: center;
