@@ -1,5 +1,5 @@
 import { StateReduxI } from "@/redux/store";
-import { IOrgItem, RaportTableInfoI, StatItemReady, StatItemReadyWithCoords, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IOrgItem, IPieChartProps, IPieObj, RaportTableInfoI, StatItemReady, StatItemReadyWithCoords, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { useSelector } from "react-redux";
 import styles from "./raport2.module.scss";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
@@ -13,6 +13,7 @@ import { createExelFile, createExelFileNew } from "@/utils/exelFuncs";
 import { useAccessRoutes } from "@/hooks/useAccessRoutes";
 
 import ExcelJS from "exceljs";
+import { PieChart } from "@/components/elements/Chart/PieChart";
 
 // Функция для сохранения таблицы в файл Excel
 const saveTableToExcel = (headers: string[], tableData: string[][]) => {
@@ -67,7 +68,7 @@ const saveTableToExcel = (headers: string[], tableData: string[][]) => {
     });
 };
 
-export default function CreateRaport2() {
+export default function CreateRaport2({ getPie = false }: { getPie?: boolean } = {}) {
     //STATE
     const [isShowLastUpdate, setIsShowLastUpdate] = useState<boolean>(JSON.parse(localStorage.getItem("showLastUpdate") || `false`));
     const [isShowFilteredOrg, setIsShowFilteredOrg] = useState(false);
@@ -364,6 +365,51 @@ export default function CreateRaport2() {
 
         saveTableToExcel(columns, rows);
     };
+    if (getPie) {
+        const all: IPieChartProps = {
+            labels: [`Растущие статистики`, "Падающие статистики", "Пустые статистики", "Заполненные статистики", "Не заполненные статистики"],
+            datasets: [
+                {
+                    label: "# of Votes",
+                    data: [counters.growingStatsCount, counters.notGrowingStatsCount, counters.noDataGrowingStatsCount, counters.fillledStatsCount, counters.notFillledStatsCount],
+                    backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)", "rgba(7, 89, 255, 0.2)", "rgba(194, 84, 109, 0.2)"],
+                    borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)", "rgba(7, 89, 255, 1)", "rgba(194, 84, 109, 1)"],
+                    borderWidth: 2,
+                },
+            ],
+        };
+        const growing: IPieChartProps = {
+            labels: [`Растущие статистики`, "Падающие статистики"],
+            datasets: [
+                {
+                    label: "# of Votes",
+                    data: [counters.growingStatsCount, counters.notGrowingStatsCount],
+                    backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)"],
+                    borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)"],
+                    borderWidth: 2,
+                },
+            ],
+        };
+        const felled: IPieChartProps = {
+            labels: ["Заполненные статистики", "Не заполненные статистики"],
+            datasets: [
+                {
+                    label: "# of Votes",
+                    data: [counters.fillledStatsCount, counters.notFillledStatsCount],
+                    backgroundColor: ["rgba(7, 89, 255, 0.2)", "rgba(194, 84, 109, 0.2)"],
+                    borderColor: ["rgba(7, 89, 255, 1)", "rgba(194, 84, 109, 1)"],
+                    borderWidth: 2,
+                },
+            ],
+        };
+
+        const props: IPieObj = {
+            growing,
+            felled,
+            //all,
+        };
+        return <PieChart props={props} />;
+    }
     return (
         <div className={styles.mainWrap}>
             <StatView statView={statView} />

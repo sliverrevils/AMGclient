@@ -419,3 +419,19 @@ export interface IOrgItem {
 }
 
 export type IMainStyle = "row" | "column";
+
+//PIE CHART
+export interface IPieChartProps {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+        backgroundColor: string[];
+        borderColor: string[];
+        borderWidth: number;
+    }[];
+}
+
+export interface IPieObj {
+    [key: string]: IPieChartProps;
+}
