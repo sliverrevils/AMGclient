@@ -92,11 +92,12 @@
 
         .tableNameWrap {
             width: 100%;
+            margin-bottom: 10px;
 
             input {
                 width: 100%;
                 border: 2px solid #bababa39;
-                border-radius: 5px 5px 0 0;
+                border-radius: 5px;
 
                 padding: 5px 15px;
                 color: #282929;
@@ -198,9 +199,10 @@
 
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             gap: 3px;
             width: 100%;
+            padding-top: 10px;
             //overflow-x: auto;
 
 
@@ -208,7 +210,7 @@
             .headerBlock {
                 display: flex;
                 position: relative;
-                gap: 2px;
+                gap: 5px;
                 // border: 1px solid orange;
 
                 .headerItem {
@@ -218,7 +220,7 @@
                     align-items: center;
                     cursor: pointer;
                     position: relative;
-                    border: 2px solid #FF8056;
+                    outline: 2px solid #FF8056;
                     border-radius: 5px 5px 2px 2px;
                     text-align: center;
                     font-size: 12px;
@@ -406,7 +408,7 @@
             .bodyBlock {
                 display: flex;
                 flex-direction: column;
-                gap: 1px;
+                gap: 2px;
                 height: 100%;
 
 
@@ -414,7 +416,7 @@
                 .row {
 
                     display: flex;
-                    gap: 1px;
+                    gap: 5px;
                     position: relative;
                     min-height: 100%;
                     //border: 1px solid red;
@@ -434,7 +436,7 @@
                         //flex-direction: column;
                         min-height: 100%;
                         border: 1px solid rgb(166, 166, 167);
-                        border-radius: 5px;
+                        border-radius: 3px;
                         font-size: 10px;
                         padding: 5px 3px;
                         position: relative;
@@ -575,10 +577,25 @@
 
                 .currentPeriod {
                     margin: 2px 0;
-                    padding: 1px 0;
-                    outline: 2px solid rgba(168, 26, 26, 0.797);
+                    padding: 5px 0;
+                    outline: 1px solid rgba(7, 153, 31, 0.726);
                     // background: rgb(47, 92, 160); 
-                    border-radius: 5px;
+                    border-radius: 2px;
+                    background: rgba(7, 165, 68, 0.26);
+                    position: relative;
+
+                    &>div,
+                    input {
+                        background: white;
+                    }
+
+                    &::before {
+                        position: absolute;
+                        left: -23px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        content: '➡️';
+                    }
 
                 }
 

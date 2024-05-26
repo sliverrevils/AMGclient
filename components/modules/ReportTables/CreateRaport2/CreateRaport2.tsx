@@ -314,8 +314,13 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                         const patterns = item.patterns.filter((pattern) => !!pattern); // убираем отсутствующие статистики
                         return (
                             <>
-                                <tr key={item.name + "itemMainList"}>
-                                    <th colSpan={5} className={styles.itemHeader} style={{ background: orgItemsColorsObj[item.itemType] }}>
+                                <tr key={item.name + "itemMainList"} className={styles[`orgItem_${item.itemType}`]}>
+                                    <th colSpan={1} className={styles.itemFirst}></th>
+                                    <th
+                                        colSpan={3}
+                                        className={styles.itemHeader}
+                                        // style={{ background: orgItemsColorsObj[item.itemType] }}
+                                    >
                                         <div>
                                             <span>{item.name}</span> <span>{userByID(item.leadership)?.name}</span>
                                         </div>
@@ -365,12 +370,14 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
 
         saveTableToExcel(columns, rows);
     };
+
+    //ГРАФИК КРУГ📈
     if (getPie) {
         const all: IPieChartProps = {
             labels: [`Растущие статистики`, "Падающие статистики", "Пустые статистики", "Заполненные статистики", "Не заполненные статистики"],
             datasets: [
                 {
-                    label: "# of Votes",
+                    label: "",
                     data: [counters.growingStatsCount, counters.notGrowingStatsCount, counters.noDataGrowingStatsCount, counters.fillledStatsCount, counters.notFillledStatsCount],
                     backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)", "rgba(7, 89, 255, 0.2)", "rgba(194, 84, 109, 0.2)"],
                     borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)", "rgba(7, 89, 255, 1)", "rgba(194, 84, 109, 1)"],
@@ -382,7 +389,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
             labels: [`Растущие статистики`, "Падающие статистики"],
             datasets: [
                 {
-                    label: "# of Votes",
+                    label: "",
                     data: [counters.growingStatsCount, counters.notGrowingStatsCount],
                     backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)"],
                     borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)"],
@@ -394,7 +401,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
             labels: ["Заполненные статистики", "Не заполненные статистики"],
             datasets: [
                 {
-                    label: "# of Votes",
+                    label: "",
                     data: [counters.fillledStatsCount, counters.notFillledStatsCount],
                     backgroundColor: ["rgba(7, 89, 255, 0.2)", "rgba(194, 84, 109, 0.2)"],
                     borderColor: ["rgba(7, 89, 255, 1)", "rgba(194, 84, 109, 1)"],
@@ -478,118 +485,147 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
             <div className={styles.tableWrap}>
                 <table style={{ opacity: isOfficeListShow || isDepartmentListShow || isSectionListShow ? 0.4 : 1 }}>
                     <caption>
-                        <div className={styles.filterOrgTypeBlock}>
-                            <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
-                                <label title="применить фильтр к элементам оргсхемы">
-                                    <span> 📇</span>
-                                    <input type="checkbox" checked={isShowFilteredOrg} onChange={(event) => setIsShowFilteredOrg(event.target.checked)} />
-                                </label>
-                            </div>
-                            {isShowFilteredOrg && (
-                                <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
-                                    <label title="автоматический выбор всех дочерних элементов">
-                                        <span> ✅</span>
-                                        <input type="checkbox" checked={isSelectedAllOrgChildren} onChange={(event) => setIsSelectedAllOrgChildren(event.target.checked)} />
-                                    </label>
+                        <div className={styles.filterBlockWrap}>
+                            <div className={styles.filterTitle}>Фильтр ОРГ-схемы</div>
+                            <div className={styles.filterOrgTypeBlock}>
+                                <div className={styles.filtersOrgBtns}>
+                                    <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
+                                        <label title="применить фильтр к элементам оргсхемы">
+                                            <span> 📇 Включить фильтр РОГ-схемы</span>
+                                            <input type="checkbox" checked={isShowFilteredOrg} onChange={(event) => setIsShowFilteredOrg(event.target.checked)} />
+                                        </label>
+                                    </div>
+                                    {isShowFilteredOrg && (
+                                        <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
+                                            <label title="автоматический выбор всех дочерних элементов">
+                                                <span> ✅Автоматический выбор всех позиций фильтра</span>
+                                                <input type="checkbox" checked={isSelectedAllOrgChildren} onChange={(event) => setIsSelectedAllOrgChildren(event.target.checked)} />
+                                            </label>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-
-                            <div
-                                className={selectedOrgFilterClass("office")}
-                                onClick={() => filtersToggle.orgTypeFiltersToggle("office")}
-                                style={{ background: orgItemsColorsObj.office }}
-                                onContextMenu={(event) => {
-                                    event.preventDefault();
-                                    isShowFilteredOrg &&
-                                        setIsOfficeListShow((state) => {
-                                            if (state) {
-                                                return false;
-                                            } else {
-                                                setIsDepartmentListShow(false);
-                                                setIsSectionListShow(false);
-                                                return true;
-                                            }
-                                        });
-                                }}
-                            >
-                                отделения {isShowFilteredOrg ? `📇${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}` : ""}
-                            </div>
-                            <div
-                                className={selectedOrgFilterClass("department")}
-                                onClick={() => filtersToggle.orgTypeFiltersToggle("department")}
-                                style={{ background: orgItemsColorsObj.department }}
-                                onContextMenu={(event) => {
-                                    event.preventDefault();
-                                    isShowFilteredOrg &&
-                                        setIsDepartmentListShow((state) => {
-                                            if (state) {
-                                                return false;
-                                            } else {
-                                                setIsOfficeListShow(false);
-                                                setIsSectionListShow(false);
-                                                return true;
-                                            }
-                                        });
-                                }}
-                            >
-                                отделы {isShowFilteredOrg ? `📇${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}` : ""}
-                            </div>
-                            <div
-                                className={selectedOrgFilterClass("section")}
-                                onClick={() => filtersToggle.orgTypeFiltersToggle("section")}
-                                style={{ background: orgItemsColorsObj.section }}
-                                onContextMenu={(event) => {
-                                    event.preventDefault();
-                                    isShowFilteredOrg &&
-                                        setIsSectionListShow((state) => {
-                                            if (state) {
-                                                return false;
-                                            } else {
-                                                setIsOfficeListShow(false);
-                                                setIsDepartmentListShow(false);
-                                                return true;
-                                            }
-                                        });
-                                }}
-                            >
-                                секции {isShowFilteredOrg ? `📇${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}` : ""}
-                            </div>
-                        </div>
-
-                        <div className={styles.filterTypeBlock}>
-                            <div className={styles[`selectedFilter_${filters.mainStatFilter}`]} onClick={filtersToggle.mainStatFilterToggle}>
-                                <span className={`${styles.title} noselect`}>Главные статистики </span> <span className={styles.count}>{counters.mainStatCount || 0}</span>
-                            </div>
-                            <div className={styles[`selectedFilter_${filters.additionalStatsFilter}`]} onClick={filtersToggle.additionalStatsFilter}>
-                                <span className={`${styles.title} noselect`}>Дополнительные статистики </span> <span className={styles.count}>{counters.additionalStatCount || 0}</span>
-                            </div>
-                        </div>
-
-                        <div className={styles.filterBlock}>
-                            <div className={styles[`selectedFilter_${filters.growingFilter}`]} onClick={filtersToggle.growingFilterToggle}>
-                                <span className={`${styles.title} noselect`}>Растущих статистик </span> <span className={styles.count}>{counters.growingStatsCount || 0}</span>
-                            </div>
-                            <div className={styles[`selectedFilter_${filters.fallingFilter}`]} onClick={filtersToggle.fallingFilterToggle}>
-                                <span className={`${styles.title} noselect`}>Падающих статистик </span> <span className={styles.count}>{counters.notGrowingStatsCount || 0}</span>
-                            </div>
-
-                            <div className={styles[`selectedFilter_${filters.emptyFilter}`]} onClick={filtersToggle.emptyFilterToggle}>
-                                <span className={`${styles.title} noselect`}>Пустые статистики </span> <span className={styles.count}>{counters.noDataGrowingStatsCount || 0}</span>
+                                <div className={styles.filtersOrg}>
+                                    <div
+                                        className={selectedOrgFilterClass("office")}
+                                        onClick={() => filtersToggle.orgTypeFiltersToggle("office")}
+                                        style={{ background: orgItemsColorsObj.office }}
+                                        onContextMenu={(event) => {
+                                            event.preventDefault();
+                                            isShowFilteredOrg &&
+                                                setIsOfficeListShow((state) => {
+                                                    if (state) {
+                                                        return false;
+                                                    } else {
+                                                        setIsDepartmentListShow(false);
+                                                        setIsSectionListShow(false);
+                                                        return true;
+                                                    }
+                                                });
+                                        }}
+                                    >
+                                        отделения {isShowFilteredOrg ? `📇${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}` : ""}
+                                    </div>
+                                    <div
+                                        className={selectedOrgFilterClass("department")}
+                                        onClick={() => filtersToggle.orgTypeFiltersToggle("department")}
+                                        style={{ background: orgItemsColorsObj.department }}
+                                        onContextMenu={(event) => {
+                                            event.preventDefault();
+                                            isShowFilteredOrg &&
+                                                setIsDepartmentListShow((state) => {
+                                                    if (state) {
+                                                        return false;
+                                                    } else {
+                                                        setIsOfficeListShow(false);
+                                                        setIsSectionListShow(false);
+                                                        return true;
+                                                    }
+                                                });
+                                        }}
+                                    >
+                                        отделы {isShowFilteredOrg ? `📇${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}` : ""}
+                                    </div>
+                                    <div
+                                        className={selectedOrgFilterClass("section")}
+                                        onClick={() => filtersToggle.orgTypeFiltersToggle("section")}
+                                        style={{ background: orgItemsColorsObj.section }}
+                                        onContextMenu={(event) => {
+                                            event.preventDefault();
+                                            isShowFilteredOrg &&
+                                                setIsSectionListShow((state) => {
+                                                    if (state) {
+                                                        return false;
+                                                    } else {
+                                                        setIsOfficeListShow(false);
+                                                        setIsDepartmentListShow(false);
+                                                        return true;
+                                                    }
+                                                });
+                                        }}
+                                    >
+                                        секции {isShowFilteredOrg ? `📇${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}` : ""}
+                                    </div>
+                                </div>
+                                <div className={styles.filtersHelp}>
+                                    <span>
+                                        <b>Левой кнопкой мыши</b> включение/отключение отображения в таблице
+                                    </span>
+                                    {isShowFilteredOrg && (
+                                        <span>
+                                            <b>Правой кнопкой мыши</b> вызов меню с конкретными позициями для отображения
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className={styles.filterFellingBlock}>
-                            <div className={styles[`selectedFilter_${filters.filledFilter}`]} onClick={filtersToggle.filledFilterToggle}>
-                                <span className={`${styles.title} noselect`}>Заполненные статистики </span> <span className={styles.count}>{counters.fillledStatsCount || 0}</span>
+
+                        <div className={styles.filterBlockWrap}>
+                            <div className={styles.filterTitle}>Фильтры статистик</div>
+                            <div className={styles.filter}>
+                                <div className={styles.text}>Тип : </div>
+                                <div className={styles.filterTypeBlock}>
+                                    <div className={styles[`selectedFilter_${filters.mainStatFilter}`]} onClick={filtersToggle.mainStatFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>Главные : </span> <span className={styles.count}>{counters.mainStatCount || 0}</span>
+                                    </div>
+                                    <div className={styles[`selectedFilter_${filters.additionalStatsFilter}`]} onClick={filtersToggle.additionalStatsFilter}>
+                                        <span className={`${styles.title} noselect`}>Дополнительные : </span> <span className={styles.count}>{counters.additionalStatCount || 0}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={styles[`selectedFilter_${filters.notFilledFilter}`]} onClick={filtersToggle.notFilledFilterToggle}>
-                                <span className={`${styles.title} noselect`}>He заполненные статистики </span> <span className={styles.count}>{counters.notFillledStatsCount || 0}</span>
+
+                            <div className={styles.filter}>
+                                <div className={styles.text}>Статус:</div>
+                                <div className={styles.filterBlock}>
+                                    <div className={styles[`selectedFilter_${filters.growingFilter}`]} onClick={filtersToggle.growingFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>Растущие : </span> <span className={styles.count}>{counters.growingStatsCount || 0}</span>
+                                    </div>
+                                    <div className={styles[`selectedFilter_${filters.fallingFilter}`]} onClick={filtersToggle.fallingFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>Падающие : </span> <span className={styles.count}>{counters.notGrowingStatsCount || 0}</span>
+                                    </div>
+
+                                    <div className={styles[`selectedFilter_${filters.emptyFilter}`]} onClick={filtersToggle.emptyFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>Пустые : </span> <span className={styles.count}>{counters.noDataGrowingStatsCount || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={styles.filter}>
+                                <div className={styles.text}>Заполнение:</div>
+                                <div className={styles.filterFellingBlock}>
+                                    <div className={styles[`selectedFilter_${filters.filledFilter}`]} onClick={filtersToggle.filledFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>Заполненные : </span> <span className={styles.count}>{counters.fillledStatsCount || 0}</span>
+                                    </div>
+                                    <div className={styles[`selectedFilter_${filters.notFilledFilter}`]} onClick={filtersToggle.notFilledFilterToggle}>
+                                        <span className={`${styles.title} noselect`}>He заполненные : </span> <span className={styles.count}>{counters.notFillledStatsCount || 0}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </caption>
 
                     <thead>
                         <tr>
-                            <th className={styles.mainColumn}></th>
+                            <th className={styles.mainColumn}>📅</th>
                             <th className={styles.mainColumn}>
                                 <div className={styles.periodColumnBlock}>
                                     <span>Период</span>

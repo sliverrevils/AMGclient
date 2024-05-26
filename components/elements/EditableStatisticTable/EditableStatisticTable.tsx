@@ -1040,7 +1040,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             key={Math.random()}
                             className={styles.miniHeaderItem}
                             style={{
-                                width: columnsWidth[headerIdx] || 0 + 5,
+                                width: columnsWidth[headerIdx] || 0 - 5,
                                 // border: selectedRow == rowIndex ? `2px solid black` : '',
                             }}
                         >
@@ -1181,7 +1181,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                             ${selectedRowRef.current == rowIndex ? styles.selectedRow : ""}
                                             `}
                                                 style={{
-                                                    width: columnsWidth[itemIndex] + 5,
+                                                    // width: columnsWidth[itemIndex] + 5,
+                                                    width: columnsWidth[itemIndex],
                                                     // border: selectedRow == rowIndex ? `2px solid black` : '',
                                                 }}
                                                 onClick={() => {

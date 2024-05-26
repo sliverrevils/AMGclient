@@ -8,11 +8,14 @@
     // clip-path: circle(50% at 0 0);
 
     .postSelect {
-        border: 3px solid #56b9ff;
+        margin-top: 10px;
+        align-self: center;
+        border: 2px solid #5e5e5e6b;
         border-radius: 5px;
         padding: 5px 15px;
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 600;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.205);
 
 
     }
@@ -29,7 +32,7 @@
             gap: 5px;
 
             input {
-                padding: 1px 5px;
+                padding: 5px 5px;
                 border-radius: 5px;
                 outline: 0;
 
@@ -52,7 +55,7 @@
         select {
             border: 3px solid #56b9ff;
             border-radius: 5px;
-            padding: 2px 5px;
+            padding: 5px;
             font-size: 14px;
             font-weight: 600;
         }
@@ -91,9 +94,11 @@
 }
 
 .orgFilterBlock {
+    align-self: flex-start;
     position: relative;
     border: 2px solid rgba(147, 145, 145, 0.116);
     padding: 3px;
+    padding-right: 20px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -112,7 +117,7 @@
     select {
         border: 2px solid #56b9ff;
         border-radius: 5px;
-        padding: 2px 5px;
+        padding: 5px;
         font-size: 13px;
         font-weight: 600;
 
@@ -121,6 +126,7 @@
     .officeList {
         border-color: #FF8056;
         color: #d54e21;
+        padding: 5px;
     }
 
     .depList {

@@ -23,8 +23,13 @@ export default function Aside() {
                     {accessedRoutes
                         .filter((el) => el.id !== 777)
                         .map((el) => (
-                            <li key={el.id + "_btn"} className={`${el.active} noselect`} onClick={() => el.clickFunc()}>
-                                {el.title}
+                            <li
+                                key={el.id + "_btn"}
+                                // className={`${el.active} noselect`}
+                                className={`${currentStyle[`menu_${el.active}`]} noselect`}
+                                onClick={() => el.clickFunc()}
+                            >
+                                <span>{el.title}</span>
                             </li>
                         ))}
                     {/* <li className={`${settingsMenu.active} noselect`} onClick={() => settingsMenu.clickFunc()}>

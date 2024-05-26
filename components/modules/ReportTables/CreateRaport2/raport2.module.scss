@@ -32,10 +32,11 @@
         .closeWin {
             z-index: 999;
             position: absolute;
-            right: -20px;
+            right: -25px;
             top: 0px;
             background: white;
-            border: 2px solid gray;
+            border: 2px solid rgb(83, 83, 83);
+            box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.336);
             padding: 2px;
         }
 
@@ -69,11 +70,12 @@
         table {
 
 
-            background: rgb(197, 197, 197);
-            width: 100%;
-            //border: 1px solid black;
+            //background: rgb(197, 197, 197);
+            width: 99%;
+            border: 2px solid rgba(0, 0, 0, 0.137);
             border-collapse: separate;
             border-radius: 5px;
+            margin-bottom: 50px;
             //margin-left: 20px;
 
 
@@ -100,111 +102,229 @@
                 }
 
 
-                .filterOrgTypeBlock {
-                    display: flex;
-                    justify-content: center;
-                    width: auto;
-                    font-size: 13px;
 
-                    .isSelectFilter_true {
-                        width: auto;
+                .filterBlockWrap {
+                    opacity: .8;
+                    background: rgba(128, 128, 128, 0.048);
+                    display: flex;
+                    flex-direction: column;
+                    //border: 2px solid rgba(0, 0, 0, 0.116);
+                    padding: 2px;
+                    margin: 10px;
+                    border-radius: 10px;
+                    box-shadow: 0px 0px 7px black;
+                    transition: all 200ms linear;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+
+                    .filterTitle {
+                        text-align: center;
+                        font-size: 15px;
+                        font-weight: 500;
+                        color: rgba(0, 0, 0, 0.79);
+                        background: rgba(128, 128, 128, 0.205);
+                        border-radius: 5px 5px 2px 2px;
+                    }
+
+
+
+                    .filterOrgTypeBlock {
                         display: flex;
-                        justify-content: center;
+                        flex-direction: column;
+
+
+                        gap: 10px;
+                        width: auto;
+                        font-size: 13px;
+
+                        .filtersOrgBtns {
+                            align-self: flex-start;
+                            display: flex;
+                            flex-direction: column;
+
+                            &>div {
+                                align-self: flex-start;
+
+                                &>label {
+                                    display: flex;
+                                    gap: 10px;
+                                    font-size: 15px;
+
+                                }
+                            }
+
+                        }
+
+                        .filtersOrg {
+                            display: flex;
+                            gap: 10px;
+
+                            .isSelectFilter_true {
+
+                                width: auto;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+
+                                label {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+
+                                }
+
+                            }
+
+                            .isSelectFilter_false {
+
+                                width: auto;
+                                display: flex;
+                                align-items: center;
+
+                                label {
+                                    display: flex;
+                                    align-items: center;
+
+                                }
+                            }
+
+
+                            &>div {
+                                width: 100%;
+                                padding: 5px;
+                            }
+                        }
+
+                        .filtersHelp {
+                            opacity: .6;
+                            background: rgba(255, 255, 0, 0.336);
+                            padding: 5px 10px;
+                            text-align: left;
+                            align-self: flex-end;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 5px;
+                            border: 2px dotted rgb(88, 88, 88);
+                            border-radius: 10px;
+                        }
+
+
+
+
+
+                    }
+
+
+                    .selectedFilter {
+                        border-radius: 10px;
+                        // padding: 20px;
+                        opacity: .8;
+                        color: white;
+                        // border: 1px solid black;
+                    }
+
+                    .notSelectedFilter {
+                        border-radius: 10px;
+                        opacity: .3;
+                    }
+
+
+                    .filter {
+                        width: 100%;
+                        display: flex;
+                        gap: 20px;
                         align-items: center;
 
-                        label {
+                        .text {
+                            width: 120px;
+                            font-weight: 600;
+                            text-align: right;
+                            opacity: .4;
+                        }
+
+                        .filterTypeBlock {
+
+                            font-size: 13px;
+                            display: flex;
+
+                            justify-content: center;
+                            gap: 10px;
+
+                            &>div {
+                                display: flex;
+                                gap: 10px;
+                                padding: 3px 10px;
+                                border-radius: 5px;
+                                font-size: 15px;
+
+                            }
+
+
+                        }
+
+                        .filterBlock {
                             display: flex;
                             justify-content: center;
-                            align-items: center;
+                            gap: 10px;
+
+                            &>div {
+                                display: flex;
+                                gap: 10px;
+                                padding: 3px 10px;
+                                border-radius: 5px;
+                                font-size: 15px;
+
+                            }
+
 
                         }
 
-                    }
-
-                    .isSelectFilter_false {
-                        width: auto;
-                        display: flex;
-                        align-items: center;
-
-                        label {
+                        .filterFellingBlock {
                             display: flex;
-                            align-items: center;
+                            justify-content: center;
+
+                            gap: 10px;
+
+                            &>div {
+                                display: flex;
+                                gap: 10px;
+                                padding: 3px 10px;
+                                border-radius: 5px;
+                                font-size: 15px;
+
+                            }
 
                         }
                     }
 
 
-                    &>div {
-                        width: 100%;
-                    }
                 }
 
-                .filterTypeBlock {
-                    font-size: 13px;
-                    display: flex;
-                    justify-content: center;
 
 
-                    &>div {
-                        width: 33%;
-                    }
-                }
-
-                .filterBlock {
-                    display: flex;
-
-                    &>div {
-                        width: 33%;
-                    }
-
-                }
-
-                .filterFellingBlock {
-                    display: flex;
-                    justify-content: center;
-
-
-                    &>div {
-                        width: 33%;
-                    }
-                }
-
-                .selectedFilter {
-                    // padding: 20px;
-                    opacity: 1;
-                    color: white;
-                    // border: 1px solid black;
-                }
-
-                .notSelectedFilter {
-                    opacity: .5;
-                }
             }
 
             thead {
-                //background: tomato;
                 color: white;
-                background: rgba(194, 97, 64, 0.151);
-                //outline: 2px solid black;
-                // box-shadow: 0px 0px 6px black;
             }
 
             tr {
-                //box-shadow: 2px 2px 5px black;
-
-                background: white;
-
                 .itemHeader {
-                    padding: 5px;
                     column-span: 5;
-
                 }
 
                 .timeCell {
                     text-wrap: nowrap;
                     font-weight: 600;
                     color: rgb(0, 0, 0);
-                    background-color: rgba(255, 99, 71, 0.473);
+                    //background-color: rgba(255, 99, 71, 0.273);
+                    // background: rgb(255, 0, 0);
+                    // background: linear-gradient(90deg, rgba(255, 0, 0, 0.4374805097820378) 0%, rgba(255, 255, 255, 1) 35%);
+                    color: rgb(223, 57, 28);
+                    //max-width: 115px;
+                    //padding: 0 5px;
 
                     .timeBlock {
                         display: flex;
@@ -231,8 +351,8 @@
                 }
 
                 .timeCell_filled {
-                    background: rgb(100, 166, 252);
-                    color: rgb(0, 0, 0);
+                    //background: rgb(100, 166, 252, .2);
+                    color: rgb(10, 13, 158);
                 }
 
                 .trendCell {
@@ -240,18 +360,20 @@
                 }
 
                 .trendCell_growing {
-                    background: rgb(63, 177, 69);
-                    color: white;
+                    background: rgb(63, 177, 69, .1);
+                    font-weight: 600;
+                    color: rgb(0, 0, 0);
                 }
 
                 .trendCell_falling {
-                    background: rgb(250, 70, 47);
-                    color: white;
+                    background: rgb(250, 70, 47, 0.1);
+                    font-weight: 600;
+                    color: rgb(0, 0, 0);
 
                 }
 
                 .trendCell_empty {
-                    background: gray;
+                    background: rgb(128, 128, 128, .1);
                 }
 
 
@@ -301,7 +423,7 @@
                 color: white;
                 font-size: 13px;
                 text-align: center;
-                transform: translateX(-1%) scale(102%);
+                //transform: translateX(-1%) scale(102%);
 
                 //box-shadow: 4px 1px 8px black;\
                 div {
@@ -312,12 +434,12 @@
                     justify-content: space-between;
 
                     &>span:nth-child(1) {
-                        color: black;
+                        color: rgba(0, 0, 0, 0.418);
 
                     }
 
                     &>span:nth-child(2) {
-                        color: rgba(255, 255, 255, 0.637);
+                        color: rgba(0, 0, 0, 0.411);
                         font-weight: 500;
                         text-align: right;
                     }
@@ -335,34 +457,76 @@
             }
 
             tbody {
+
+
+
                 tr {}
+
+                .orgItem_office {
+                    // outline: 2px solid rgb(255, 128, 86, );
+                    // background: #ff8056;
+                    background: rgb(255, 128, 86);
+                    background: linear-gradient(90deg, rgba(255, 128, 86, .3) 0%, rgba(255, 255, 255, 1) 53%);
+                    color: rgb(3, 3, 3);
+                    //opacity: .5;
+
+                    .itemFirst {
+                        background: white;
+                    }
+                }
+
+                .orgItem_department {
+                    //background: #4683b4;
+                    background: rgb(70, 131, 180);
+                    background: linear-gradient(90deg, rgba(70, 131, 180, .3) 0%, rgba(255, 255, 255, 1) 53%);
+                    color: white;
+
+                    .itemFirst {
+                        background: white;
+                    }
+                }
+
+                .orgItem_section {
+                    //background: #2a9955;
+                    background: rgb(42, 153, 85);
+                    background: linear-gradient(90deg, rgba(42, 153, 85, .3) 0%, rgba(255, 255, 255, 1) 53%);
+
+                    .itemFirst {
+                        background: white;
+                    }
+                }
+
 
                 .statLine {
                     padding: 10px;
 
+
                     &>td {
-                        border: 1px solid rgba(0, 0, 0, 0.521);
+                        border: 1px solid rgba(0, 0, 0, 0.267);
                     }
 
+                    &:hover {
 
+                        cursor: pointer;
 
+                        &>td:nth-child(3) {
+                            background: rgba(187, 255, 0, 0.199);
+                            font-weight: 600;
+                        }
+                    }
 
                 }
 
                 .statLine_selected {
                     position: relative;
 
-                    // &>td:nth-child(1) {
-                    //     background: rgba(255, 0, 140, 0.692);
-
-
-
-                    // }
-
                     &::after {
                         //position: fixed;
+                        z-index: -1;
                         position: absolute;
-                        left: -22px;
+                        left: -24px;
+                        top: 50%;
+                        transform: translateY(-50%);
                         z-index: 1;
                         content: '⭐';
                     }
@@ -385,7 +549,7 @@
 
 
     .title {
-        color: white;
+        color: rgb(0, 0, 0);
     }
 
     .count {
@@ -422,11 +586,12 @@
 
 .filterTypeBlock>.selectedFilter_true {
     &:nth-child(1) {
-        background: rgb(196, 192, 6);
+        background: rgb(196, 192, 6, 0.432);
+        color: black;
     }
 
     &:nth-child(2) {
-        background: rgb(168, 168, 167);
+        background: rgb(168, 168, 167, 0.432);
     }
 
 
@@ -435,11 +600,11 @@
 
 .filterTypeBlock>.selectedFilter_false {
     &:nth-child(1) {
-        outline: 2px solid rgb(196, 192, 6);
+        outline: 1px solid rgb(196, 192, 6);
     }
 
     &:nth-child(2) {
-        outline: 2px solid rgb(168, 168, 167);
+        outline: 1px solid rgb(168, 168, 167);
     }
 
 
@@ -448,51 +613,51 @@
 
 .filterBlock>.selectedFilter_true {
     &:nth-child(1) {
-        background: rgb(63, 177, 69);
+        background: rgb(63, 177, 69, 0.432);
     }
 
     &:nth-child(2) {
-        background: rgb(250, 70, 47);
+        background: rgb(250, 70, 47, 0.432);
     }
 
     &:nth-child(3) {
-        background: rgb(134, 134, 134);
+        background: rgb(134, 134, 134, 0.432);
     }
 
 }
 
 .filterBlock>.selectedFilter_false {
     &:nth-child(1) {
-        outline: 2px solid rgb(63, 177, 69);
+        outline: 1px solid rgb(63, 177, 69);
     }
 
     &:nth-child(2) {
-        outline: 2px solid rgb(250, 70, 47);
+        outline: 1px solid rgb(250, 70, 47);
     }
 
     &:nth-child(3) {
-        outline: 2px solid rgb(134, 134, 134);
+        outline: 1px solid rgb(134, 134, 134);
     }
 
 }
 
 .filterFellingBlock>.selectedFilter_true {
     &:nth-child(1) {
-        background: rgb(100, 166, 252);
+        background: rgb(100, 166, 252, 0.432);
     }
 
     &:nth-child(2) {
-        background: rgb(250, 70, 47);
+        background: rgba(250, 71, 47, 0.432);
     }
 }
 
 .filterFellingBlock>.selectedFilter_false {
     &:nth-child(1) {
-        outline: 2px solid rgb(100, 166, 252);
+        outline: 1px solid rgb(100, 166, 252);
     }
 
     &:nth-child(2) {
-        outline: 2px solid rgb(250, 70, 47);
+        outline: 1px solid rgb(250, 70, 47);
     }
 }
 

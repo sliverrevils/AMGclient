@@ -22,7 +22,7 @@ export default function Header() {
 
                 <div className={styles.mainText}>
                     <span className={styles.amg}>AMG</span>
-                    <span className={styles.stat}>Avtomarket Statistic</span>
+                    <span className={styles.stat}>Avtomarket Statistics</span>
                 </div>
                 <div className={`${styles.userBlock}`}>
                     <div className={styles.firstRow}>

@@ -6,6 +6,8 @@
     padding: 5px;
 
 
+
+
     .container {
         height: 100%;
         display: flex;
@@ -17,7 +19,12 @@
         }
 
         .mainText {
-            font-size: 30px;
+            background-image: url('/img/graph_fone.png');
+            background-size: 100%;
+            // background-position: 160px 380px;
+            background-position: 20px -90px;
+            background-repeat: no-repeat;
+            font-size: 40px;
             font-weight: 700;
             // border: 1px solid black;
             display: flex;
@@ -25,29 +32,45 @@
             color: #FF8056;
             letter-spacing: .7px;
             gap: 20px;
+            text-wrap: nowrap;
 
-            .amg {}
+            // text-shadow: 2px 2px 4px rgba(209, 209, 209, 0.1),
+            //     3px 4px 4px rgba(209, 209, 209, 0.15),
+            //     4px 6px 4px rgba(209, 209, 209, 0.2),
+            //     5px 8px 4px rgba(209, 209, 209, 0.25);
+
+            .amg {
+                font-weight: 600;
+                color: #FF8056;
+            }
 
             .stat {
-                color: rgba(128, 128, 128, 0.267);
+                // color: rgb(182, 179, 179);
+                // background: linear-gradient(to right, #FF8056, #3063f07e);
+                // -webkit-background-clip: text;
+                // -webkit-text-fill-color: transparent;
+                color: #4296d4;
+                font-size: 30px;
             }
         }
 
         .userBlock {
             display: flex;
             flex-direction: column;
-            border: 3px solid rgba(0, 0, 0, 0.048);
-            outline: 1px solid rgba(0, 0, 0, 0.356);
+            //border: 3px solid rgba(0, 0, 0, 0.048);
+            outline: 1px solid rgba(0, 0, 0, 0.133);
             align-items: center;
             border-radius: 20px;
             padding: 0px 10px;
-            opacity: .5;
+
             transition: all 150ms linear;
+
+
 
             &:hover {
                 opacity: 1;
-                border: 3px solid #ff805657;
-                box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.479);
+                // outline: 3px solid #ff805657;
+                box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.379);
             }
 
             .firstRow {
@@ -64,7 +87,7 @@
                     // justify-content: flex-end;
                     .roleText {
                         font-size: 12px;
-                        opacity: .3;
+                        opacity: .5;
                         align-self: flex-end;
                     }
 
@@ -72,7 +95,7 @@
                         display: flex;
                         align-items: center;
                         gap: 5px;
-                        cursor: pointer;
+
 
 
                         .key {}
@@ -94,7 +117,7 @@
 
                     &:hover {
                         opacity: .8;
-                        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.651));
+                        filter: drop-shadow(3px 3px 1px rgba(0, 0, 0, 0.151));
                     }
                 }
 
@@ -118,9 +141,9 @@
                 align-self: flex-end;
 
                 .exit {
-                    align-self: flex-end;
-                    border: 1px solid gray;
-                    border-radius: 5px;
+                    // align-self: center;
+                    border: 1px solid rgba(128, 128, 128, 0.399);
+                    border-radius: 5px 5px 10px 5px;
                     font-size: 12px;
                     opacity: .6;
                     display: flex;
@@ -132,11 +155,12 @@
                     //width: 175px;
                     text-align: right;
                     padding: 2px 5px;
-                    box-shadow: 1px 1px 3px black;
+                    // box-shadow: 1px 1px 3px black;
 
                     &:hover {
                         opacity: 1;
                         box-shadow: 0;
+                        box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.385);
 
                     }
                 }

@@ -252,7 +252,7 @@ export default function Statistics2Screen() {
                                     setFilterStats(event.target.value.trimStart());
                                     //statSelectRef.current.
                                 }}
-                                placeholder="фильтр по названию"
+                                placeholder="фильтр по названию статистики"
                             />
                             {!!filterStats.trim().length && (
                                 <div className={styles.close} onClick={() => setFilterStats("")}>
