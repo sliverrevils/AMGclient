@@ -29,7 +29,7 @@ interface ILinearRes {
     slopeArr: number[];
 }
 
-export default function EditableStatisticTable({ selectedTable, disableSelectOnList, view = false }: { selectedTable: TableStatisticI | "clear" | undefined; disableSelectOnList: () => void; view?: boolean }) {
+export default function EditableStatisticTable({ selectedTable, disableSelectOnList, view = false, isControl = false }: { selectedTable: TableStatisticI | "clear" | undefined; disableSelectOnList: () => void; view?: boolean; isControl?: boolean }) {
     //REFS
     const reportResultRef = useRef<any>();
     //const inputsArrRef = useRef<any>([]);
@@ -711,37 +711,6 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             };
                         }
                     }
-                    //TERM;
-                    // if (logicStr && isTerm) {
-                    //     const regex = /@term\([^)]+\)/g;
-                    //     const termString = logicStr.match(regex)?.[0].replace("@term(", "").replace(")", "");
-                    //     const valuesArr = termString?.split(",");
-
-                    //     //Проверка количества аргументов
-                    //     if (valuesArr?.length !== 3 || isNaN(Number(valuesArr[0]))) {
-                    //         return {
-                    //             ...item,
-                    //             value: "❓",
-                    //             expression: "неверное условие",
-                    //         };
-                    //     }
-
-                    //     const paramNamber = Number(valuesArr[0]);
-                    //     const resValue = 0;
-
-                    //     // const val = Number(result?.value) > paramNamber ? valuesArr[1] : valuesArr[2];
-                    //     const valueCell = Number(result?.value);
-                    //     console.log("VAL", valueCell, valueCell > paramNamber ? valuesArr[1] : valuesArr[2]);
-                    //     // return {
-                    //     //     ...item,
-                    //     //     value: val,
-                    //     //     expression: `${val} > ${paramNamber}`,
-                    //     // };
-                    //     result = {
-                    //         ...(result || item),
-                    //         value: valueCell > paramNamber ? valuesArr[1] : valuesArr[2],
-                    //     };
-                    // }
 
                     if (logicStr) {
                         result ??= {
@@ -1195,6 +1164,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             )
                         )
                     }
+
                     {!!headers.length && (
                         <div className={styles.saveTableBlock} onMouseEnter={() => setSelectedHeaderPattern(true)} onMouseLeave={() => setSelectedHeaderPattern(false)}>
                             <input type="text" value={patternName} onChange={(event) => setPatternName(event.target.value)} placeholder="название шаблона" />
@@ -1207,12 +1177,23 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             )}
 
             <div className={styles.tableWrap}>
+                {/* <div>control - {isControl + ""}</div> */}
                 {/* {
                     !!headers.length &&
                     <div className={styles.tableAboutWrap}>
                         <ReactQuill value={about} onChange={setAbout} readOnly={!isAdmin} theme={isAdmin ? "snow" : "bubble"} />
                     </div>
                 } */}
+                {!!headers.length && selectedTable === "clear" && (
+                    <div className={styles.columnsHelp}>
+                        <span>
+                            ❗Колонки имеющие в названии слово <b>"план"</b> или <b>"комент"</b> - будут доступны к редактированию вне текущего периода и не будут влиять на статус заполнения записи
+                        </span>
+                        <span>
+                            ❗В колонки с <b>"комент"</b> можно записывать текст{" "}
+                        </span>
+                    </div>
+                )}
 
                 <div className={styles.tableMain}>
                     {!!headers.length && (
@@ -1232,6 +1213,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             </div>
                         )}
                     </div>
+
                     <div className={styles.bodyBlock}>
                         {calcedRows.map((row, rowIndex) => {
                             const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
@@ -1320,7 +1302,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 onClick={(event) => onClickItem(event, rowIndex)}
                                                                 disabled={
                                                                     // FOR TIME INPUT CONTROL !!! 🕒🕒🕒🕒
-                                                                    !(isCurrentPeriod || isAdmin || isPlane(itemIndex) || isComent(itemIndex))
+                                                                    !(isCurrentPeriod || isAdmin || isPlane(itemIndex) || isComent(itemIndex) || isControl)
                                                                 }
                                                             />
                                                         )}
@@ -1413,6 +1395,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             </button> */}
                         </div>
                     )}
+
                     {!createdNextPeriod && dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
                         <div className={styles.createNextPeriodBtn} onClick={onCreateNextPeriodStatistic}>
                             Создать статистику на следующий период

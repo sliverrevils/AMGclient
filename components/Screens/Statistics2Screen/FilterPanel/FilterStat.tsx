@@ -9,7 +9,7 @@ import useOrg from "@/hooks/useOrg";
 import { StateReduxI } from "@/redux/store";
 import { useSelector } from "react-redux";
 
-export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTable }: { isGenDir: boolean; postItem: any; setTableSelect: React.Dispatch<React.SetStateAction<number>>; clearTable: () => void }) {
+export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTable, setIsControl }: { isGenDir: boolean; postItem: any; setTableSelect: React.Dispatch<React.SetStateAction<number>>; clearTable: () => void; setIsControl: React.Dispatch<React.SetStateAction<boolean>> }) {
     //STATE
     const [currentTarget, setCurrentTarget] = useState(postItem);
     //offices
@@ -56,11 +56,12 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
     };
 
     //create statisctic html button
-    const StatDiv = ({ statId }: { statId: number | null }) => {
+    const StatDiv = ({ statId, control }: { statId: number | null; control: boolean }) => {
         if (statId) {
             return (
                 <div
                     onClick={() => {
+                        setIsControl(control);
                         setTableSelect(statId);
                         setAdditionalStatsSelect(0);
                     }}
@@ -247,7 +248,7 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                         <div className={styles.statsBlock}>
                             <div className={styles.mainStat}>
                                 <span>Главная статистика</span>
-                                <StatDiv statId={currentTarget.mainPattern} />
+                                <StatDiv statId={currentTarget.mainPattern} control={!(currentTarget?.name == postItem?.name)} />
                             </div>
                             <div className={styles.addStat}>
                                 <span>Дополнительные статистики</span>

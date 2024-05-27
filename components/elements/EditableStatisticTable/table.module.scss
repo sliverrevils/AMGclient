@@ -5,6 +5,21 @@
     width: 100%;
     padding: 5px;
 
+
+    .columnsHelp {
+        font-size: 12px;
+        opacity: .6;
+        background: rgba(255, 255, 0, 0.336);
+        padding: 5px 10px;
+        text-align: left;
+        align-self: flex-end;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        border: 2px dotted rgb(88, 88, 88);
+        border-radius: 10px;
+    }
+
     .fullScreenBtn {
         //background: #56b9ff;
         border: 2px solid lightblue;

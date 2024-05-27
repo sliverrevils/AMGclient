@@ -41,6 +41,8 @@ export default function Statistics2Screen() {
 
     const [filterStats, setFilterStats] = useState("");
 
+    const [isControl, setIsControl] = useState(false);
+
     //hooks
     const { getOrgFullScheme } = useOrg();
     const { getAllTableStatistics, getTableStatisticById, statNameById } = useTableStatistics();
@@ -227,6 +229,7 @@ export default function Statistics2Screen() {
                         !!userPostSelect.length && (
                             <FilterStat
                                 {...{
+                                    setIsControl,
                                     isGenDir,
                                     postItem,
                                     setTableSelect,
@@ -351,8 +354,9 @@ export default function Statistics2Screen() {
                 )
             }
             <div style={{ color: "tomato", padding: 10 }}>{error}</div>
-
+            {/* <div>control - {isControl + ""}</div> */}
             <EditableStatisticTable
+                isControl={isControl}
                 selectedTable={selectedTable}
                 disableSelectOnList={() => {
                     setTableSelect(0);
