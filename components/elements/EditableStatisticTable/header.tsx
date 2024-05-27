@@ -114,6 +114,9 @@ export default function TableHeader({
                                     <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, "@init")}>
                                         нулевое значение
                                     </div>
+                                    <div className={styles.mathHelpItem} onClick={() => onChangeHeaderLogic(null, header.id, `@term(0,Хорошо,Плохо)`)}>
+                                        условие
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -503,7 +503,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             return acc;
         }, {});
 
-        let logicStrWithDecorValues = logicStr.replaceAll("@sum", "").replaceAll("@trend", "").replaceAll("@revtrend", "");
+        let logicStrWithDecorValues = logicStr
+            .replaceAll("@sum", "")
+            .replaceAll("@trend", "")
+            .replaceAll("@revtrend", "")
+            .replaceAll(/@term\([^)]+\)/g, "");
 
         // console.log('DECORS',columnDecorsObj);
         if (logicStr) {
@@ -657,66 +661,146 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const calcRows = () => {
         let lastRow: StatRowI;
 
+        // ПРОСЧЕТ СУММЫ И УСЛОВИЯ
         let calcedTemp = rows.map((row, rowIndex) => {
             lastRow = {
                 ...row,
                 values: row.values.map((item, itemIndex) => {
-                    const result = { ...item };
+                    let result: typeof item | undefined;
                     let logicStr = "";
                     logicStr = headers?.[itemIndex]?.logicStr || "";
                     const calcedItemTemp = calcRowItem(rowIndex, itemIndex);
 
+                    const isSum = /@sum/.test(logicStr);
+                    // const isTerm = /@term\([^)]+\)/.test(logicStr);
+
                     //SUM
-                    if (logicStr && /@sum/.test(logicStr)) {
+                    if (logicStr && isSum) {
                         if (/❓/g.test(calcedItemTemp.result)) {
                             calcedItemTemp.result = "";
-                            return {
+                            result = {
                                 ...item,
                                 value: "❓",
                                 expression: calcedItemTemp.logicStrWithDecorValues,
                             };
                         }
 
-                        if (!rowIndex) {
+                        if (!result && !rowIndex) {
                             if (headers[itemIndex].initValue) {
-                                return {
+                                result = {
                                     ...item,
                                     value: Number(Number(Number(calcedItemTemp.result) + Number(headers[itemIndex].initValue)).toFixed(2)),
                                     expression: `${headers[itemIndex].initValue} + (${calcedItemTemp.result})`,
                                 };
                             }
-                            return {
+                            result ??= {
                                 ...item,
                                 value: Number(Number(calcedItemTemp.result).toFixed(2)),
                                 expression: calcedItemTemp.logicStrWithDecorValues,
                             };
                         }
-
-                        // clear ❓ in result
-                        let resExpression = `${lastRow.values[itemIndex].value}+${calcedItemTemp.logicStrWithDecorValues}`;
-                        let isUnknownsInExpressions = /❓/g.test(resExpression);
-                        const calcedValue = isUnknownsInExpressions ? "❓" : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2));
-                        return {
-                            ...item,
-                            value: calcedValue,
-                            expression: isUnknownsInExpressions ? "❓" : resExpression,
-                        };
+                        if (!result) {
+                            // clear ❓ in result
+                            let resExpression = `${lastRow.values[itemIndex].value}+${calcedItemTemp.logicStrWithDecorValues}`;
+                            let isUnknownsInExpressions = /❓/g.test(resExpression);
+                            const calcedValue = isUnknownsInExpressions ? "❓" : Number(Number(Number(calcedItemTemp.result) + Number(lastRow.values[itemIndex].value)).toFixed(2));
+                            result ??= {
+                                ...item,
+                                value: calcedValue,
+                                expression: isUnknownsInExpressions ? "❓" : resExpression,
+                            };
+                        }
                     }
+                    //TERM;
+                    // if (logicStr && isTerm) {
+                    //     const regex = /@term\([^)]+\)/g;
+                    //     const termString = logicStr.match(regex)?.[0].replace("@term(", "").replace(")", "");
+                    //     const valuesArr = termString?.split(",");
+
+                    //     //Проверка количества аргументов
+                    //     if (valuesArr?.length !== 3 || isNaN(Number(valuesArr[0]))) {
+                    //         return {
+                    //             ...item,
+                    //             value: "❓",
+                    //             expression: "неверное условие",
+                    //         };
+                    //     }
+
+                    //     const paramNamber = Number(valuesArr[0]);
+                    //     const resValue = 0;
+
+                    //     // const val = Number(result?.value) > paramNamber ? valuesArr[1] : valuesArr[2];
+                    //     const valueCell = Number(result?.value);
+                    //     console.log("VAL", valueCell, valueCell > paramNamber ? valuesArr[1] : valuesArr[2]);
+                    //     // return {
+                    //     //     ...item,
+                    //     //     value: val,
+                    //     //     expression: `${val} > ${paramNamber}`,
+                    //     // };
+                    //     result = {
+                    //         ...(result || item),
+                    //         value: valueCell > paramNamber ? valuesArr[1] : valuesArr[2],
+                    //     };
+                    // }
+
                     if (logicStr) {
-                        return {
+                        result ??= {
                             ...item,
                             value: calcedItemTemp.result,
                             expression: calcedItemTemp.logicStrWithDecorValues,
                         };
                     }
 
-                    return {
-                        ...item,
-                    };
+                    return result || item;
                 }),
             };
             return lastRow;
         });
+
+        calcedTemp = calcedTemp.map((row, rowIndex) => ({
+            ...row,
+            values: row.values.map((item, itemIndex) => {
+                let logicStr = "";
+                logicStr = headers?.[itemIndex]?.logicStr || "";
+
+                const isTerm = /@term\([^)]+\)/.test(logicStr);
+
+                //TERM;
+                if (logicStr && isTerm) {
+                    const regex = /@term\([^)]+\)/g;
+                    const termString = logicStr.match(regex)?.[0].replace("@term(", "").replace(")", "");
+                    const valuesArr = termString?.split(",");
+
+                    //Проверка количества аргументов
+                    if (valuesArr?.length !== 3 || isNaN(Number(valuesArr[0]))) {
+                        return {
+                            ...item,
+                            value: "❓",
+                            expression: "неверное условие",
+                        };
+                    }
+
+                    const paramNamber = Number(valuesArr[0]);
+                    let cellVelue: number | string = Number(item.value);
+                    console.log(item.value);
+                    if (!Number.isNaN(cellVelue)) {
+                        cellVelue = cellVelue > paramNamber ? valuesArr[1] : valuesArr[2];
+                    } else {
+                        cellVelue = "❓";
+                    }
+
+                    // return item;
+
+                    return {
+                        ...item,
+                        value: cellVelue,
+                        expression: `${item.value} > ${paramNamber}`,
+                    };
+                } else {
+                    return item;
+                }
+            }),
+        }));
 
         //-------------------------------------------------------- SET STATUS TRENDS📉📈📉📈
         calcedTemp = calcedTemp.map((row, rowIndex) => {
