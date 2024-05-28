@@ -7,7 +7,7 @@ export const logicMath = (logic, fields, index, lastFields?) => {
     const logicWithValue = logic
         .replaceAll("@index", index + 1)
         .replaceAll(/@@\d{1,3}/g, (x, y, z) => {
-            return lastFields[x.replace("@@", "") - 1]?.value;
+            return `(${lastFields[x.replace("@@", "") - 1]?.value})`;
         })
         .replaceAll(/@\d{1,3}/g, (x, y, z) => {
             const field = x.replace("@", "") - 1;
@@ -16,7 +16,7 @@ export const logicMath = (logic, fields, index, lastFields?) => {
                 clearData = true;
             }
 
-            return fields[field]?.value;
+            return `(${fields[field]?.value})`;
         });
 
     let res: any = null;
@@ -29,7 +29,7 @@ export const logicMath = (logic, fields, index, lastFields?) => {
     try {
         res = +eval(logicWithValue);
     } catch {
-        // console.log('MATH ERROR')
+        console.log("MATH ERROR");
     }
 
     return res !== null ? res : logicWithValue.replaceAll(/[-|+|*|/]/g, "");
@@ -172,7 +172,7 @@ export function celarPeriodStats(initStatsArr: TableStatisticListItemI[]): Table
 //CLEAR PERIOD FROM NAME
 export function clearStatName(statName: string) {
     const isPeriodStat = /@/g.test(statName);
-    return `${statName.split("@")[0].trim()}${isPeriodStat ? "📅" : ""}`;
+    return `${statName.split("@")[0].trimStart()}${isPeriodStat ? "📅" : ""}`;
 }
 
 //REPLASE FIO
@@ -187,3 +187,8 @@ export const replaceFio = (nameStr: string): string => {
         return "unnamed";
     }
 };
+
+//CLEAR EMOJIES
+export const clearSmiels = (text: string): string => text.replace(/[^А-Яа-яA-Za-z1-90\s.@"']/g, "");
+export const clearForInput = (text: string): string => text.replace(/[^А-Яа-яA-Za-z1-90\s-"'.@!?():;#№]/g, "");
+//export const clearSmiels = (text: string): string => text.replace(/([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, "");

@@ -3,7 +3,7 @@ import { UserFullI, UserI } from "@/types/types";
 import { useEffect, useRef, useState } from "react";
 import styles from "./usersScreen.module.scss";
 import useOrg from "@/hooks/useOrg";
-import { replaceFio } from "@/utils/funcs";
+import { clearSmiels, replaceFio } from "@/utils/funcs";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 
@@ -93,21 +93,21 @@ export default function UsersScreen() {
 
                     <div className={styles.editebleField}>
                         <span>Имя</span>
-                        <input value={editUserName} onChange={(event) => setEditUserName(event.target.value)} placeholder="имя" />
+                        <input value={editUserName} onChange={(event) => setEditUserName(clearSmiels(event.target.value))} placeholder="имя" />
                     </div>
 
                     <div className={styles.editebleField}>
                         <span>Фамилия</span>
-                        <input value={editUserSurname} onChange={(event) => setEditUserSurname(event.target.value)} placeholder="фамилия" />
+                        <input value={editUserSurname} onChange={(event) => setEditUserSurname(clearSmiels(event.target.value))} placeholder="фамилия" />
                     </div>
                     <div className={styles.editebleField}>
                         <span>Отчество</span>
-                        <input value={editUserPatronymic} onChange={(event) => setEditUserPatronymic(event.target.value)} placeholder="отчество" />
+                        <input value={editUserPatronymic} onChange={(event) => setEditUserPatronymic(clearSmiels(event.target.value))} placeholder="отчество" />
                     </div>
                     {currentUser.email !== "admin@admin.com" && (
                         <div className={styles.editebleField}>
                             <span>Логин для авторизации</span>
-                            <input value={editUserLogin} onChange={(event) => setEditUserLogin(event.target.value)} placeholder="логин для авторизации" />
+                            <input value={editUserLogin} onChange={(event) => setEditUserLogin(clearSmiels(event.target.value))} placeholder="логин для авторизации" />
                         </div>
                     )}
 
@@ -115,7 +115,7 @@ export default function UsersScreen() {
                         <div className={styles.editebleField}>
                             <span>Смена пароля</span>
                             <div className={styles.changePassBlock}>
-                                <input value={editChangePass} onChange={(event) => setEditChangePass(event.target.value)} placeholder="укажиите новый пароль" />
+                                <input value={editChangePass} onChange={(event) => setEditChangePass(clearSmiels(event.target.value))} placeholder="укажиите новый пароль" />
                                 {editChangePass.length >= 5 && (
                                     <div className={styles.changePassBtn} onClick={changePassword}>
                                         <span>Сменить пароль</span>
@@ -193,19 +193,19 @@ export default function UsersScreen() {
                         <h3>Создание новго пользователя</h3>
 
                         <span className={styles.addHelp}>Имя</span>
-                        <input type="text" value={newUserName} onChange={(event) => setNewUserName(event.target.value.trim())} placeholder="" />
+                        <input type="text" value={newUserName} onChange={(event) => setNewUserName(clearSmiels(event.target.value.trim()))} placeholder="" />
 
                         <span className={styles.addHelp}>Фамилия</span>
-                        <input type="text" value={newUserSurname} onChange={(event) => setNewUserSurname(event.target.value.trim())} placeholder="" />
+                        <input type="text" value={newUserSurname} onChange={(event) => setNewUserSurname(clearSmiels(event.target.value.trim()))} placeholder="" />
 
                         <span className={styles.addHelp}>Отчество</span>
-                        <input type="text" value={newUserPatronymic} onChange={(event) => setNewUserPatronymic(event.target.value.trim())} placeholder="" />
+                        <input type="text" value={newUserPatronymic} onChange={(event) => setNewUserPatronymic(clearSmiels(event.target.value.trim()))} placeholder="" />
 
                         <span className={styles.addHelp}>Логин</span>
-                        <input type="text" value={newUserEmail} onChange={(event) => setNewUserEmail(event.target.value.trim())} placeholder="Укажите логин для авторизации пользователя" />
+                        <input type="text" value={newUserEmail} onChange={(event) => setNewUserEmail(clearSmiels(event.target.value.trim()))} placeholder="Укажите логин для авторизации пользователя" />
 
                         <span className={styles.addHelp}>Пароль</span>
-                        <input type="text" value={newUserPassword} onChange={(event) => setNewUserPassword(event.target.value.trim())} placeholder="Укажите пароль без пробелов , минимум 5 символов" />
+                        <input type="text" value={newUserPassword} onChange={(event) => setNewUserPassword(clearSmiels(event.target.value.trim()))} placeholder="Укажите пароль без пробелов , минимум 5 символов" />
 
                         <button onClick={singInHandle} className={styles.addBtn} style={{ width: 250 }} disabled={!(newUserName.length && newUserSurname.length && newUserPatronymic.length && newUserEmail.length && newUserPassword.length > 4)}>
                             Добавить пользователя

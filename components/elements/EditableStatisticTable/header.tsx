@@ -67,10 +67,11 @@ export default function TableHeader({
             setColumnsWidth((state) => state.map((size, idx) => (idx == headerIndex ? width : size)));
         }
     }, [width, header]);
+    //console.log("WIDTH", colWidth);
 
     return (
         <div className={`${styles.headerItem} ${headerIndex > 0 && selectedHeaderPattern ? styles.selectPattern : ""}`} ref={ref}>
-            <div className={styles.clientHeader} style={{ width: colWidth }}>
+            <div className={isAdmin ? styles.adminHeaderMain : styles.clientHeaderMain} style={{ width: colWidth }}>
                 <div>{header.name}</div>
                 {!isComent(header.name) && isAdmin && !!!header.logicStr && !/период/g.test(header.name) && <div className={styles.headerDecor}>{`@${headerIndex + 1}`}</div>}
             </div>

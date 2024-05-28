@@ -17,7 +17,7 @@ import EditableTable from "../EditableTable/EditableTable";
 import useTablePatterns from "@/hooks/useTablePatterns";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { toast } from "react-toastify";
-import { clearStatName, getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
+import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
 
@@ -175,7 +175,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         setDateColumn((state) => state && { ...state, datesArr: state.datesArr.filter((_, idx) => idx !== index) });
     };
     const onChangeRowItem = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, rowIndex: number, id: string, onlyNumbers: boolean = false) => {
-        if (onlyNumbers && isNaN(+event.target.value)) return; // Set only NUMBERS
+        if (onlyNumbers && event.target.value !== "-" && isNaN(+event.target.value)) return; // Set only NUMBERS
         setRows((state) =>
             state.map((row, rowIdx) => {
                 if (rowIdx !== rowIndex) return row;
@@ -185,7 +185,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         if (item.id !== id) return item;
                         return {
                             ...item,
-                            value: event.target.value[onlyNumbers ? "trim" : "trimStart"](),
+                            value: clearForInput(event.target.value)[onlyNumbers ? "trim" : "trimStart"](),
                         };
                     }),
                 };
@@ -256,7 +256,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             //dateColumn:dateColumn?{...dateColumn,raportInfo:getRaportInfo()}:undefined,
             about,
         };
-        //  console.log(createdTable)
+
         createTableStatistic(createdTable).then(() => {
             clearStates();
             disableSelectOnList(); //сбрасываем выбор (что бы после создания нового периода не висел старый список периодов , без нового)
@@ -439,6 +439,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //update
     const onUpdateTable = useCallback(async () => {
+        console.log("SAVED WIDTH", columnsWidth);
         const createdTable: TableStatisticI = {
             tableName,
             dateStart: dateColumn!.dateStart,
@@ -458,7 +459,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         } else {
             toast.error("Талица не выбрана");
         }
-    }, [dateColumn, headers, rows, chartLines]);
+    }, [dateColumn, headers, rows, chartLines, columnsWidth]);
     const onDeleteTable = () => {
         if (!confirm(`Вы точно хотите удалить статистику "${tableName}" ?`)) return;
         if (selectedTable !== "clear" && selectedTable?.id) {
@@ -519,7 +520,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     if (rowIndex == 0) {
                         //itemValue = headers[targetIndex].initValue;
                         //  console.log('ROW 0', headers[targetIndex].initValue);
-                        return String(headers[targetIndex].initValue);
+                        return `(${headers[targetIndex].initValue})`;
                     }
 
                     let itemValue;
@@ -530,7 +531,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         itemValue = rows[rowIndex - 1].values[targetIndex].value;
                     }
                     //console.log('replace',{decorator,a,b,row:rows[rowIndex].values,targetIndex,itemValue});
-                    return String(itemValue);
+                    return `(${itemValue})`;
                 });
 
                 logicStrWithDecorValues = logicStrWithDecorValues.replaceAll(/@\d{1,3}/g, (decorator, a, b) => {
@@ -550,11 +551,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         //itemValue = rows[rowIndex].values[targetIndex].value || '❓'
                     }
                     //console.log('replace',{decorator,a,b,row:rows[rowIndex].values,targetIndex,itemValue});
-                    return String(itemValue);
+                    return `(${itemValue})`;
                 });
 
-                logicStrWithDecorValues = logicStrWithDecorValues.replaceAll("@init", String(initValue));
-                //console.log(`STR VALUES : ${logicStrWithDecorValues}`);
+                logicStrWithDecorValues = logicStrWithDecorValues.replaceAll("@init", `(${initValue})`);
+                console.log(`STR VALUES : ${logicStrWithDecorValues}`);
                 let result = eval(logicStrWithDecorValues);
 
                 if (!result) {
@@ -1157,7 +1158,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             <CreateTableControl onCreateDateColumn={onCreateDateColumn} onCancel={() => setIsCreateTableBlock(false)} />
                         ) : (
                             selectedTable == "clear" &&
-                            !param && (
+                            !param &&
+                            !headers.length && (
                                 <div className={styles.createNewTableBtn} onClick={() => setIsCreateTableBlock(true)}>
                                     создать новую статистику
                                 </div>
@@ -1167,7 +1169,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
                     {!!headers.length && (
                         <div className={styles.saveTableBlock} onMouseEnter={() => setSelectedHeaderPattern(true)} onMouseLeave={() => setSelectedHeaderPattern(false)}>
-                            <input type="text" value={patternName} onChange={(event) => setPatternName(event.target.value)} placeholder="название шаблона" />
+                            <input type="text" value={patternName} onChange={(event) => setPatternName(clearForInput(event.target.value))} placeholder="название шаблона" />
                             <div onClick={onSavePattern} className={styles.savePatternBtn}>
                                 сохранить шаблон
                             </div>
@@ -1185,7 +1187,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     </div>
                 } */}
                 {!!headers.length && selectedTable === "clear" && (
-                    <div className={styles.columnsHelp}>
+                    <div className={styles.columnsHelps}>
                         <span>
                             ❗Колонки имеющие в названии слово <b>"план"</b> или <b>"комент"</b> - будут доступны к редактированию вне текущего периода и не будут влиять на статус заполнения записи
                         </span>
@@ -1199,7 +1201,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     {!!headers.length && (
                         <>
                             <div className={styles.tableNameWrap}>
-                                <input type="text" value={clearStatName(tableName)} onChange={(event) => setTableName(event.target.value.trimStart())} placeholder="название статистики" disabled={selectedTable !== "clear"} />
+                                <input type="text" value={clearStatName(tableName)} onChange={(event) => setTableName(clearSmiels(event.target.value.trimStart()))} placeholder="название статистики" disabled={selectedTable !== "clear"} />
                             </div>
                         </>
                     )}
@@ -1218,10 +1220,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         {calcedRows.map((row, rowIndex) => {
                             const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
                             const isPlane = (index: number): boolean => {
-                                return headers[index].name.toLocaleLowerCase().includes("план");
+                                return headers?.[index]?.name?.toLocaleLowerCase()?.includes("план") || false;
                             };
                             const isComent = (index: number): boolean => {
-                                return headers[index].name.toLocaleLowerCase().includes("коммент");
+                                return headers?.[index]?.name?.toLocaleLowerCase()?.includes("коммент") || false;
                             };
                             return (
                                 <div
@@ -1339,7 +1341,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                 ❌
                                             </div>
 
-                                            <input className={styles.descriptionsName} value={tableDescriptionsName} onChange={(event) => setTableDescriptionsName(event.target.value)} />
+                                            <input className={styles.descriptionsName} value={tableDescriptionsName} onChange={(event) => setTableDescriptionsName(clearForInput(event.target.value))} disabled={!isAdmin} />
 
                                             <EditableTable saveFunc={setTableDescriptions} descriptionsStr={tableDescriptions} />
                                         </div>
