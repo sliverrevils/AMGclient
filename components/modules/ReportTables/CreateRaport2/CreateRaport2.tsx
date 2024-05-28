@@ -121,9 +121,9 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
                 //console.log(startOfLastWeek);
 
-                //console.log("LAST", startOfLastWeek);
-
-                if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.end) return { ...stat, main, isGrowing, periodStr, filled: true };
+                console.log("LAST", new Date(info.lastFilledPeriod?.end));
+                //старт прошлой недели
+                if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.start) return { ...stat, main, isGrowing, periodStr, filled: true };
                 else return { ...stat, main, isGrowing, periodStr, filled: false };
             }
             if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: true };
