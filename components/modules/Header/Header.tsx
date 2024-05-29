@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useAuth } from "@/hooks/useAuth";
 import { useAccessRoutes } from "@/hooks/useAccessRoutes";
 import { replaceFio } from "@/utils/funcs";
+import Icons from "@/components/icons/Icons";
 
 export default function Header() {
     const { user }: { user: UserFullI } = useSelector((state: any) => state.main);
@@ -41,7 +42,7 @@ export default function Header() {
 
                     <div className={styles.secondRow}>
                         <span className={styles.exit} onClick={() => confirm("Выйти из учётной записи ?") && logout()}>
-                            <span>🚪</span>
+                            <div className={styles.exitIco}>{Icons().mainMenu.exit}</div>
                             <span>выход из учётной записи</span>
                         </span>
                     </div>

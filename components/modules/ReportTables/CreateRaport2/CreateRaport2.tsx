@@ -14,6 +14,7 @@ import { useAccessRoutes } from "@/hooks/useAccessRoutes";
 
 import ExcelJS from "exceljs";
 import { PieChart } from "@/components/elements/Chart/PieChart";
+import Icons from "@/components/icons/Icons";
 
 // Функция для сохранения таблицы в файл Excel
 const saveTableToExcel = (headers: string[], tableData: string[][]) => {
@@ -119,12 +120,10 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 //проверяем заполнение прошлой недели
                 const currentDate = new Date();
                 const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
-                //console.log(startOfLastWeek);
 
-                console.log("LAST", new Date(info.lastFilledPeriod?.end));
-                //старт прошлой недели
-                if (startOfLastWeek.getTime() <= info.lastFilledPeriod?.start) return { ...stat, main, isGrowing, periodStr, filled: true };
-                else return { ...stat, main, isGrowing, periodStr, filled: false };
+                const filled = startOfLastWeek.getTime() <= info.lastFilledPeriod?.start;
+
+                return { ...stat, main, isGrowing, periodStr, filled };
             }
             if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: true };
             if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: false };
@@ -302,7 +301,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                 //statViewArrToggle(item.id);
                             }}
                         >
-                            {trendStatus}
+                            <span className={styles.trendText}>{trendStatus}</span>
+                            <span className={styles[`trendIco_${currentTrendStatus}`]}>{Icons().stat?.[currentTrendStatus] || ""}</span>
                         </td>
                     </tr>
                 );
@@ -315,14 +315,19 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                         return (
                             <>
                                 <tr key={item.name + "itemMainList"} className={styles[`orgItem_${item.itemType}`]}>
-                                    <th colSpan={1} className={styles.itemFirst}></th>
+                                    {/* <th colSpan={1} className={styles.itemFirst}></th> */}
                                     <th
-                                        colSpan={3}
+                                        colSpan={4}
                                         className={styles.itemHeader}
                                         // style={{ background: orgItemsColorsObj[item.itemType] }}
                                     >
-                                        <div>
-                                            <span>{item.name}</span> <span>{userByID(item.leadership)?.name}</span>
+                                        <div className={styles.itemBlock}>
+                                            <div className={styles.itemTitleBlock}>
+                                                <span className={styles.itemIcon}>{Icons().org[item.itemType]}</span>
+                                                <span className={styles.itemName}>{item.name}</span>
+                                            </div>
+
+                                            <span className={styles.itemLeadership}>{userByID(item.leadership)?.name}</span>
                                         </div>
                                     </th>
                                 </tr>
@@ -486,19 +491,23 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 <table style={{ opacity: isOfficeListShow || isDepartmentListShow || isSectionListShow ? 0.4 : 1 }}>
                     <caption>
                         <div className={styles.filterBlockWrap}>
-                            <div className={styles.filterTitle}>Фильтр ОРГ-схемы</div>
+                            <div className={styles.filterTitle}>
+                                <span>Фильтр ОРГ-схемы</span> <div className={styles.iconSmall}>{Icons().filter.filter}</div>
+                            </div>
                             <div className={styles.filterOrgTypeBlock}>
                                 <div className={styles.filtersOrgBtns}>
                                     <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
                                         <label title="применить фильтр к элементам оргсхемы">
-                                            <span> 📇 Включить фильтр РОГ-схемы</span>
+                                            <span className={styles.iconSmall}>{Icons().filter.filter}</span>
+                                            <span> Включить фильтр РОГ-схемы</span>
                                             <input type="checkbox" checked={isShowFilteredOrg} onChange={(event) => setIsShowFilteredOrg(event.target.checked)} />
                                         </label>
                                     </div>
                                     {isShowFilteredOrg && (
                                         <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
                                             <label title="автоматический выбор всех дочерних элементов">
-                                                <span> ✅Автоматический выбор всех позиций фильтра</span>
+                                                <span className={styles.iconSmall}>{Icons().filter.autoSelects}</span>
+                                                <span> Автоматический выбор всех позиций фильтра</span>
                                                 <input type="checkbox" checked={isSelectedAllOrgChildren} onChange={(event) => setIsSelectedAllOrgChildren(event.target.checked)} />
                                             </label>
                                         </div>
@@ -523,7 +532,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        отделения {isShowFilteredOrg ? `📇${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}` : ""}
+                                        <div className={styles.filtersIco}>{Icons().org.office}</div>
+                                        <div className={styles.filtersText}>отделения {isShowFilteredOrg ? `${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}` : ""}</div>
                                     </div>
                                     <div
                                         className={selectedOrgFilterClass("department")}
@@ -543,7 +553,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        отделы {isShowFilteredOrg ? `📇${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}` : ""}
+                                        <div className={styles.filtersIco}>{Icons().org.department}</div>
+                                        <div className={styles.filtersText}> отделы {isShowFilteredOrg ? `${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}` : ""}</div>
                                     </div>
                                     <div
                                         className={selectedOrgFilterClass("section")}
@@ -563,7 +574,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        секции {isShowFilteredOrg ? `📇${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}` : ""}
+                                        <div className={styles.filtersIco}>{Icons().org.section}</div>
+                                        <div className={styles.filtersText}> секции {isShowFilteredOrg ? `${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}` : ""}</div>
                                     </div>
                                 </div>
                                 <div className={styles.filtersHelp}>
@@ -580,7 +592,10 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                         </div>
 
                         <div className={styles.filterBlockWrap}>
-                            <div className={styles.filterTitle}>Фильтры статистик</div>
+                            <div className={styles.filterTitle}>
+                                <span>Фильтры статистик </span>
+                                <div className={styles.iconSmall}>{Icons().filter.filter}</div>
+                            </div>
                             <div className={styles.filter}>
                                 <div className={styles.text}>Тип : </div>
                                 <div className={styles.filterTypeBlock}>

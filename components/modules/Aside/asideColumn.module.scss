@@ -20,23 +20,32 @@
 
         li {
             display: flex;
+            gap: 5px;
             justify-content: center;
             align-items: center;
-            border-radius: 9px/14px;
-            padding: 10px 15px;
+            border-radius: 9px;
+            padding: 2px 15px;
             font-family: 'Roboto';
             font-style: normal;
             font-weight: 400;
-            font-size: 15px;
+            font-size: 13px;
             line-height: 130%;
             cursor: pointer;
             transition: all 200ms linear;
             //outline: 2px solid rgb(247, 246, 246);
-            box-shadow: -1px -1px 5px rgba(128, 128, 128, 0.24), 2px 2px 3px rgba(128, 128, 128, 0.24);
+            box-shadow: -1px -1px 5px rgba(128, 128, 128, 0.062), 2px 2px 3px rgba(128, 128, 128, 0.048);
 
-
+            .menuIco {
+                width: 30px;
+            }
 
         }
+
+
+    }
+
+    .exitBlock {
+        display: none;
     }
 
 

@@ -19,6 +19,7 @@
         }
 
         .mainText {
+
             background-image: url('/img/graph_fone.png');
             background-size: 100%;
             // background-position: 160px 380px;
@@ -31,7 +32,7 @@
             align-items: center;
             color: #FF8056;
             letter-spacing: .7px;
-            gap: 20px;
+            gap: 30px;
             text-wrap: nowrap;
 
             // text-shadow: 2px 2px 4px rgba(209, 209, 209, 0.1),
@@ -51,6 +52,7 @@
                 // -webkit-text-fill-color: transparent;
                 color: #4296d4;
                 font-size: 30px;
+                opacity: .6;
             }
         }
 
@@ -70,11 +72,12 @@
             &:hover {
                 opacity: 1;
                 // outline: 3px solid #ff805657;
-                box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.379);
+                box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.179);
             }
 
             .firstRow {
                 display: flex;
+                align-items: center;
                 gap: 3px;
 
                 .mainInfo {
@@ -148,6 +151,7 @@
                     opacity: .6;
                     display: flex;
                     align-items: center;
+                    gap: 5px;
                     justify-content: center;
                     font-weight: 500;
                     cursor: pointer;
@@ -155,7 +159,11 @@
                     //width: 175px;
                     text-align: right;
                     padding: 2px 5px;
+
                     // box-shadow: 1px 1px 3px black;
+                    .exitIco {
+                        width: 15px;
+                    }
 
                     &:hover {
                         opacity: 1;
