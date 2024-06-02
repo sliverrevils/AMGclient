@@ -509,7 +509,7 @@ export default function CreateChartList() {
                         </div>
                     )}
 
-                    {!chartItem.isClose && showStat.dateColumn.raportInfo?.chartProps && <MultiLinesChart2 {...{ ...showStat.dateColumn.raportInfo?.chartProps }} chartSchema={[]} showBtns={false} showX={!showOnModal} linesBtns={!showOnModal} />}
+                    {!chartItem.isClose && showStat.dateColumn.raportInfo?.chartProps && <MultiLinesChart2 {...{ ...showStat.dateColumn.raportInfo?.chartProps, chartName: chartItem.itemName }} chartSchema={[]} showBtns={false} showX={!showOnModal} linesBtns={!showOnModal} />}
                 </div>
             );
         } else {
