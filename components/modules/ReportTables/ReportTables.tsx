@@ -178,6 +178,7 @@ export default function ReportTables() {
     }, [currentTargets, statTypeSelect]);
 
     const StatRaportItem = ({ statId, main }: { statId: number; main: boolean }) => {
+        const stat = reportsList.find((report) => report.id == statId);
         const info: RaportTableInfoI | undefined = reportsList.find((report) => report.id == statId)?.dateColumn?.raportInfo;
         if (!statNameById(statId)) return; // не отображаем удаленную статистику
         if (!info) {
@@ -205,7 +206,7 @@ export default function ReportTables() {
             //----------------------------------------------------------------- SHOW GRAPH 📈
             event.preventDefault();
             if (info.chartProps) {
-                setChartHTML(<MultiLinesChart2 {...{ ...info.chartProps }} chartSchema={[]} showBtns={false} />);
+                setChartHTML(<MultiLinesChart2 {...{ ...info.chartProps, chartName: stat?.name || "" }} chartSchema={[]} showBtns={false} />);
             } else {
                 setChartHTML(undefined);
             }
