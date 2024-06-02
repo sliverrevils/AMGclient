@@ -17,9 +17,10 @@ import EditableTable from "../EditableTable/EditableTable";
 import useTablePatterns from "@/hooks/useTablePatterns";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { toast } from "react-toastify";
-import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, getTextLength } from "@/utils/funcs";
+import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, getTextLength, rgbToHex } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
+import Chart24Test from "../Chart24/Chart24";
 
 interface ILinearRes {
     result: any[];
@@ -555,7 +556,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 });
 
                 logicStrWithDecorValues = logicStrWithDecorValues.replaceAll("@init", `(${initValue})`);
-                console.log(`STR VALUES : ${logicStrWithDecorValues}`);
+                //console.log(`STR VALUES : ${logicStrWithDecorValues}`);
                 let result = eval(logicStrWithDecorValues);
 
                 if (!result) {
@@ -870,21 +871,51 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
 
     //----------------------------------------------------------------------------------------------CREATE LINES & TREND ⭐⭐⭐⭐⭐⭐⭐⭐
     const findChartColumnAndCreateLine = () => {
-        const chartColumnsIdxArr = headers.reduce((arr: number[], header, idx) => (header.onChart ? [...arr, idx] : arr), []);
-        const linesArr: CostumLineI[] = chartColumnsIdxArr.map((columnIdx) => ({
-            color: "green",
-            trend: false,
-            name: headers[columnIdx].name,
-            columnKey: 22,
-            records: calcedRows.map((row, rowIdx) => (row.values.length && row.values[columnIdx]?.value !== "" ? Number(row.values[columnIdx]?.value) : NaN)), //clear empty data
-        }));
-
+        //индексы колонок с трэндом
         const trendColumnsIdxArr = headers.reduce((arr: number[], header, idx) => (/@trend/g.test(header.logicStr) || /@revtrend/g.test(header.logicStr) ? [...arr, idx] : arr), []);
+        const chartColumnsIdxArr = headers.reduce((arr: number[], header, idx) => (header.onChart ? [...arr, idx] : arr), []);
+        const linesArr: CostumLineI[] = chartColumnsIdxArr.map((columnIdx) => {
+            let trend = false;
+            let growingArr: null | boolean[] = null;
+            if (trendColumnsIdxArr.includes(columnIdx)) {
+                trend = true;
+                growingArr = calcedRows
+                    .map((row, rowIdx) => row.values[columnIdx]?.message)
+                    .map((msg) => {
+                        if (!msg || /не/.test(msg.toLowerCase())) return null;
+                        if (/раст/.test(msg.toLowerCase())) return true;
+                        if (/пад/.test(msg.toLowerCase())) return false;
+                    })
+                    .filter((status) => status !== null) as boolean[];
+            }
+            return {
+                color: rgbToHex(headers[columnIdx].color),
+                trend,
+                name: headers[columnIdx].name,
+                columnKey: 22,
+                fill: headers[columnIdx].fill || false,
+                records: calcedRows.map((row, rowIdx) => (row.values.length && row.values[columnIdx]?.value !== "" ? Number(row.values[columnIdx]?.value) : NaN)), //clear empty data
+                growingArr,
+            };
+        });
+
         const trendArr = trendColumnsIdxArr
-            .map((columnIdx) => ({ columnIdx, values: calcedRows.map((row, rowIdx) => Number(row.values[columnIdx]?.value)) }))
+            .map((columnIdx) => ({
+                columnIdx,
+                values: calcedRows.map((row, rowIdx) => Number(row.values[columnIdx]?.value)),
+                growing: calcedRows
+                    .map((row, rowIdx) => row.values[columnIdx]?.message)
+                    .map((msg) => {
+                        if (!msg || /не/.test(msg.toLowerCase())) return null;
+                        if (/раст/.test(msg.toLowerCase())) return true;
+                        if (/пад/.test(msg.toLowerCase())) return false;
+                    })
+                    .filter((status) => status !== null) as boolean[],
+            }))
             //.filter(row=>!row.values.some(value=>Number.isNaN(value)))
             .map((row) => {
                 const values = row.values;
+                const growingArr = row.growing;
                 let go = true;
                 const numbers = values.filter((value) => {
                     if (!Number.isNaN(value) && go) {
@@ -900,13 +931,15 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     numbers.map((_, index) => index + 1),
                     numbers
                 );
-                //console.log('📈', trend);
+                console.log("📈", growingArr);
                 return {
-                    color: "gray",
-                    trend: false,
+                    color: rgbToHex("rgb(112, 112, 112)"),
+                    trend: true,
                     name: "тренд",
                     columnKey: 22,
                     records: trend.result, //clear empty data
+                    fill: false,
+                    growingArr, //растущая или падающая точка тренда
                 };
             });
 
@@ -1405,13 +1438,18 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     )}
                 </div>
             </div>
+            {/* {process.env.NODE_ENV === "development" && <Chart24Test />} */}
             {!!chartLines.length && (
-                <div style={{ width: isModal ? "60vw" : "100%" }}>
+                <div
+                    //style={{ width: isModal ? "60vw" : "100%" }}
+                    className={styles.chartBlock}
+                >
                     <MultiLinesChart2
                         {...{
                             chartSchema: [],
                             costumsLines: chartLines,
                             dates: dateColumn?.datesArr || [],
+                            chartName: tableName,
                             clickFunc: () => {},
                             reverseTrend: headers.map((header) => header.logicStr).some((logicStr) => logicStr.includes("@revtrend")),
                         }}

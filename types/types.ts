@@ -222,6 +222,8 @@ export interface CostumLineI {
     color: string;
     columnKey: number;
     trend: boolean;
+    fill: boolean;
+    growingArr: boolean[] | null;
 }
 
 export interface MonthI {
@@ -310,6 +312,8 @@ export interface StatHeaderI {
     initValue: number;
     showControl: boolean;
     onChart: boolean;
+    color?: string;
+    fill?: boolean;
 }
 
 export interface TablePatternI {

@@ -4,9 +4,15 @@ import CreateRaport2 from "@/components/modules/ReportTables/CreateRaport2/Creat
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import { UserFullI } from "@/types/types";
+import Mission from "@/components/elements/Mission/Mission";
 
 export default function MainScreen() {
     const { tablePatterns } = useSelector((state: StateReduxI) => state.patterns);
     const isAdmin = useSelector((state: any) => state.main.user.role === "admin");
-    return <div className={styles.mainWrap}>{isAdmin && !!tablePatterns.length && <CreateRaport2 getPie />}</div>;
+    return (
+        <div className={styles.mainWrap}>
+            <Mission />
+            {isAdmin && !!tablePatterns.length && <CreateRaport2 getPie />}
+        </div>
+    );
 }

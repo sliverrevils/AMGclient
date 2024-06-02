@@ -1,0 +1,82 @@
+.missionWrap {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 20px;
+
+
+    h1 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    h2 {
+        color: #666;
+        font-size: 18px;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    ol {
+        color: #444;
+        font-size: 16px;
+        margin-left: 20px;
+    }
+
+    li {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+
+        b {
+            opacity: .5;
+            margin-right: 5px;
+        }
+
+        svg {
+            //transform: rotate(15deg);
+            animation: gestureAnimation 5s infinite;
+        }
+
+    }
+}
+
+
+@keyframes gestureAnimation {
+
+    0% {
+        transform: rotate(0);
+    }
+
+    15% {
+        transform: rotate(5deg);
+    }
+
+    20% {
+        transform: rotate(-5deg);
+    }
+
+    30% {
+        transform: rotate(0);
+    }
+
+    40% {
+        transform: rotate(5deg);
+    }
+
+    40% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(0);
+    }
+}

@@ -1,20 +1,235 @@
-.buttonsBlock {
-    width: 100%;
-    position: relative;
+.chartWrap {
 
-    .pointLabelData {
-        background: #FF8056;
-        color: white;
-        box-shadow: 2px 2px 5px black;
-        border: 1px solid rgba(0, 0, 0, 0.267);
-        border-radius: 5px;
-        padding: 2px 5px;
-        position: absolute;
-        text-wrap: nowrap;
-        font-size: 12px;
-        left: 15px;
-        top: 5px;
-        cursor: pointer;
+    border: 1px solid rgba(206, 206, 206, 0.322);
+    border-radius: 10px;
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+    //background: white;
+    align-items: center;
+    transition: all 500ms linear;
+
+    // background: linear-gradient(90deg, #4b6bb70a 0%, #18284817 100%);
+
+    max-width: 70vw;
+
+    .chartViewStatus {
+        align-self: flex-end;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+
+        .help {
+            font-size: 10px;
+            opacity: .5;
+        }
     }
+
+
+
+    .chartMenu {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        background: white;
+        border: 1px solid black;
+        box-shadow: 4px 4px 5px black;
+        padding: 10px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        border-radius: 15px;
+
+        .closeMenuBtn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            opacity: 0.2;
+            transition: all 100ms linear;
+
+        }
+
+        &:hover {
+            .closeMenuBtn {
+                opacity: 1;
+            }
+
+
+        }
+
+        .setttingsBlock {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            .menuTitle {
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .item {
+                border: 1px solid rgb(177, 177, 177);
+                padding: 2px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+            }
+
+            .save {
+                display: block;
+                padding: 5px;
+                font-size: 17px;
+                text-align: center;
+                background: cornflowerblue;
+                color: white;
+            }
+
+            .itemSelect {
+                border: 1px solid rgb(235, 105, 105);
+                display: flex;
+                gap: 10px;
+                border-radius: 5px;
+                padding: 2px 10px;
+                display: flex;
+                gap: 10px;
+
+            }
+
+            .itemBlock {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                border: 1px solid rgb(221, 184, 21);
+                background: rgb(253, 249, 231);
+                border-radius: 5px;
+                padding: 5px;
+
+                .titleBlock {
+                    text-align: center;
+                    opacity: .9;
+                    font-style: italic;
+                }
+
+                .itemBtn {
+                    border: 1px solid black;
+                    padding: 2px 10px;
+                    border-radius: 5px;
+                    background: white;
+                    cursor: pointer;
+                }
+            }
+        }
+
+
+
+        .btnsBlock {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 5px;
+
+            .saveTitle {
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+            }
+
+            .btn {
+                text-align: center;
+                width: 100%;
+                border: 1px solid black;
+                border-radius: 5px;
+                padding: 5px 10px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                // flex-direction: column;
+
+                .ico {
+                    align-self: center;
+                    justify-self: center;
+                    //  border: 1px solid black;
+                }
+
+                .text {
+                    // border: 1px solid black;
+                    width: 100%;
+
+                    .btnTitle {
+                        font-size: 17px;
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    .btnHelp {
+                        text-align: right;
+                        font-size: 13px;
+                    }
+                }
+
+
+            }
+        }
+
+
+    }
+
+    .buttonsBlock {
+        width: 100%;
+        position: relative;
+
+        .pointLabelData {
+            background: #FF8056;
+            color: white;
+            box-shadow: 2px 2px 5px black;
+            border: 1px solid rgba(0, 0, 0, 0.267);
+            border-radius: 5px;
+            padding: 2px 5px;
+            position: absolute;
+            text-wrap: nowrap;
+            font-size: 12px;
+            left: 15px;
+            top: 5px;
+            cursor: pointer;
+        }
+
+    }
+}
+
+.modal {
+    max-width: 100vw;
+    background: white;
+    position: fixed;
+    inset: 0px 0px 0px 0px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    padding: 20px;
+    padding-bottom: 90px;
+    // background-color: #FBAB7E;
+    // background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+
+    canvas {
+        // background-color: #FBAB7E;
+        // background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+    }
+
+
 
 }

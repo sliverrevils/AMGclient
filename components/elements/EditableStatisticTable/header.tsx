@@ -2,6 +2,7 @@ import { StatHeaderI, StatRowI } from "@/types/types";
 import styles from "./table.module.scss";
 import { useEffect, useRef } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { hexToRgba, rgbToHex } from "@/utils/funcs";
 
 export default function TableHeader({
     header,
@@ -53,6 +54,16 @@ export default function TableHeader({
     //header on chart
     const onChangeHeaderOnChart = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, id: string) => {
         setHeaders((state) => state.map((header) => (header.id == id ? { ...header, onChart: !header.onChart } : header)));
+    };
+    //fill line on chart
+    const onChangeLineFill = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, id: string) => {
+        setHeaders((state) => state.map((header) => (header.id == id ? { ...header, fill: !header.fill } : header)));
+    };
+    //change color
+    const onChangeColor = (event: React.ChangeEvent<HTMLInputElement>, id: string) => {
+        const rgba = hexToRgba(event.target.value, 1);
+        console.log("color", event.target.value, rgba);
+        setHeaders((state) => state.map((header) => (header.id == id ? { ...header, color: rgba } : header)));
     };
 
     //is comment column ?
@@ -124,11 +135,21 @@ export default function TableHeader({
                     )}
                     {!isComent(header.name) && <input type="number" onChange={(event) => onChangeHeaderInitValue(event, header.id)} placeholder="нулевое значене" />}
                     {!isComent(header.name) && (
-                        <label style={{ display: "flex" }} className={styles.displayOChart}>
-                            <span>отобразить на графике</span>
-                            <input type="checkbox" onChange={(event) => onChangeHeaderOnChart(event, header.id)} />
-                        </label>
+                        <>
+                            <label style={{ display: "flex" }} className={styles.displayOChart}>
+                                <span>отобразить на графике</span>
+                                <input type="checkbox" checked={header.onChart} onChange={(event) => onChangeHeaderOnChart(event, header.id)} />
+                            </label>
+                            {header.onChart && (
+                                <label style={{ display: "flex" }} className={styles.displayOChart}>
+                                    <span>заполнить линию цветом</span>
+                                    <input type="checkbox" checked={header.fill || false} onChange={(event) => onChangeLineFill(event, header.id)} />
+                                </label>
+                            )}
+                        </>
                     )}
+                    <input type="color" value={rgbToHex(header?.color)} onChange={(event) => onChangeColor(event, header.id)} />
+
                     <div onClick={() => onDelHeader(headerIndex, header.id)}>удалить колонку❌</div>
                 </div>
             )}

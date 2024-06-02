@@ -615,9 +615,9 @@
                 }
 
                 .currentPeriod {
-                    margin: 2px 0;
-                    padding: 5px 0;
-                    outline: 1px solid rgba(7, 153, 31, 0.726);
+                    //margin: 2px 0;
+                    padding: 1px 0;
+                    //outline: 1px solid rgba(7, 153, 31, 0.726);
                     // background: rgb(47, 92, 160); 
                     border-radius: 2px;
                     background: rgba(7, 165, 68, 0.26);
@@ -824,6 +824,7 @@
 }
 
 .modal {
+    max-width: 100vw;
     position: fixed;
     top: 0px;
     left: 0px;
@@ -835,6 +836,7 @@
     background: white;
     padding-top: 70px;
 
+
     .closeModalBtn {
         position: absolute;
         top: 10px;
@@ -842,4 +844,11 @@
         cursor: pointer;
     }
 
+}
+
+.chartBlock {
+    // border: 1px solid black;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }

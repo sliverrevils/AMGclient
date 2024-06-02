@@ -192,3 +192,20 @@ export const replaceFio = (nameStr: string): string => {
 export const clearSmiels = (text: string): string => text.replace(/[^А-Яа-яA-Za-z1-90\s.@"']/g, "");
 export const clearForInput = (text: string): string => text.replace(/[^А-Яа-яA-Za-z1-90\s-"'.@!?():;#№]/g, "");
 //export const clearSmiels = (text: string): string => text.replace(/([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, "");
+
+//COLOR
+export function hexToRgba(hex: string, alpha: number): string {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return "";
+    return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`;
+}
+
+export function rgbToHex(RGBstring: string | undefined): string {
+    // if (!RGBstring) return "#2eb314";
+    if (!RGBstring || !/rgba/.test(RGBstring)) return RGBstring || "#2eb314";
+    const [r, g, b] = RGBstring.replace("rgba(", "")
+        .replace(")", "")
+        .split(",")
+        .map((col) => Number(col));
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
