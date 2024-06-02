@@ -83,6 +83,8 @@ export default function ChartView({
                 name: line?.name + "-тренд",
                 records: trend.result.map((el) => el.y),
                 trend: false,
+                fill: false,
+                growingArr: [],
             },
         ]);
         onCloseLineMenu();
@@ -167,6 +169,8 @@ export default function ChartView({
                                     name: columns[columnIndex].name + "-тренд",
                                     records: trend.result.map((el) => el.y),
                                     trend: true,
+                                    fill: false,
+                                    growingArr: [],
                                 },
                             ];
                         }
