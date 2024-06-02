@@ -286,7 +286,7 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
             return (
                 <div className={styles.statInfo}>
                     {activeStat.name}
-                    <MultiLinesChart2 {...{ ...activeStat.data?.chartProps }} chartSchema={[]} showBtns={false} />
+                    <MultiLinesChart2 {...{ ...activeStat.data?.chartProps, chartName: activeStat.name }} chartSchema={[]} showBtns={false} />
                 </div>
             );
         } else {
