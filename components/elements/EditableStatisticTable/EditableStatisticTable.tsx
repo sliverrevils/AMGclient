@@ -460,7 +460,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         } else {
             toast.error("Талица не выбрана");
         }
-    }, [dateColumn, headers, rows, chartLines, columnsWidth]);
+    }, [dateColumn, headers, rows, chartLines, columnsWidth, tableDescriptions, tableDescriptionsName]);
     const onDeleteTable = () => {
         if (!confirm(`Вы точно хотите удалить статистику "${tableName}" ?`)) return;
         if (selectedTable !== "clear" && selectedTable?.id) {
@@ -1131,6 +1131,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             }
         }
     }, [selectedRow, selectedItem]);
+
+    useEffect(() => {
+        console.log(tableDescriptions);
+    }, [tableDescriptions]);
 
     if (view) {
         return (
