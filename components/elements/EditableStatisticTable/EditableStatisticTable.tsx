@@ -931,7 +931,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     numbers.map((_, index) => index + 1),
                     numbers
                 );
-                console.log("📈", growingArr);
+                // console.log("📈", growingArr);
                 return {
                     color: rgbToHex("rgb(112, 112, 112)"),
                     trend: true,
@@ -985,9 +985,23 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         if (!dateColumn || !dateColumn?.datesArr[rowIndex]) return { isCurrentPeriod: true };
         const { datesArr } = dateColumn;
         const currentDateSec = new Date().getTime();
+        const { start, end } = datesArr[rowIndex];
         // console.log('CURRENT PERIOD🕖',dateColumn?.datesArr,new Date(datesArr[rowIndex].start).getDate(),currentDateSec>=datesArr[rowIndex].start&&currentDateSec<=datesArr[rowIndex].end + (daySec*2))
         if (dateColumn.type == "2 года плюс текущий") {
             return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 10 };
+        }
+        if (dateColumn.type === "Месячный") {
+            //7 -5
+            let addDays = 2; //дни на заполнение после периода
+
+            const periodDays = (end - start) / daySec;
+            const days = dateColumn.periodDayCount - (periodDays + 1);
+            //дни в неполной неделе добавляем к периоду заполнения
+            if (days) {
+                addDays += days;
+            }
+
+            return { isCurrentPeriod: currentDateSec >= start && currentDateSec <= end + daySec * addDays };
         }
         return { isCurrentPeriod: currentDateSec >= datesArr[rowIndex].start && currentDateSec <= datesArr[rowIndex].end + daySec * 2 };
     };
