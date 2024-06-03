@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, scales, ChartArea, Filler } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import { clearStatName, getChartImage, hexToRgba, logicMath } from "@/utils/funcs";
-import Modal from "../Modal/Modal";
+
 import styles from "./chart.module.scss";
 // import faker from 'faker';
 import chartTrendline from "chartjs-plugin-trendline";
@@ -11,11 +11,9 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 //import chartTrendline from './trend';
 import { CostumLineI } from "@/types/types";
 import { linearRegression } from "@/utils/trend";
-import { useSelector } from "react-redux";
-import { StateReduxI } from "@/redux/store";
 
 //ICONS
-import { ExclamationCircleIcon, ChartBarSquareIcon, EllipsisVerticalIcon, AdjustmentsHorizontalIcon, BeakerIcon, ChartBarIcon, ArrowPathIcon, ChatBubbleBottomCenterTextIcon, CheckCircleIcon, ChevronDownIcon, HashtagIcon, MapIcon, MapPinIcon, VariableIcon, BarsArrowUpIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
+import { ViewfinderCircleIcon, CodeBracketSquareIcon, ExclamationCircleIcon, ChartBarSquareIcon, EllipsisVerticalIcon, AdjustmentsHorizontalIcon, BeakerIcon, ChartBarIcon, ArrowPathIcon, ChatBubbleBottomCenterTextIcon, CheckCircleIcon, ChevronDownIcon, HashtagIcon, MapIcon, MapPinIcon, VariableIcon, BarsArrowUpIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon, XCircleIcon, CameraIcon } from "@heroicons/react/24/solid";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartTrendline, ChartDataLabels, Filler);
 
@@ -311,7 +309,11 @@ export function MultiLinesChart2({
     }, [lineWidth]);
     return (
         <div className={`${modal ? styles.modal : ""} ${styles.chartWrap}`}>
-            {/* {currentChartView} */}
+            {modal && (
+                <div className={styles.closeBtn} onClick={() => setModal(false)}>
+                    ❌
+                </div>
+            )}
             <div className={styles.chartViewStatus}>
                 <div className={styles.help}>{statusChartViewObj[currentChartView].help} </div>
                 <CheckBadgeIcon fill={statusChartViewObj[currentChartView].color} width={20} />
@@ -333,6 +335,15 @@ export function MultiLinesChart2({
                                 <AdjustmentsHorizontalIcon width={17} /> Настройки графика
                             </div>
                             <div className={styles.menuTitle}>{modal ? "для полноэкранного размера" : "стандартного размера"}</div>
+                            <div
+                                className={styles.item}
+                                onClick={() => {
+                                    setModal((state) => !state);
+                                    setIsShowMenu(false);
+                                }}
+                            >
+                                <ViewfinderCircleIcon width={17} /> На весь экран
+                            </div>
                             <div className={styles.item} onClick={() => setReverse((state) => !state)}>
                                 <ArrowPathIcon width={17} /> Перевернуть график
                             </div>
@@ -468,7 +479,7 @@ export function MultiLinesChart2({
                             },
                         },
                         legend: {
-                            position: "bottom",
+                            position: "top",
                             align: "center",
                             display: linesBtns || modal,
 
@@ -480,7 +491,7 @@ export function MultiLinesChart2({
                                 font: {
                                     family: "Roboto",
                                     style: "normal",
-                                    size: modal ? 16 : 13,
+                                    size: modal ? 14 : 11,
                                     weight: "600",
                                 },
                                 boxWidth: 10,
