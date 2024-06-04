@@ -339,9 +339,13 @@ select {
   // }
 }
 
-// @media print {
-// 	html, body{
-// 		height: 297mm;
-// 		width: 210mm;
-// 	}
-// }
+@media print {
+
+  html,
+  body {
+    height: 100px;
+    width: 100px;
+  }
+}
+
+.print {}

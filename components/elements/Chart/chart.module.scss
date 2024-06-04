@@ -17,6 +17,16 @@
 
     max-width: 70vw;
 
+    .printBtn {
+        position: absolute;
+        right: 10px;
+        top: 100px;
+        cursor: pointer;
+
+
+
+    }
+
     .chartViewStatus {
         align-self: flex-end;
         display: flex;
@@ -29,186 +39,202 @@
         }
     }
 
-
-
-    .chartMenu {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translateY(-50%) translateX(-50%);
-        background: white;
-        border: 1px solid black;
-        box-shadow: 4px 4px 5px black;
-        padding: 10px 20px;
+    .sizeChart {
+        width: 100%;
+        height: 100%;
         display: flex;
-        flex-direction: column;
-        gap: 5px;
-        border-radius: 15px;
+        justify-content: center;
 
-        .closeMenuBtn {
+        .chartMenu {
             position: absolute;
-            right: 10px;
-            top: 10px;
-            cursor: pointer;
-            opacity: 0.2;
-            transition: all 100ms linear;
-
-        }
-
-        &:hover {
-            .closeMenuBtn {
-                opacity: 1;
-            }
-
-
-        }
-
-        .setttingsBlock {
+            left: 50%;
+            top: 50%;
+            transform: translateY(-50%) translateX(-50%);
+            background: white;
+            border: 1px solid black;
+            box-shadow: 4px 4px 5px black;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
             gap: 5px;
+            border-radius: 15px;
 
-            .menuTitle {
-                text-align: center;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .item {
-                border: 1px solid rgb(177, 177, 177);
-                padding: 2px 10px;
-                border-radius: 5px;
+            .closeMenuBtn {
+                position: absolute;
+                right: 10px;
+                top: 10px;
                 cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 5px;
+                opacity: 0.2;
+                transition: all 100ms linear;
 
             }
 
-            .save {
-                display: block;
-                padding: 5px;
-                font-size: 17px;
-                text-align: center;
-                background: cornflowerblue;
-                color: white;
-            }
+            &:hover {
+                .closeMenuBtn {
+                    opacity: 1;
+                }
 
-            .itemSelect {
-                border: 1px solid rgb(235, 105, 105);
-                display: flex;
-                gap: 10px;
-                border-radius: 5px;
-                padding: 2px 10px;
-                display: flex;
-                gap: 10px;
 
             }
 
-            .itemBlock {
+            .setttingsBlock {
                 display: flex;
                 flex-direction: column;
-                gap: 3px;
-                border: 1px solid rgb(221, 184, 21);
-                background: rgb(253, 249, 231);
-                border-radius: 5px;
-                padding: 5px;
+                gap: 5px;
 
-                .titleBlock {
+                .menuTitle {
                     text-align: center;
-                    opacity: .9;
-                    font-style: italic;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
-                .itemBtn {
-                    border: 1px solid black;
+                .item {
+                    border: 1px solid rgb(177, 177, 177);
                     padding: 2px 10px;
                     border-radius: 5px;
-                    background: white;
                     cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+
+
+                }
+
+                .print {
+                    padding: 5px;
+                    justify-content: center;
+                    background: rgb(233, 233, 233);
+                    box-shadow: 1px 1px 3px black;
+                }
+
+                .save {
+                    display: block;
+                    padding: 5px;
+                    font-size: 17px;
+                    text-align: center;
+                    background: cornflowerblue;
+                    color: white;
+                    box-shadow: 1px 1px 3px black;
+                }
+
+                .itemSelect {
+                    border: 1px solid rgb(235, 105, 105);
+                    display: flex;
+                    gap: 10px;
+                    border-radius: 5px;
+                    padding: 2px 10px;
+                    display: flex;
+                    gap: 10px;
+
+                }
+
+                .itemBlock {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 3px;
+                    border: 1px solid rgb(221, 184, 21);
+                    background: rgb(253, 249, 231);
+                    border-radius: 5px;
+                    padding: 5px;
+
+                    .titleBlock {
+                        text-align: center;
+                        opacity: .9;
+                        font-style: italic;
+                    }
+
+                    .itemBtn {
+                        border: 1px solid black;
+                        padding: 2px 10px;
+                        border-radius: 5px;
+                        background: white;
+                        cursor: pointer;
+                    }
                 }
             }
-        }
 
 
 
-        .btnsBlock {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            padding: 5px;
-
-            .saveTitle {
-                text-align: center;
+            .btnsBlock {
                 display: flex;
-                align-items: center;
-                justify-content: center;
-
-            }
-
-            .btn {
-                text-align: center;
-                width: 100%;
-                border: 1px solid black;
-                border-radius: 5px;
-                padding: 5px 10px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
+                flex-direction: column;
                 gap: 10px;
-                // flex-direction: column;
+                align-items: center;
+                padding: 5px;
 
-                .ico {
-                    align-self: center;
-                    justify-self: center;
-                    //  border: 1px solid black;
+                .saveTitle {
+                    text-align: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
                 }
 
-                .text {
-                    // border: 1px solid black;
+                .btn {
+                    text-align: center;
                     width: 100%;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    // flex-direction: column;
 
-                    .btnTitle {
-                        font-size: 17px;
-                        display: flex;
-                        justify-content: center;
+                    .ico {
+                        align-self: center;
+                        justify-self: center;
+                        //  border: 1px solid black;
                     }
 
-                    .btnHelp {
-                        text-align: right;
-                        font-size: 13px;
+                    .text {
+                        // border: 1px solid black;
+                        width: 100%;
+
+                        .btnTitle {
+                            font-size: 17px;
+                            display: flex;
+                            justify-content: center;
+                        }
+
+                        .btnHelp {
+                            text-align: right;
+                            font-size: 13px;
+                        }
                     }
+
+
                 }
-
-
             }
+
+
         }
 
+        .buttonsBlock {
+            width: 100%;
+            position: relative;
 
-    }
+            .pointLabelData {
+                background: #FF8056;
+                color: white;
+                box-shadow: 2px 2px 5px black;
+                border: 1px solid rgba(0, 0, 0, 0.267);
+                border-radius: 5px;
+                padding: 2px 5px;
+                position: absolute;
+                text-wrap: nowrap;
+                font-size: 12px;
+                left: 15px;
+                top: 5px;
+                cursor: pointer;
+            }
 
-    .buttonsBlock {
-        width: 100%;
-        position: relative;
-
-        .pointLabelData {
-            background: #FF8056;
-            color: white;
-            box-shadow: 2px 2px 5px black;
-            border: 1px solid rgba(0, 0, 0, 0.267);
-            border-radius: 5px;
-            padding: 2px 5px;
-            position: absolute;
-            text-wrap: nowrap;
-            font-size: 12px;
-            left: 15px;
-            top: 5px;
-            cursor: pointer;
         }
-
     }
+
+
 }
 
 .modal {
@@ -245,4 +271,82 @@
 
 
 
+}
+
+.printChart {
+
+    max-width: 100vw;
+    background: white;
+    position: fixed;
+    inset: 0px 0px 0px 0px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    padding: 20px;
+    padding-bottom: 90px;
+
+    .sizeChart {
+
+        // aspect-ratio: 1.77;
+        // border: 1px solid red;
+        width: 270mm;
+        height: 210mm;
+
+    }
+
+    // background-color: #FBAB7E;
+    // background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+
+
+    canvas {
+        // width: 300px;
+        // height: 200px;
+
+        // background-color: #FBAB7E;
+        // background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+    }
+
+    .closeBtn {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        cursor: pointer;
+    }
+
+    .chartViewStatus {
+        position: absolute;
+        top: 10px;
+        right: 100px;
+    }
+
+
+
+}
+
+@media print {
+
+    .printChart {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+
+        .printBtn {
+            display: none;
+        }
+
+        .chartViewStatus {
+            display: none;
+        }
+
+        .closeBtn {
+            display: none;
+        }
+
+        .sizeChart {
+            width: 270mm;
+            height: 210mm;
+
+        }
+    }
 }
