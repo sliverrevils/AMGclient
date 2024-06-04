@@ -235,6 +235,8 @@ export function MultiLinesChart2({
         setIsSave((state) => false);
     };
 
+    const fixGreenColor = (colorStr: string): string => (colorStr.includes("green") ? "#398f1f" : colorStr);
+
     //SELECTORS
 
     useEffect(() => {
@@ -632,7 +634,7 @@ export function MultiLinesChart2({
                     datasets: costumsLines.map((line, lineIdx) => ({
                         //заливка фона
                         fill: linesFill[lineIdx]?.fill,
-                        backgroundColor: /^тренд/.test(line.name.toLocaleLowerCase()) ? "rgba(128, 128, 128,.2)" : hexToRgba(line.color, 0.2), //заливка
+                        backgroundColor: /^тренд/.test(line.name.toLocaleLowerCase()) ? "rgba(128, 128, 128,.2)" : hexToRgba(fixGreenColor(line.color), 0.2), //заливка
                         type: "line",
                         label: line.name,
                         borderColor: line.color, //цвет линии
