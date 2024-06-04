@@ -268,7 +268,7 @@ export function MultiLinesChart2({
     //ON Modal
     useEffect(() => {
         document.documentElement.style.overflow = modal ? "hidden" : "auto";
-        console.log("LOAD", currentChart[modal ? "big" : "min"]);
+        // console.log("LOAD", currentChart[modal ? "big" : "min"]);
         setGridWidthX(currentChart[modal ? "big" : "min"].gridWidthX);
         setGridWidthY(currentChart[modal ? "big" : "min"].gridWidthY);
         setIsShowTrendPoint(currentChart[modal ? "big" : "min"].isShowTrendPoint);

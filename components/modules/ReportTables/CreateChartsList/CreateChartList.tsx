@@ -414,7 +414,7 @@ export default function CreateChartList() {
         }, [selectStat, scopeStart, scopeEnd]);
 
         if (showStat) {
-            console.log(showStat.dateColumn.raportInfo?.chartProps);
+            //console.log(showStat.dateColumn.raportInfo?.chartProps);
             return (
                 <div className={`${styles.chartItem} ${chartItem.isClose ? styles.chartItemClose : ""} ${styles[chartItem.type]} noselect`} onClick={() => chartItem.isClose && openCloseToggle()}>
                     <div className={styles.btnsBlock}>
@@ -584,7 +584,7 @@ export default function CreateChartList() {
         const selectedList = chartsListsArr.find((list) => list.id == selectedListId);
         if (selectedList) {
             if (JSON.stringify(selectedStatsIdArr) !== JSON.stringify(selectedList.charts)) {
-                console.log("SET LKIST");
+                //console.log("SET LKIST");
                 setSelectedStatsIdArr(selectedList.charts);
             }
         }

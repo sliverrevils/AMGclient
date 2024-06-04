@@ -209,3 +209,7 @@ export function rgbToHex(RGBstring: string | undefined): string {
         .map((col) => Number(col));
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
+
+export function splitNumberStr(num: string | number): string {
+    return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}

@@ -17,7 +17,7 @@ import EditableTable from "../EditableTable/EditableTable";
 import useTablePatterns from "@/hooks/useTablePatterns";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { toast } from "react-toastify";
-import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, getTextLength, rgbToHex } from "@/utils/funcs";
+import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, getTextLength, rgbToHex, splitNumberStr } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
 import Chart24Test from "../Chart24/Chart24";
@@ -176,7 +176,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         setDateColumn((state) => state && { ...state, datesArr: state.datesArr.filter((_, idx) => idx !== index) });
     };
     const onChangeRowItem = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, rowIndex: number, id: string, onlyNumbers: boolean = false) => {
-        if (onlyNumbers && event.target.value !== "-" && isNaN(+event.target.value)) return; // Set only NUMBERS
+        let value = event.target.value;
+        if (onlyNumbers) {
+            value = value.replaceAll(" ", "");
+            //console.log("ONLY");
+        }
+        // console.log(value);
+        if (onlyNumbers && value !== "-" && isNaN(+value)) return; // Set only NUMBERS
         setRows((state) =>
             state.map((row, rowIdx) => {
                 if (rowIdx !== rowIndex) return row;
@@ -186,7 +192,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         if (item.id !== id) return item;
                         return {
                             ...item,
-                            value: clearForInput(event.target.value)[onlyNumbers ? "trim" : "trimStart"](),
+                            value: clearForInput(value)[onlyNumbers ? "trim" : "trimStart"](),
                         };
                     }),
                 };
@@ -1317,10 +1323,11 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 {isAdmin && (
                                                                     <div className={styles.expression}>
                                                                         {/* Выражение : */}
+
                                                                         <b className={styles.expressionStr}>{value.message ? value.value : value.expression}</b>
                                                                     </div>
                                                                 )}
-                                                                <div className={styles.resultValue}>{value.message || value.value}</div>
+                                                                <div className={styles.resultValue}>{value.message || splitNumberStr(value.value)}</div>
                                                             </div>
                                                         ) : (
                                                             <input
@@ -1342,7 +1349,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                                 }}
                                                                 className={styles.itemInput}
                                                                 type="text"
-                                                                value={value.value}
+                                                                value={
+                                                                    // value.value
+                                                                    splitNumberStr(value.value)
+                                                                }
                                                                 onChange={(event) => {
                                                                     event.preventDefault();
                                                                     onChangeRowItem(event, rowIndex, value.id, !isComent(itemIndex));
