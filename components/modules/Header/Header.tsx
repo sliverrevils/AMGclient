@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAccessRoutes } from "@/hooks/useAccessRoutes";
 import { replaceFio } from "@/utils/funcs";
 import Icons from "@/components/icons/Icons";
+import useOrg from "@/hooks/useOrg";
 
 export default function Header() {
     const { user }: { user: UserFullI } = useSelector((state: any) => state.main);
@@ -16,10 +17,11 @@ export default function Header() {
     const { logout } = useAuth();
     const { accessedRoutes } = useAccessRoutes();
     const settingsMenu = accessedRoutes.find((el) => el.id === 777);
+    const { getOrgFullScheme } = useOrg();
     return (
         <header className={styles.wrapper}>
             <div className={`${styles.container} container`}>
-                <img src="img/logo.svg" />
+                <img src="img/logo.svg" onClick={() => getOrgFullScheme()} style={{ cursor: "pointer" }} />
 
                 <div className={styles.mainText}>
                     <span className={styles.amg}>AMG</span>

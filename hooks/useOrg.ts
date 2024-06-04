@@ -13,7 +13,7 @@ export default function useOrg() {
     const dispatch = useDispatch();
 
     // GET FULL ORG
-    const getOrgFullScheme = ({ setOrgScheme, setUsers, setCharts }: { setOrgScheme?: any; setUsers?: any; setCharts?: any }) => {
+    const getOrgFullScheme = ({ setOrgScheme, setUsers, setCharts }: { setOrgScheme?: any; setUsers?: any; setCharts?: any } = {}) => {
         dispatch(setLoadingRedux(true));
         axiosClient
             .get("info")
