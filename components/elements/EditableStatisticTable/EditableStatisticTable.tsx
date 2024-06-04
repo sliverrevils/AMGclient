@@ -21,6 +21,7 @@ import { clearForInput, clearSmiels, clearStatName, getDayOfWeek, getMonthStr, g
 import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
 import Chart24Test from "../Chart24/Chart24";
+import { createExelFile, createExelFile2 } from "@/utils/exelFuncs";
 
 interface ILinearRes {
     result: any[];
@@ -1393,7 +1394,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 <div className={styles.tableDescriptionsWrap}>
                                     <div className={styles.tableDescriptionsBtn} onClick={() => setIsDescriptionsShow((state) => !state)}>
                                         <div className={styles.tableDescriptionsBtnIco}>📑</div>
-                                        <div className={styles.tableDescriptionsBtnName}>{tableDescriptionsName}</div>
+                                        <div className={styles.tableDescriptionsBtnName}>{tableDescriptionsName || "описание таблицы"}</div>
                                     </div>
 
                                     {isDescriptionsShow && (
@@ -1407,6 +1408,15 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                             <EditableTable saveFunc={setTableDescriptions} descriptionsStr={tableDescriptions} />
                                         </div>
                                     )}
+                                    <div
+                                        className={styles.saveExelBtn}
+                                        onClick={() => {
+                                            createExelFile2({ columns: headers, rows: calcedRows, fileName: clearStatName(tableName), user, columnSizeArr: columnsWidth });
+                                        }}
+                                    >
+                                        <span className={styles.text}>сохранить таблицу в</span>
+                                        <span className={styles.ico}>Exel</span>
+                                    </div>
                                 </div>
                             )
                         }
