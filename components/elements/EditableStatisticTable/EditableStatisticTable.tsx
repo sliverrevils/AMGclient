@@ -1415,7 +1415,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                         }}
                                     >
                                         <span className={styles.text}>сохранить таблицу в</span>
-                                        <span className={styles.ico}>Exel</span>
+                                        <span className={styles.ico}>Excel</span>
                                     </div>
                                 </div>
                             )

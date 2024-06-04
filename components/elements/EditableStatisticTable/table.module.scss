@@ -223,6 +223,13 @@
                 gap: 10px;
                 background: #FF8056;
 
+                opacity: .7;
+
+                &:hover {
+                    opacity: 1;
+                    box-shadow: 2px 2px 5px black;
+                }
+
                 .text {
                     color: white;
                     font-size: 12px;
