@@ -210,7 +210,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         setTableDescriptions("");
         setTableDescriptionsName("");
         setTableName("");
-        setCalcedRows([]);
+        // setCalcedRows([]);
         setIsCreateTableBlock(false); // DISABLED FOR TEST !!! ❗❗❗❗❗❗❗
         setDateColumn(undefined);
     };
@@ -594,6 +594,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     //trends array values
     let trendsObj = {};
 
+    //ОПРЕДЕЛЕНИЕ СТАТУСА ТРЕНДА
     const trendStatus = (trendType: boolean, value: any, itemIndex: number, rowIndex: number): string => {
         let trendStatus = true;
         const resultStatusText = () => (trendStatus ? "Растущая↗️" : "Падающая🔻");

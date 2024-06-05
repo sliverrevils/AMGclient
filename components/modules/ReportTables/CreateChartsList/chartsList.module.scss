@@ -395,6 +395,27 @@
 
         }
 
+        .worning {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            align-self: flex-end;
+            border: 2px dotted red;
+            border-radius: 5px;
+
+            padding: 2px 10px;
+            background: #ffad144b;
+
+            //color: white;
+            :nth-child(2) {
+                opacity: .6;
+                text-align: right;
+            }
+
+        }
+
         .infoBlock {
             align-self: flex-end;
             border: 2px solid rgba(0, 0, 0, 0.164);

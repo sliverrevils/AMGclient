@@ -326,10 +326,10 @@ export default function CreateChartList() {
             }
 
             if (selectStat === "all" || selectStat === "scope") {
-                let recordsAll: any = [[], []];
+                let recordsAll: any = [];
                 let datesAll: DatesI[] = [];
-
-                //console.log("All", allStats);
+                let growingArrAll: boolean[][] = [];
+                console.log("All", allStats);
                 //setScopeEnd(allStats.length - 1);
                 allStats.forEach((table, tableIDx) => {
                     if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
@@ -338,7 +338,10 @@ export default function CreateChartList() {
 
                             costumsLines.forEach((line, lineIdx) => {
                                 //Убираем тренд
-                                recordsAll[lineIdx] = [...recordsAll[lineIdx], ...line.records];
+                                recordsAll[lineIdx] = [...(recordsAll?.[lineIdx] || []), ...line.records];
+                                if (line?.growingArr && line.growingArr !== null) {
+                                    growingArrAll[lineIdx] = [...(growingArrAll?.[lineIdx] || []), ...line.growingArr];
+                                }
                             });
 
                             // recordsAll.forEach((line) => {
@@ -355,13 +358,17 @@ export default function CreateChartList() {
                     }
                 });
 
-                // console.log({ recordsAll, datesAll });
+                console.log({ growingArrAll });
 
                 if (actualStat && actualStat?.dateColumn.raportInfo?.chartProps) {
                     //NEW LINES
 
                     let allStatsLines: CostumLineI[] = [];
+                    actualStat.dateColumn.raportInfo.chartProps;
+                    const { reverseTrend } = actualStat.dateColumn.raportInfo.chartProps;
                     allStatsLines = actualStat?.dateColumn.raportInfo?.chartProps.costumsLines.map((line, lineIdx, linesArr) => {
+                        let notFullDataPeriodTrend = false;
+
                         // ПРОСЧИТЫВАЕМ ТРЕНД ПО ПРОШЛОЙ ЛИНИИ
                         let trendLineRecords;
                         let go = true;
@@ -378,12 +385,20 @@ export default function CreateChartList() {
                                 lineTrend.map((_, index) => index + 1),
                                 lineTrend
                             );
-                            // console.log("TREND ℹ👍", lineTrend);
+                            console.log("TREND ℹ👍", line, lineTrend);
                             trendLineRecords = result;
+                        }
+                        const records = trendLineRecords || recordsAll[lineIdx];
+                        //проверяем количество записей с количеством статусов (рост\пад)
+                        if (trendLineRecords?.length && trendLineRecords.length !== growingArrAll[lineIdx]?.length) {
+                            // console.log("WORNING 😲", trendLineRecords.length, growingArrAll[lineIdx].length);
+                            notFullDataPeriodTrend = true;
                         }
                         return {
                             ...line,
-                            records: trendLineRecords || recordsAll[lineIdx],
+                            growingArr: !notFullDataPeriodTrend ? growingArrAll[lineIdx] : null,
+                            records,
+                            notFullDataPeriodTrend,
                         };
                     });
 
@@ -462,51 +477,59 @@ export default function CreateChartList() {
 
                     <div className={styles.statName}>{clearStatName(showStat.name)}</div>
                     {!chartItem.isClose && allStats.length > 1 && (
-                        <div className={styles.statPeriod}>
-                            <select value={selectStat} onChange={(event) => setSelectStat(event.target.value)}>
-                                <option value={"actual"}>➡️ актуальная статистика</option>
-                                {allStats.map((table) => {
-                                    const titleArr = table.name.split("@");
-                                    const periodTitle = titleArr?.[1] || titleArr[0];
-                                    return (
-                                        <option key={table.name} value={table.name}>
-                                            📅{periodTitle}
-                                        </option>
-                                    );
-                                })}
-                                <option value={"all"}>📈 общая статистика</option>
-                                <option value={"scope"}>📉 диапазон статистик</option>
-                            </select>
-                            {selectStat === "scope" && (
-                                <>
-                                    <div className={styles.statPeriodSelect}>
-                                        <select value={scopeStart} onChange={(event) => setScopeStart(Number(event.target.value))}>
-                                            {allStats.map((stat, statIdx) => {
-                                                const titleArr = stat.name.split("@");
-                                                const periodTitle = titleArr?.[1] || titleArr[0];
-                                                return (
-                                                    <option key={stat.name + statIdx} value={statIdx}>
-                                                        {periodTitle}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                        <select value={scopeEnd} onChange={(event) => setScopeEnd(Number(event.target.value))}>
-                                            {allStats.map((stat, statIdx) => {
-                                                //if (statIdx < scopeStart) return false;
-                                                const titleArr = stat.name.split("@");
-                                                const periodTitle = titleArr?.[1] || titleArr[0];
-                                                return (
-                                                    <option key={stat.name + statIdx + "end"} value={statIdx}>
-                                                        {periodTitle}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-                                </>
+                        <>
+                            <div className={styles.statPeriod}>
+                                <select value={selectStat} onChange={(event) => setSelectStat(event.target.value)}>
+                                    <option value={"actual"}>➡️ актуальная статистика</option>
+                                    {allStats.map((table) => {
+                                        const titleArr = table.name.split("@");
+                                        const periodTitle = titleArr?.[1] || titleArr[0];
+                                        return (
+                                            <option key={table.name} value={table.name}>
+                                                📅{periodTitle}
+                                            </option>
+                                        );
+                                    })}
+                                    <option value={"all"}>📈 общая статистика</option>
+                                    <option value={"scope"}>📉 диапазон статистик</option>
+                                </select>
+                                {selectStat === "scope" && (
+                                    <>
+                                        <div className={styles.statPeriodSelect}>
+                                            <select value={scopeStart} onChange={(event) => setScopeStart(Number(event.target.value))}>
+                                                {allStats.map((stat, statIdx) => {
+                                                    const titleArr = stat.name.split("@");
+                                                    const periodTitle = titleArr?.[1] || titleArr[0];
+                                                    return (
+                                                        <option key={stat.name + statIdx} value={statIdx}>
+                                                            {periodTitle}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                            <select value={scopeEnd} onChange={(event) => setScopeEnd(Number(event.target.value))}>
+                                                {allStats.map((stat, statIdx) => {
+                                                    //if (statIdx < scopeStart) return false;
+                                                    const titleArr = stat.name.split("@");
+                                                    const periodTitle = titleArr?.[1] || titleArr[0];
+                                                    return (
+                                                        <option key={stat.name + statIdx + "end"} value={statIdx}>
+                                                            {periodTitle}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            {!chartItem.isClose && showStat.dateColumn.raportInfo?.chartProps?.costumsLines.some((line) => line.notFullDataPeriodTrend) && (
+                                <div className={styles.worning}>
+                                    <span>Для корректного отображения статусов тренда🔴🔵 некоторые периоды этой статистики надо пересохранить</span>
+                                    <span>Просто зайти на не обновленный период и нажать "сохранить изменения"</span>
+                                </div>
                             )}
-                        </div>
+                        </>
                     )}
 
                     {!chartItem.isClose && showStat.dateColumn.raportInfo?.chartProps && <MultiLinesChart2 {...{ ...showStat.dateColumn.raportInfo?.chartProps, chartName: chartItem.itemName }} chartSchema={[]} showBtns={false} showX={!showOnModal} linesBtns={!showOnModal} />}

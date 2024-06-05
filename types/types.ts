@@ -224,6 +224,7 @@ export interface CostumLineI {
     trend: boolean;
     fill: boolean;
     growingArr: boolean[] | null;
+    notFullDataPeriodTrend?: boolean;
 }
 
 export interface MonthI {
