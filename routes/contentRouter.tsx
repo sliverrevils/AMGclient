@@ -1,6 +1,7 @@
 import AllPatternsScreen from "@/components/Screens/AllPatterns/AllPaternsScreen";
 import ChartFillerScreen from "@/components/Screens/ChartFiller/ChartFiller";
 import ControlScreen from "@/components/Screens/ControlScreen/ControlScreen";
+import DirectiveScreen from "@/components/Screens/DirectiveScreen/DirectiveScreen";
 import MainScreen from "@/components/Screens/Main/MainScreen";
 import OrgScreen from "@/components/Screens/Org/OrgScreen";
 
@@ -32,6 +33,7 @@ export const accessRoutesArray: Array<{ id: number; name: string; title: string;
     //{ id: 8, title: "📚 Отчеты", access: ["admin"], Component: ReportsScreen },
     { id: 9, name: "raports", title: "Отчеты", access: ["admin"], Component: CreateRaport2 },
     { id: 12, name: "charts", title: "Графики", access: ["admin", "user"], Component: CreateChartList },
+    { id: 14, name: "directive", title: "Директива РК", access: ["admin", "user"], Component: DirectiveScreen },
 
     //{ id: 11, title: "📚 Отчеты2", access: ['admin'], Component: ReportNew },
     // { id: 9, title: "🛂 Контроль записей", access: ['admin'], Component: ControlScreen },

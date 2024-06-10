@@ -363,6 +363,10 @@ export interface StatItemReady extends TableStatisticListItemI {
     periodStr: string;
 }
 
+export interface StatItemLogic extends StatItemReady {
+    logicStrArr: string[];
+}
+
 export interface StatItemReadyWithCoords extends StatItemReady {
     type: "chart" | "period" | "table";
     x: number;
@@ -439,4 +443,17 @@ export interface IPieChartProps {
 
 export interface IPieObj {
     [key: string]: IPieChartProps;
+}
+
+//DIRECT
+export interface IDirectHeader {
+    id: string;
+    title: string;
+    color: string;
+}
+
+export interface IDirectTable {
+    id: string;
+    item: IOrgItem | undefined;
+    stats: StatItemLogic[];
 }

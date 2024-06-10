@@ -1,0 +1,39 @@
+.directWrap {
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .addTableBtn {
+        background: lightgreen;
+        align-self: flex-start;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .addTableModal {
+        background: white;
+        padding: 20px;
+        align-self: center;
+    }
+
+
+
+    .mainTable {
+        table-layout: fixed;
+        border: 1px solid black;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        th {
+            background: lightgreen;
+            border: 1px solid #fff;
+        }
+    }
+}
