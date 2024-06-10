@@ -148,9 +148,13 @@
 
 
             .descriptionsName {
+                width: 100%;
                 border: 2px solid #56b9ff;
                 border-radius: 5px;
                 padding: 5px 15px;
+                text-align: center;
+                font-size: 15px;
+                font-weight: 600;
 
                 &:focus {
                     outline: 0;
