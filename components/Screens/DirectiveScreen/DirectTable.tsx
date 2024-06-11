@@ -28,7 +28,8 @@ export default function DirectTable({ table, headers, setTables }: { table: IDir
                             ...curTable.stats,
                             {
                                 ...stat,
-                                logicStrArr: new Array(headers.length).fill(""), //создаем массив строк с логикой колонок
+                                // logicStrArr: new Array(headers.length).fill(""), //создаем массив строк с логикой колонок
+                                logicStrArr: headers.map((header) => ({ headerId: header.id, logicStr: "" })), //создаем массив строк с логикой колонок
                             },
                         ],
                     };
@@ -39,7 +40,7 @@ export default function DirectTable({ table, headers, setTables }: { table: IDir
         [setTables]
     );
 
-    const onChangeLogic = (statId: number, logicIdx: number, value: string) => {
+    const onChangeLogic = (statId: number, logicHeaderId: string, value: string) => {
         setTables((state) => {
             return state.map((curTable, curTableIdx) => {
                 if (curTable.id !== table.id) return curTable;
@@ -51,10 +52,10 @@ export default function DirectTable({ table, headers, setTables }: { table: IDir
 
                         return {
                             ...stat,
-                            logicStrArr: stat.logicStrArr.map((curLogic, curLogicIdx) => {
-                                if (curLogicIdx !== logicIdx) return curLogic;
+                            logicStrArr: stat.logicStrArr.map((curLogic) => {
+                                if (curLogic.headerId !== logicHeaderId) return curLogic;
 
-                                return value;
+                                return { ...curLogic, logicStr: value };
                             }),
                         };
                     }),

@@ -17,6 +17,39 @@
         align-self: center;
     }
 
+    .headersEditBlock {
+        border: 1px solid black;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px 0px;
+
+
+        .headersItem {
+            border: 1px solid black;
+            padding: 10px;
+            text-wrap: wrap;
+            position: relative;
+
+            .itemText {}
+
+            .itemDel {
+                position: absolute;
+                top: 0px;
+                right: 0px;
+            }
+        }
+
+        .addBtn {
+            border: 1px solid rgb(7, 133, 7);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-wrap: balance;
+        }
+    }
+
 
 
     .mainTable {

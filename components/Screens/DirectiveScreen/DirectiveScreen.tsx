@@ -7,61 +7,39 @@ import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
+import useTableStatistics from "@/hooks/useTableStatistics";
+
+const defaultHeaders: IDirectHeader[] = [
+    {
+        id: nanoid(),
+        title: "Название блока",
+        color: "lightgreen",
+    },
+    {
+        id: nanoid(),
+        title: "План/факт за прошедший период",
+        color: "lightgreen",
+    },
+    {
+        id: nanoid(),
+        title: "Состояние",
+        color: "lightgreen",
+    },
+    {
+        id: nanoid(),
+        title: "Квота на будущий период",
+        color: "lightgreen",
+    },
+    {
+        id: nanoid(),
+        title: "Планируемое состояние на будущий период",
+        color: "lightgreen",
+    },
+];
 
 export default function DirectiveScreen() {
-    //ФУНКЦИЯ  ПРОВЕРКИ ЗАПОЛНЕНОГО ПЕРИОДА✍️⌛
-    const addingFilledField = (stat: TableStatisticListItemI, main = false): StatItemReady => {
-        const isGrowing = stat.dateColumn.raportInfo?.trendStatus || "нет данных";
-
-        //Формируем строку времен периода
-        let periodStr = `не заполнена`;
-        if (stat.dateColumn.raportInfo?.lastFilledPeriod?.start && stat.dateColumn.raportInfo?.lastFilledPeriod?.end) {
-            periodStr = `${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.start).toLocaleDateString()} - ${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.end).toLocaleDateString()}`;
-        }
-
-        if (!stat?.dateColumn.raportInfo) {
-            return { ...stat, main, isGrowing, periodStr, filled: false };
-        }
-        const info: RaportTableInfoI = stat.dateColumn.raportInfo;
-
-        const currentDateSec = new Date().getTime();
-        if (info.statHeaders?.[0].trim() == "2 года плюс текущий период") {
-            //проверяем заполнение прошлого месяца
-            const lastMonth = new Date(new Date().setDate(0));
-            lastMonth.setHours(0, 0, 0, 0);
-            if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return { ...stat, main, periodStr, isGrowing, filled: true };
-            else return { ...stat, main, isGrowing, periodStr, filled: false };
-        }
-        if (info.statHeaders?.[0].trim() == "13ти недельный период") {
-            //проверяем заполнение прошлой недели
-            const currentDate = new Date();
-            const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
-
-            const filled = startOfLastWeek.getTime() <= info.lastFilledPeriod?.start;
-
-            return { ...stat, main, isGrowing, periodStr, filled };
-        }
-        if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: true };
-        if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: false };
-
-        return { ...stat, main, isGrowing, periodStr, filled: false };
-    };
-
-    const getLatestTable = (id: number) => {
-        const currentStat = tableStatisticsList.find((stat) => stat.id == id);
-
-        if (currentStat && /@/g.test(currentStat.name)) {
-            const statName = currentStat.name.split("@")[0].trim();
-            const statsArr = tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
-            if (statsArr.length) {
-                return statsArr[0];
-            } else {
-                return currentStat;
-            }
-        }
-
-        return currentStat;
-    };
+    //HOOKS
+    const { getLatestTable, addingFilledField } = useTableStatistics();
 
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -130,37 +108,32 @@ export default function DirectiveScreen() {
     // console.log(initOrgItems.filter((item) => item.itemType === "office"));
 
     //STATE
-    const [headers, setHeaders] = useState<IDirectHeader[]>([
-        {
-            id: nanoid(),
-            title: "item name",
-            color: "lightgreen",
-        },
-        {
-            id: nanoid(),
-            title: "План/факт за прошедший период",
-            color: "lightgreen",
-        },
-        {
-            id: nanoid(),
-            title: "Состояние",
-            color: "lightgreen",
-        },
-        {
-            id: nanoid(),
-            title: "Квота на будущий период",
-            color: "lightgreen",
-        },
-        {
-            id: nanoid(),
-            title: "Планируемое состояние на будущий период",
-            color: "lightgreen",
-        },
-    ]);
+    const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
-    const [isAddTable, setIsAddTable] = useState(true);
+    const [isAddTable, setIsAddTable] = useState(false);
 
     //FUNCS
+    //headers
+    const onDelHeader = (id: string) => {
+        setHeaders((state) => state.filter((header) => header.id !== id));
+        //удаляем логику с ячеек для этой колонки по ID колонки
+        setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: stat.logicStrArr.filter((logic) => logic.headerId !== id) })) })));
+    };
+
+    const onAddHeader = () => {
+        const newHeaderId = nanoid();
+        setHeaders((state) => [
+            ...state,
+            {
+                id: newHeaderId,
+                title: "Новая колонка",
+                color: "lightgreen",
+            },
+        ]);
+        setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: [...stat.logicStrArr, { headerId: newHeaderId, logicStr: "" }] })) })));
+    };
+
+    //tabels
     const onAddTable = (item: IOrgItem) => {
         setTables((state) => [
             ...state,
@@ -176,29 +149,51 @@ export default function DirectiveScreen() {
         initOrgItems.filter((item) => item.itemType === "office").forEach(onAddTable);
     };
 
-    const createdTabels = useMemo(() => {
+    //TABLE HTML
+    const mainTable = useMemo(() => {
+        console.log(tabels);
         return tabels.map((table) => {
-            const allItemStats = [table.item?.mainPattern, ...table.item!.patterns] as StatItemReady[];
-            // console.log(allItemStats);
             return <DirectTable headers={headers} table={table} setTables={setTables} />;
         });
     }, [tabels, headers]);
 
+    const headersEditBlock = useMemo(() => {
+        return (
+            <div className={styles.headersEditBlock}>
+                {headers.map((header, headerIdx) => {
+                    return (
+                        <div className={styles.headersItem}>
+                            <div className={styles.itemText}> {header.title}</div>
+                            {!!headerIdx && (
+                                <div className={styles.itemDel} onClick={() => confirm(`Удалить колонку "${header.title}" со всеми логиками ячеек таблиц ?`) && onDelHeader(header.id)}>
+                                    ❌
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+                <div className={styles.addBtn} onClick={onAddHeader}>
+                    Добавить колонку
+                </div>
+            </div>
+        );
+    }, [headers]);
+
     return (
         <div className={styles.directWrap}>
             <div className={styles.addTableBtn} onClick={() => setIsAddTable(true)}>
-                Добавить таблицу
+                <span>Добавить таблицу</span>
             </div>
             {isAddTable && (
                 <Modal fullWidth closeModalFunc={() => setIsAddTable(false)}>
                     <div className={styles.addTableModal}></div>
                 </Modal>
             )}
-            <div>Directive Screen</div>
+            {headersEditBlock}
             <button onClick={() => onAddTable(initOrgItems[0])}> test add</button>
             <button onClick={addAllOffices}> test add all</button>
 
-            <table className={styles.mainTable}>{createdTabels}</table>
+            <table className={styles.mainTable}>{mainTable}</table>
         </div>
     );
 }

@@ -5,7 +5,7 @@ import styles from "./cell.module.scss";
 import { clearStatName } from "@/utils/funcs";
 
 export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string }) {
-    const { isGrowing, filled, lastUpdate } = stat;
+    const { isGrowing, filled, lastUpdate, periodStr } = stat;
     const { statHeaders, statLastRowValues, statFilled } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
     //STATE
@@ -19,7 +19,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                         <div
                             className={styles.helpItem}
                             onClick={() => {
-                                onCurrentChangeLogic(`${stat.logicStrArr[cellIndex]} @${idx}`);
+                                onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @${idx}`);
                             }}
                         >
                             <div className={styles.decor}>@{idx}</div>
@@ -30,7 +30,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                 <div
                     className={styles.helpItem}
                     onClick={() => {
-                        onCurrentChangeLogic(`${stat.logicStrArr[cellIndex]} @status`);
+                        onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @status`);
                     }}
                 >
                     <div className={styles.decor}>@status</div>
@@ -66,24 +66,24 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
     };
 
     return (
-        <td className={styles.cellWrap}>
-            <div className={styles.cellBlock} onClick={() => setIsSelectedCell(true)}>
+        <td className={styles.cellWrap} onClick={() => setIsSelectedCell(true)}>
+            <div className={styles.cellBlock}>
                 {isSelectedCell && (
                     <Modal closeModalFunc={() => setIsSelectedCell(false)} fullWidth>
                         <div className={styles.modalBlock}>
                             <div className={styles.field}>
-                                <div className={styles.help}>используемая статистика</div>
-                                <div className={styles.statName}>{clearStatName(stat.name)}</div>
-                            </div>
-                            <div className={styles.field}>
-                                <div className={styles.help}>колонки статистики</div>
-                                <div className={styles.helpBlock}>{statHelpMenu()}</div>
-                            </div>
-
-                            <div className={styles.field}>
                                 <div className={styles.help}>колонка Директивы РК</div>
                                 <div className={styles.columnName}>{columnName}</div>
                             </div>
+                            <div className={styles.field}>
+                                <div className={styles.help}>используемая статистика ( последнее обновление в {new Date(lastUpdate).toLocaleString()} )</div>
+                                <div className={styles.statName}>{clearStatName(stat.name)}</div>
+                            </div>
+                            <div className={styles.field}>
+                                <div className={styles.help}>колонки статистики c данными за {periodStr}</div>
+                                <div className={styles.helpBlock}>{statHelpMenu()}</div>
+                            </div>
+
                             <div className={styles.field}>
                                 <div className={styles.help}>логическая строка</div>
                                 <input className={styles.logicStr} value={logicStr} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" />
@@ -96,7 +96,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                         </div>
                     </Modal>
                 )}
-                <div>{calcCell(logicStr)}</div>
+                <div className={styles.cellResult}>{calcCell(logicStr)}</div>
             </div>
         </td>
     );

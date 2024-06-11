@@ -363,8 +363,13 @@ export interface StatItemReady extends TableStatisticListItemI {
     periodStr: string;
 }
 
+export interface ILogicCell {
+    headerId: string;
+    logicStr: string;
+}
+
 export interface StatItemLogic extends StatItemReady {
-    logicStrArr: string[];
+    logicStrArr: ILogicCell[];
 }
 
 export interface StatItemReadyWithCoords extends StatItemReady {

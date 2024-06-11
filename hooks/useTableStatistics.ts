@@ -1,11 +1,12 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
-import { TablePatternI, TableStatisticI, TableStatisticListItemI, TableStatisticNotParsedI, UserFullI } from "@/types/types";
+import { RaportTableInfoI, StatItemReady, TablePatternI, TableStatisticI, TableStatisticListItemI, TableStatisticNotParsedI, UserFullI } from "@/types/types";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import useOrg from "./useOrg";
 import { StateReduxI } from "@/redux/store";
+import { daySec } from "@/utils/vars";
 
 export default function useTableStatistics() {
     const dispatch = useDispatch();
@@ -17,6 +18,61 @@ export default function useTableStatistics() {
 
     //FIND STAT BY ID
     const statNameById = (statId: number) => tableStatisticsList.find((stat) => stat.id == statId)?.name || "";
+
+    //FIND LATEST STAT PERIOD BY ID
+    const getLatestTable = (id: number) => {
+        const currentStat = tableStatisticsList.find((stat) => stat.id == id);
+
+        if (currentStat && /@/g.test(currentStat.name)) {
+            const statName = currentStat.name.split("@")[0].trim();
+            const statsArr = tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
+            if (statsArr.length) {
+                return statsArr[0];
+            } else {
+                return currentStat;
+            }
+        }
+
+        return currentStat;
+    };
+
+    //ФУНКЦИЯ  ПРОВЕРКИ ЗАПОЛНЕНОГО ПЕРИОДА✍️⌛
+    const addingFilledField = (stat: TableStatisticListItemI, main = false): StatItemReady => {
+        const isGrowing = stat.dateColumn.raportInfo?.trendStatus || "нет данных";
+
+        //Формируем строку времен периода
+        let periodStr = `не заполнена`;
+        if (stat.dateColumn.raportInfo?.lastFilledPeriod?.start && stat.dateColumn.raportInfo?.lastFilledPeriod?.end) {
+            periodStr = `${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.start).toLocaleDateString()} - ${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.end).toLocaleDateString()}`;
+        }
+
+        if (!stat?.dateColumn.raportInfo) {
+            return { ...stat, main, isGrowing, periodStr, filled: false };
+        }
+        const info: RaportTableInfoI = stat.dateColumn.raportInfo;
+
+        const currentDateSec = new Date().getTime();
+        if (info.statHeaders?.[0].trim() == "2 года плюс текущий период") {
+            //проверяем заполнение прошлого месяца
+            const lastMonth = new Date(new Date().setDate(0));
+            lastMonth.setHours(0, 0, 0, 0);
+            if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return { ...stat, main, periodStr, isGrowing, filled: true };
+            else return { ...stat, main, isGrowing, periodStr, filled: false };
+        }
+        if (info.statHeaders?.[0].trim() == "13ти недельный период") {
+            //проверяем заполнение прошлой недели
+            const currentDate = new Date();
+            const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
+
+            const filled = startOfLastWeek.getTime() <= info.lastFilledPeriod?.start;
+
+            return { ...stat, main, isGrowing, periodStr, filled };
+        }
+        if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: true };
+        if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: false };
+
+        return { ...stat, main, isGrowing, periodStr, filled: false };
+    };
 
     //GET ALL
     const getAllTableStatistics = async (): Promise<TableStatisticListItemI[]> => {
@@ -146,5 +202,5 @@ export default function useTableStatistics() {
         }
     };
 
-    return { createTableStatistic, getAllTableStatistics, getTableStatisticById, updateTableStatistic, deleteTableStatistic, statNameById };
+    return { createTableStatistic, getAllTableStatistics, getTableStatisticById, updateTableStatistic, deleteTableStatistic, statNameById, getLatestTable, addingFilledField };
 }
