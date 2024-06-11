@@ -9,31 +9,34 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import { hexToRgba, rgbToHex } from "@/utils/funcs";
+
 const defaultHeaders: IDirectHeader[] = [
     {
         id: nanoid(),
         title: "Название блока",
-        color: "lightgreen",
+        color: "#6FD273",
     },
     {
         id: nanoid(),
         title: "План/факт за прошедший период",
-        color: "lightgreen",
+        color: "#6FD273",
     },
     {
         id: nanoid(),
         title: "Состояние",
-        color: "lightgreen",
+        color: "#6FD273",
     },
     {
         id: nanoid(),
         title: "Квота на будущий период",
-        color: "lightgreen",
+        color: "#6FD273",
     },
     {
         id: nanoid(),
         title: "Планируемое состояние на будущий период",
-        color: "lightgreen",
+        color: "#6FD273",
     },
 ];
 
@@ -86,8 +89,8 @@ export default function DirectiveScreen() {
 
     //STATE
     const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
+    const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
-    const [isAddTable, setIsAddTable] = useState(false);
 
     //FUNCS
     //headers
@@ -136,39 +139,65 @@ export default function DirectiveScreen() {
 
     const headersEditBlock = useMemo(() => {
         return (
-            <div className={styles.headersEditBlock}>
+            <>
                 {headers.map((header, headerIdx) => {
                     return (
-                        <div className={styles.headersItem}>
+                        <div className={styles.headersItem} onClick={() => headerIdx && setSelectedHeader(headerIdx)} style={{ background: header.color }}>
                             <div className={styles.itemText}> {header.title}</div>
                             {!!headerIdx && (
                                 <div className={styles.itemDel} onClick={() => confirm(`Удалить колонку "${header.title}" со всеми логиками ячеек таблиц ?`) && onDelHeader(header.id)}>
-                                    ❌
+                                    <XCircleIcon width={20} />
                                 </div>
                             )}
                         </div>
                     );
                 })}
                 <div className={styles.addBtn} onClick={onAddHeader}>
-                    Добавить колонку
+                    <span>Добавить колонку</span>
+                    <ViewColumnsIcon width={20} />
                 </div>
-            </div>
+            </>
         );
     }, [headers]);
 
     return (
         <div className={styles.directWrap}>
-            <div className={styles.addTableBtn} onClick={() => setIsAddTable(true)}>
-                <span>Добавить таблицу</span>
-            </div>
-            {isAddTable && (
-                <Modal fullWidth closeModalFunc={() => setIsAddTable(false)}>
-                    <div className={styles.addTableModal}></div>
+            {!!selectedHeader && (
+                <Modal fullWidth closeModalFunc={() => setSelectedHeader(0)}>
+                    <div className={styles.headerModalBlock}>
+                        <input
+                            value={headers[selectedHeader].title}
+                            onChange={(event) =>
+                                setHeaders((state) => {
+                                    const temp = [...state];
+                                    temp[selectedHeader].title = event.target.value;
+                                    return temp;
+                                })
+                            }
+                        />
+                        <input
+                            type="color"
+                            value={rgbToHex(headers[selectedHeader].color)}
+                            onChange={(event) => {
+                                setHeaders((state) => {
+                                    const temp = [...state];
+                                    temp[selectedHeader].color = hexToRgba(event.target.value, 1);
+                                    return temp;
+                                });
+                            }}
+                        />
+                    </div>
                 </Modal>
             )}
-            {headersEditBlock}
-            {/* <button onClick={() => onAddTable(initOrgItems[0])}> test add</button> */}
-            <button onClick={addAllOffices}> test add all</button>
+
+            <div className={styles.headersEditBlock}>{headersEditBlock}</div>
+
+            {!!!tabels.length && (
+                <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>
+                    <span>Добавить таблицы орг-схемы</span>
+                    <BuildingOffice2Icon width={25} />
+                </div>
+            )}
 
             <table className={styles.mainTable}>{mainTable}</table>
         </div>

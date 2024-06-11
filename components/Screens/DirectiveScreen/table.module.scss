@@ -1,0 +1,55 @@
+.modalStatList {
+    border-radius: 10px;
+    padding: 20px;
+    align-self: center;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 90vh;
+    overflow-y: auto;
+
+    .statFilter {
+        margin-left: 30px;
+        outline: 0;
+        border: 0;
+        min-width: 350px;
+        max-width: 500px;
+        //border: 1px solid rgb(172, 15, 15);
+        font-size: 20px;
+        padding: 5px 10px;
+        color: gray;
+        border-bottom: 2px solid rgba(128, 128, 128, 0.486);
+
+        &:focus {
+            outline: 0;
+            border: 0;
+            border-bottom: 2px solid gray;
+        }
+    }
+
+    .statItem {
+        border: 1px solid rgb(167, 167, 167);
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+}
+
+.btnsBlock {
+    display: flex;
+
+    .addStatBtn {
+        cursor: pointer;
+        padding: 5px 10px;
+        border: 2px solid cornflowerblue;
+        color: cornflowerblue;
+        border-radius: 5px;
+        display: flex;
+        gap: 5px;
+        background: white;
+        box-shadow: 2px 2px 3px rgb(168, 168, 168);
+
+
+    }
+}
