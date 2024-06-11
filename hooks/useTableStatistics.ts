@@ -35,6 +35,11 @@ export default function useTableStatistics() {
 
         return currentStat;
     };
+    //TABLE BY ID
+    const tableById = (id: number) => {
+        const currentStat = tableStatisticsList.find((stat) => stat.id == id);
+        return currentStat;
+    };
 
     //ФУНКЦИЯ  ПРОВЕРКИ ЗАПОЛНЕНОГО ПЕРИОДА✍️⌛
     const addingFilledField = (stat: TableStatisticListItemI, main = false): StatItemReady => {
@@ -202,5 +207,5 @@ export default function useTableStatistics() {
         }
     };
 
-    return { createTableStatistic, getAllTableStatistics, getTableStatisticById, updateTableStatistic, deleteTableStatistic, statNameById, getLatestTable, addingFilledField };
+    return { tableById, createTableStatistic, getAllTableStatistics, getTableStatisticById, updateTableStatistic, deleteTableStatistic, statNameById, getLatestTable, addingFilledField };
 }

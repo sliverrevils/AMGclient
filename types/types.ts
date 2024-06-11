@@ -457,8 +457,60 @@ export interface IDirectHeader {
     color: string;
 }
 
+export interface ITableStat {
+    id: number;
+    logicStrArr: ILogicCell[];
+}
+
 export interface IDirectTable {
     id: string;
-    item: IOrgItem | undefined;
-    stats: StatItemLogic[];
+    //item: IDirectOffice;
+    officeID: number;
+    stats: ITableStat[];
+    // stats: StatItemLogic[];
+}
+
+export interface IDirectSectionI {
+    id: number;
+    office_id: number;
+    department_id: number;
+    name: string;
+    leadership: number;
+    administrators: Array<AdministratorI>;
+    descriptions: string;
+    createdAt: string;
+    updatedAt: string;
+    ckp: string;
+
+    patterns: (TableStatisticListItemI | undefined)[];
+    mainPattern: TableStatisticListItemI | undefined;
+    itemType: "office" | "department" | "section";
+}
+
+export interface IDirectDepartmentI {
+    id: number;
+    office_id: number;
+    name: string;
+    code: string;
+    leadership: number;
+    descriptions: string;
+    sections: Array<IDirectSectionI>;
+    ckp: string;
+
+    patterns: (TableStatisticListItemI | undefined)[];
+    mainPattern: TableStatisticListItemI | undefined;
+    itemType: "office" | "department" | "section";
+}
+
+export interface IDirectOffice {
+    id: number;
+    name: string;
+    leadership: number;
+    descriptions: string;
+    departments: Array<IDirectDepartmentI>;
+    ckp: string;
+
+    patterns: (TableStatisticListItemI | undefined)[];
+    mainPattern: TableStatisticListItemI | undefined;
+    itemType: "office" | "department" | "section";
 }

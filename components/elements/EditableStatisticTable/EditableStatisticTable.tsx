@@ -640,8 +640,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     return resultStatusText();
                 } else {
                     trendStatus = false;
-                    // если наклона нет , то смотрим по логике первого значения
-                    if (value > 0 && trend.slope === 0) {
+                    // если наклона нет , то смотрим по логике первого значения (❗❗❗new fix - выше либо равно нулю, раньше было просто больше)
+                    if (value >= 0 && trend.slope === 0) {
                         trendStatus = true;
                     }
                     return resultStatusText();

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IDirectHeader, IDirectTable, IOrgItem, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IDirectHeader, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -43,11 +43,12 @@ export default function DirectiveScreen() {
 
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
+    const { offices } = useSelector((state: StateReduxI) => state.org);
     const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
     const user: UserI = useSelector((state: any) => state.main.user);
     const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
-    const initOrgItems = useSelector((state: StateReduxI) => {
-        const fullOrgWithdata = state.org.offices
+    const fullOrgWithdata = useSelector((state: StateReduxI) => {
+        const orgWithdata = state.org.offices
             .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
             .map((office) => {
                 return {
@@ -78,31 +79,7 @@ export default function DirectiveScreen() {
                 };
             });
 
-        //собираем все айтемы в один массив
-        let itemCells: IOrgItem[] = [];
-
-        //ПОДГОТОВЛИВАЕМ ЯЧЕЙКУ
-        //проверяем наличие статистик в айтеме и очищаем от пустых
-        const preparationOrgCell = (item: any) => {
-            const patterns = item.patterns.filter((pattern) => !!pattern);
-            if (!item.mainPattern && !patterns.length) {
-                return []; // если нет статистик не возвращаем item
-            } else {
-                //дополняем каждую статистику полем filled - ЗАПОЛНЕНОСТЬ
-                return [{ ...item, mainPattern: item.mainPattern ? addingFilledField(item.mainPattern, true) : undefined, patterns: patterns.map((item) => addingFilledField(item, false)) }];
-            }
-        };
-        fullOrgWithdata.forEach((office) => {
-            itemCells = [...itemCells, ...preparationOrgCell(office)];
-            office.departments.forEach((department) => {
-                itemCells = [...itemCells, ...preparationOrgCell(department)];
-                department.sections.forEach((section) => {
-                    itemCells = [...itemCells, ...preparationOrgCell(section)];
-                });
-            });
-        });
-
-        return itemCells;
+        return orgWithdata as IDirectOffice[];
     });
 
     // console.log(initOrgItems.filter((item) => item.itemType === "office"));
@@ -134,26 +111,26 @@ export default function DirectiveScreen() {
     };
 
     //tabels
-    const onAddTable = (item: IOrgItem) => {
+    const onAddTable = (item: IDirectOffice) => {
         setTables((state) => [
             ...state,
             {
                 id: nanoid(),
-                item,
+                officeID: item.id,
                 stats: [],
             },
         ]);
     };
 
     const addAllOffices = () => {
-        initOrgItems.filter((item) => item.itemType === "office").forEach(onAddTable);
+        fullOrgWithdata.forEach(onAddTable);
     };
 
     //TABLE HTML
     const mainTable = useMemo(() => {
         console.log(tabels);
         return tabels.map((table) => {
-            return <DirectTable headers={headers} table={table} setTables={setTables} />;
+            return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} />;
         });
     }, [tabels, headers]);
 
@@ -190,7 +167,7 @@ export default function DirectiveScreen() {
                 </Modal>
             )}
             {headersEditBlock}
-            <button onClick={() => onAddTable(initOrgItems[0])}> test add</button>
+            {/* <button onClick={() => onAddTable(initOrgItems[0])}> test add</button> */}
             <button onClick={addAllOffices}> test add all</button>
 
             <table className={styles.mainTable}>{mainTable}</table>
