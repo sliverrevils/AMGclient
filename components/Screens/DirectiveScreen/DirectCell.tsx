@@ -1,6 +1,6 @@
 import Modal from "@/components/elements/Modal/Modal";
 import { RaportTableInfoI, StatItemLogic } from "@/types/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./cell.module.scss";
 import { clearStatName } from "@/utils/funcs";
 

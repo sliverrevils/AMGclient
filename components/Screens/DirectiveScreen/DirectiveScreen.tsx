@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IDirectHeader, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IDirectHeader, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -11,6 +11,7 @@ import useTableStatistics from "@/hooks/useTableStatistics";
 
 import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { hexToRgba, rgbToHex } from "@/utils/funcs";
+import useUsers from "@/hooks/useUsers";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -40,9 +41,12 @@ const defaultHeaders: IDirectHeader[] = [
     },
 ];
 
+const memberPresenceCol = ["#B2B2B2", "#FFF545"];
+
 export default function DirectiveScreen() {
     //HOOKS
     const { getLatestTable, addingFilledField } = useTableStatistics();
+    const { userByID } = useUsers();
 
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -89,8 +93,10 @@ export default function DirectiveScreen() {
 
     //STATE
     const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
+    const [isShowEditHeaders, setIsShowEditHeaders] = useState(false);
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
+    const [members, setMembers] = useState<IDirectMembers[]>([]);
 
     //FUNCS
     //headers
@@ -126,7 +132,19 @@ export default function DirectiveScreen() {
     };
 
     const addAllOffices = () => {
-        fullOrgWithdata.forEach(onAddTable);
+        fullOrgWithdata.forEach((office, officeIDx) => {
+            onAddTable(office);
+            setMembers((state) => {
+                return [
+                    ...state,
+                    {
+                        officeNumber: officeIDx + 1,
+                        presence: 0,
+                        userId: office.leadership,
+                    },
+                ];
+            });
+        });
     };
 
     //TABLE HTML
@@ -162,35 +180,95 @@ export default function DirectiveScreen() {
 
     return (
         <div className={styles.directWrap}>
+            {!!tabels.length && (
+                <div className={styles.membersBlock}>
+                    <div className={styles.membersTitle}>Члены РС</div>
+                    <table>
+                        <thead>
+                            <th>Отделение</th>
+                            <th>Руководитель</th>
+                            <th>Присутствие</th>
+                        </thead>
+                        <tbody>
+                            {members.map((member, memberIdx) => (
+                                <tr className={styles.memberItem}>
+                                    <td>{member.officeNumber} отделение</td>
+                                    <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
+                                    <td>
+                                        <select
+                                            value={Number(member.presence)}
+                                            onChange={(event) =>
+                                                setMembers((state) => {
+                                                    const temp = [...state];
+                                                    temp[memberIdx].presence = Number(event.target.value);
+                                                    return temp;
+                                                })
+                                            }
+                                        >
+                                            <option value={0}>отсутствует</option>
+                                            <option value={1}>присутствует</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
             {!!selectedHeader && (
                 <Modal fullWidth closeModalFunc={() => setSelectedHeader(0)}>
                     <div className={styles.headerModalBlock}>
-                        <input
-                            value={headers[selectedHeader].title}
-                            onChange={(event) =>
-                                setHeaders((state) => {
-                                    const temp = [...state];
-                                    temp[selectedHeader].title = event.target.value;
-                                    return temp;
-                                })
-                            }
-                        />
-                        <input
-                            type="color"
-                            value={rgbToHex(headers[selectedHeader].color)}
-                            onChange={(event) => {
-                                setHeaders((state) => {
-                                    const temp = [...state];
-                                    temp[selectedHeader].color = hexToRgba(event.target.value, 1);
-                                    return temp;
-                                });
-                            }}
-                        />
+                        <div className={styles.field}>
+                            <span>Название колонки</span>
+                            <input
+                                className={styles.name}
+                                value={headers[selectedHeader].title}
+                                onChange={(event) =>
+                                    setHeaders((state) => {
+                                        const temp = [...state];
+                                        temp[selectedHeader].title = event.target.value;
+                                        return temp;
+                                    })
+                                }
+                            />
+                        </div>
+                        <div className={styles.field}>
+                            <span>Цвет колонки</span>
+                            <input
+                                className={styles.color}
+                                type="color"
+                                value={rgbToHex(headers[selectedHeader].color)}
+                                onChange={(event) => {
+                                    setHeaders((state) => {
+                                        const temp = [...state];
+                                        temp[selectedHeader].color = hexToRgba(event.target.value, 1);
+                                        return temp;
+                                    });
+                                }}
+                            />
+                            <div
+                                className={styles.dropBtn}
+                                onClick={(event) => {
+                                    setHeaders((state) => {
+                                        const temp = [...state];
+                                        temp[selectedHeader].color = hexToRgba("#6FD273", 1);
+                                        return temp;
+                                    });
+                                }}
+                            >
+                                Сбросить цвет
+                            </div>
+                        </div>
+                        <div className={styles.okBtn} onClick={() => setSelectedHeader(0)}>
+                            Ok
+                        </div>
                     </div>
                 </Modal>
             )}
 
-            <div className={styles.headersEditBlock}>{headersEditBlock}</div>
+            {!!tabels.length && <div onClick={() => setIsShowEditHeaders((state) => !state)}>Настройки шапки</div>}
+            {isShowEditHeaders && <div className={styles.headersEditBlock}>{headersEditBlock}</div>}
 
             {!!!tabels.length && (
                 <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>

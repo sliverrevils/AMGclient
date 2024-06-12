@@ -514,3 +514,9 @@ export interface IDirectOffice {
     mainPattern: TableStatisticListItemI | undefined;
     itemType: "office" | "department" | "section";
 }
+
+export interface IDirectMembers {
+    officeNumber: number;
+    userId: number;
+    presence: number;
+}
