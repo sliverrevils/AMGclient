@@ -5,17 +5,31 @@
     gap: 10px;
     //border: 1px solid rgb(151, 151, 151);
 
+    .headersSettingsBtn {
+        border: 2px solid rgb(207, 207, 207);
+        cursor: pointer;
+        align-self: flex-end;
+        display: flex;
+        gap: 10px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 3px 3px 3px rgb(128, 128, 128);
+    }
+
     .topInfoBlock {
         //align-self: flex-start;
         padding: 10px 20px;
         box-shadow: 3px 3px 3px rgb(128, 128, 128);
         border-radius: 10px;
-        background: #FFB61E;
+        background: #8D695C;
         display: flex;
         gap: 20px;
+        justify-content: space-between;
 
         .infoBlock {
+            align-self: self-end;
             display: flex;
+
             align-items: center;
             gap: 10px;
 
@@ -23,7 +37,8 @@
             .field {
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 5px;
+                //border: 1px solid black;
 
 
                 .title {
@@ -31,6 +46,7 @@
                     padding: 10px 5px;
                     border-radius: 5px;
                     text-wrap: nowrap;
+                    height: 40px;
                 }
 
 
@@ -39,7 +55,8 @@
             .values {
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 5px;
+                // border: 1px solid black;
 
 
                 .value {
@@ -49,6 +66,7 @@
                     padding: 10px 5px;
                     border-radius: 5px;
                     text-wrap: nowrap;
+                    height: 40px;
 
                     select,
                     input {
@@ -194,6 +212,7 @@
 
 
     .mainTable {
+        align-self: center;
         table-layout: fixed;
         border: 1px solid black;
         border-collapse: collapse;
@@ -280,4 +299,6 @@
         border-radius: 5px;
 
     }
+
+
 }

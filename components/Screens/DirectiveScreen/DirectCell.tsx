@@ -69,7 +69,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
         <td className={styles.cellWrap} onClick={() => setIsSelectedCell(true)}>
             <div className={styles.cellBlock}>
                 {isSelectedCell && (
-                    <Modal closeModalFunc={() => setIsSelectedCell(false)} fullWidth>
+                    <Modal closeModalFunc={() => setIsSelectedCell(false)} fullWidth scrollOnTop={false}>
                         <div className={styles.modalBlock}>
                             <div className={styles.field}>
                                 <div className={styles.help}>колонка Директивы РК</div>

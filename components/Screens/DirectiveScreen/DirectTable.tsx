@@ -11,7 +11,7 @@ import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
-export default function DirectTable({ table, headers, setTables, fullOrgWithdata }: { table: IDirectTable; headers: IDirectHeader[]; setTables: (value: React.SetStateAction<IDirectTable[]>) => void; fullOrgWithdata: IDirectOffice[] }) {
+export default function DirectTable({ table, headers, setTables, fullOrgWithdata, setCharts, charts }: { table: IDirectTable; headers: IDirectHeader[]; setTables: (value: React.SetStateAction<IDirectTable[]>) => void; fullOrgWithdata: IDirectOffice[]; setCharts: React.Dispatch<React.SetStateAction<number[]>>; charts: number[] }) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
         return (
@@ -47,7 +47,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                     if (curTable.id !== table.id) return curTable;
 
                     if (curTable.stats.some((st) => st.id === statId)) {
-                        toast.warning(`Статистика уже добавлена !`);
+                        toast.warning(`Эта статистика уже добавлена !`);
                         return curTable;
                     }
 
@@ -57,7 +57,6 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                             ...curTable.stats,
                             {
                                 id: statId,
-                                // logicStrArr: new Array(headers.length).fill(""), //создаем массив строк с логикой колонок
                                 logicStrArr: headers.map((header) => ({ headerId: header.id, logicStr: "" })), //создаем массив строк с логикой колонок
                             },
                         ],
@@ -66,7 +65,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
             });
             setSelectedStatId(0);
         },
-        [setTables]
+        [setTables, headers]
     );
 
     const onChangeLogic = (statId: number, logicHeaderId: string, value: string) => {
@@ -93,6 +92,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
         });
     };
 
+    //МЕНЮ ДОБАВЛЕНИЯ СТАТИСТИК
     const statList = useMemo(() => {
         return (
             <div className={styles.modalStatList}>
@@ -141,7 +141,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                             logicStrArr: stat.logicStrArr,
                         };
 
-                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} />;
+                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} />;
                     })
                 }
 
@@ -161,7 +161,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                                 <DocumentPlusIcon width={20} />
                             </div>
                             {isAddStat && (
-                                <Modal fullWidth closeModalFunc={() => setIsAddStat(false)}>
+                                <Modal fullWidth closeModalFunc={() => setIsAddStat(false)} scrollOnTop={false}>
                                     {statList}
                                 </Modal>
                             )}

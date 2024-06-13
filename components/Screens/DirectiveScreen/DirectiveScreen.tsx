@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
 import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
@@ -9,10 +9,11 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
+import Charts from "./Charts";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -99,6 +100,7 @@ export default function DirectiveScreen() {
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
     const [members, setMembers] = useState<IDirectMembers[]>([]);
+    const [charts, setCharts] = useState<number[]>([]);
     const [info, setInfo] = useState<IDirectInfoDoc>({
         protocol: 1,
         date: new Date().getTime(),
@@ -117,18 +119,18 @@ export default function DirectiveScreen() {
         setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: stat.logicStrArr.filter((logic) => logic.headerId !== id) })) })));
     };
 
-    const onAddHeader = () => {
+    const onAddHeader = useCallback(() => {
         const newHeaderId = nanoid();
         setHeaders((state) => [
             ...state,
             {
                 id: newHeaderId,
                 title: "Новая колонка",
-                color: "lightgreen",
+                color: "#6FD273",
             },
         ]);
         setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: [...stat.logicStrArr, { headerId: newHeaderId, logicStr: "" }] })) })));
-    };
+    }, [setHeaders, setTables]);
 
     //tabels
     const onAddTable = (item: IDirectOffice) => {
@@ -160,11 +162,11 @@ export default function DirectiveScreen() {
 
     //TABLE HTML
     const mainTable = useMemo(() => {
-        console.log(tabels);
+        //console.log(tabels);
         return tabels.map((table) => {
-            return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} />;
+            return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} />;
         });
-    }, [tabels, headers]);
+    }, [tabels, headers, charts]);
 
     const headersEditBlock = useMemo(() => {
         return (
@@ -174,7 +176,13 @@ export default function DirectiveScreen() {
                         <div className={styles.headersItem} onClick={() => headerIdx && setSelectedHeader(headerIdx)} style={{ background: header.color }}>
                             <div className={styles.itemText}> {header.title}</div>
                             {!!headerIdx && (
-                                <div className={styles.itemDel} onClick={() => confirm(`Удалить колонку "${header.title}" со всеми логиками ячеек таблиц ?`) && onDelHeader(header.id)}>
+                                <div
+                                    className={styles.itemDel}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        confirm(`Удалить колонку "${header.title}" со всеми логиками ячеек таблиц ?`) && onDelHeader(header.id);
+                                    }}
+                                >
                                     <XCircleIcon width={20} />
                                 </div>
                             )}
@@ -187,12 +195,12 @@ export default function DirectiveScreen() {
                 </div>
             </>
         );
-    }, [headers]);
+    }, [headers, tabels]);
 
     const headerModal = useMemo(() => {
-        if (!!selectedHeader)
+        if (!!selectedHeader && headers[selectedHeader])
             return (
-                <Modal fullWidth closeModalFunc={() => setSelectedHeader(0)}>
+                <Modal fullWidth closeModalFunc={() => setSelectedHeader(0)} scrollOnTop={false}>
                     <div className={styles.headerModalBlock}>
                         <div className={styles.field}>
                             <span>Название колонки</span>
@@ -241,7 +249,7 @@ export default function DirectiveScreen() {
                     </div>
                 </Modal>
             );
-    }, [headers, selectedHeader]);
+    }, [headers, selectedHeader, tabels]);
 
     const topInfoBlock = useMemo(() => {
         if (!!tabels.length) {
@@ -346,7 +354,12 @@ export default function DirectiveScreen() {
 
             {headerModal}
 
-            {!!tabels.length && <div onClick={() => setIsShowEditHeaders((state) => !state)}>Настройки шапки</div>}
+            {!!tabels.length && (
+                <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
+                    <div>Настройки шапки</div>
+                    <Cog6ToothIcon width={20} />
+                </div>
+            )}
             {isShowEditHeaders && <div className={styles.headersEditBlock}>{headersEditBlock}</div>}
 
             {!!!tabels.length && (
@@ -357,6 +370,8 @@ export default function DirectiveScreen() {
             )}
 
             <table className={styles.mainTable}>{mainTable}</table>
+
+            <Charts charts={charts} />
         </div>
     );
 }

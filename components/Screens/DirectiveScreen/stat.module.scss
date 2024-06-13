@@ -1,0 +1,10 @@
+.statNameCell {
+    display: flex;
+    justify-content: space-between;
+
+    .icoBtns {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+    }
+}
