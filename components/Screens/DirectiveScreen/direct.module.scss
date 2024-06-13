@@ -5,40 +5,100 @@
     gap: 10px;
     //border: 1px solid rgb(151, 151, 151);
 
-    .membersBlock {
-        align-self: flex-start;
+    .topInfoBlock {
+        //align-self: flex-start;
         padding: 10px 20px;
         box-shadow: 3px 3px 3px rgb(128, 128, 128);
         border-radius: 10px;
         background: #FFB61E;
+        display: flex;
+        gap: 20px;
 
-        .membersTitle {
-            color: white;
-            margin: 10px;
-        }
+        .infoBlock {
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
-        table {
-            // border: 1px solid black;
 
-            th,
-            td {
-                padding: 10px 20px;
-                border: 1px solid rgba(0, 0, 0, 0.342);
-                border-radius: 5px;
-                background: white;
+            .field {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
 
-                select {
-                    border: 0;
-                    font-size: 16px;
+
+                .title {
+                    background: white;
+                    padding: 10px 5px;
+                    border-radius: 5px;
+                    text-wrap: nowrap;
                 }
+
+
             }
 
-            th {
-                background: #FF8056;
+            .values {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+
+                .value {
+                    align-self: flex-start;
+                    width: 100%;
+                    background: white;
+                    padding: 10px 5px;
+                    border-radius: 5px;
+                    text-wrap: nowrap;
+
+                    select,
+                    input {
+                        width: 100%;
+                        text-align: center;
+                        border: 0;
+                        font-size: 16px;
+
+                        &:focus {
+                            border: 0;
+                            outline: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        .membersBlock {
+
+
+            .membersTitle {
                 color: white;
+                margin: 10px;
+            }
+
+            table {
+                // border: 1px solid black;
+
+                th,
+                td {
+                    padding: 10px 10px;
+                    border: 1px solid rgba(0, 0, 0, 0.342);
+                    border-radius: 5px;
+                    background: white;
+
+                    select {
+                        border: 0;
+                        font-size: 16px;
+                    }
+                }
+
+                th {
+                    background: #FF8056;
+                    color: white;
+                }
             }
         }
     }
+
+
 
 
     .addTableBtn {

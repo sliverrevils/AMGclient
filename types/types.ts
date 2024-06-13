@@ -520,3 +520,13 @@ export interface IDirectMembers {
     userId: number;
     presence: number;
 }
+
+export interface IDirectInfoDoc {
+    protocol: number;
+    date: number;
+    chairmanId: number;
+    lastProtocol: number;
+    strategy: number;
+    directFP: number;
+    docs: number;
+}

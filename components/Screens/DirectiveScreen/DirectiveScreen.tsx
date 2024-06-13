@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IDirectHeader, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -10,8 +10,9 @@ import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
 import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
-import { hexToRgba, rgbToHex } from "@/utils/funcs";
+import { hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
+import Mission from "@/components/elements/Mission/Mission";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -54,6 +55,7 @@ export default function DirectiveScreen() {
     const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
     const user: UserI = useSelector((state: any) => state.main.user);
     const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
+    const { generalDirector } = useSelector((state: StateReduxI) => state.org);
     const fullOrgWithdata = useSelector((state: StateReduxI) => {
         const orgWithdata = state.org.offices
             .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
@@ -97,6 +99,15 @@ export default function DirectiveScreen() {
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
     const [members, setMembers] = useState<IDirectMembers[]>([]);
+    const [info, setInfo] = useState<IDirectInfoDoc>({
+        protocol: 1,
+        date: new Date().getTime(),
+        chairmanId: generalDirector,
+        lastProtocol: 0,
+        strategy: 0,
+        directFP: 0,
+        docs: 0,
+    });
 
     //FUNCS
     //headers
@@ -178,45 +189,9 @@ export default function DirectiveScreen() {
         );
     }, [headers]);
 
-    return (
-        <div className={styles.directWrap}>
-            {!!tabels.length && (
-                <div className={styles.membersBlock}>
-                    <div className={styles.membersTitle}>Члены РС</div>
-                    <table>
-                        <thead>
-                            <th>Отделение</th>
-                            <th>Руководитель</th>
-                            <th>Присутствие</th>
-                        </thead>
-                        <tbody>
-                            {members.map((member, memberIdx) => (
-                                <tr className={styles.memberItem}>
-                                    <td>{member.officeNumber} отделение</td>
-                                    <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
-                                    <td>
-                                        <select
-                                            value={Number(member.presence)}
-                                            onChange={(event) =>
-                                                setMembers((state) => {
-                                                    const temp = [...state];
-                                                    temp[memberIdx].presence = Number(event.target.value);
-                                                    return temp;
-                                                })
-                                            }
-                                        >
-                                            <option value={0}>отсутствует</option>
-                                            <option value={1}>присутствует</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {!!selectedHeader && (
+    const headerModal = useMemo(() => {
+        if (!!selectedHeader)
+            return (
                 <Modal fullWidth closeModalFunc={() => setSelectedHeader(0)}>
                     <div className={styles.headerModalBlock}>
                         <div className={styles.field}>
@@ -265,7 +240,111 @@ export default function DirectiveScreen() {
                         </div>
                     </div>
                 </Modal>
-            )}
+            );
+    }, [headers, selectedHeader]);
+
+    const topInfoBlock = useMemo(() => {
+        if (!!tabels.length) {
+            return (
+                <div className={styles.topInfoBlock}>
+                    <div className={styles.infoBlock}>
+                        <div className={styles.field}>
+                            <div className={styles.title}>№ протокола</div>
+                            <div className={styles.title}>Дата проведения </div>
+                            <div className={styles.title}>Председатель РС </div>
+                            <div className={styles.title} style={{ background: memberPresenceCol[info.lastProtocol] }}>
+                                Протокол прошлого РС
+                            </div>
+                            <div className={styles.title} style={{ background: memberPresenceCol[info.strategy] }}>
+                                Стратегия филиала
+                            </div>
+                            <div className={styles.title} style={{ background: memberPresenceCol[info.directFP] }}>
+                                Директива ФП
+                            </div>
+                            <div className={styles.title} style={{ background: memberPresenceCol[info.docs] }}>
+                                Перечень программ и проектов{" "}
+                            </div>
+                        </div>
+                        <div className={styles.values}>
+                            <div className={styles.value}>
+                                <input type="number" value={info.protocol} onChange={(event) => setInfo((state) => ({ ...state, protocol: Number(event.target.value) }))} />
+                            </div>
+                            <div className={styles.value}>
+                                {/* {info.date} */}
+
+                                <input type="date" value={timeNumberToString(info.date)} onChange={(event) => setInfo((state) => ({ ...state, date: timeStrToNumber(event.target.value) }))} />
+                            </div>
+                            <div className={styles.value}>{userByID(info.chairmanId)?.name}</div>
+                            <div className={styles.value}>
+                                <select value={info.lastProtocol} onChange={(event) => setInfo((state) => ({ ...state, lastProtocol: Number(event.target.value) }))}>
+                                    <option value={0}>нет</option>
+                                    <option value={1}>есть</option>
+                                </select>
+                            </div>
+                            <div className={styles.value}>
+                                <select value={info.strategy} onChange={(event) => setInfo((state) => ({ ...state, strategy: Number(event.target.value) }))}>
+                                    <option value={0}>нет</option>
+                                    <option value={1}>есть</option>
+                                </select>
+                            </div>
+                            <div className={styles.value}>
+                                <select value={info.directFP} onChange={(event) => setInfo((state) => ({ ...state, directFP: Number(event.target.value) }))}>
+                                    <option value={0}>нет</option>
+                                    <option value={1}>есть</option>
+                                </select>
+                            </div>
+                            <div className={styles.value}>
+                                <select value={info.docs} onChange={(event) => setInfo((state) => ({ ...state, docs: Number(event.target.value) }))}>
+                                    <option value={0}>нет</option>
+                                    <option value={1}>есть</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.membersBlock}>
+                        <div className={styles.membersTitle}>Члены РС</div>
+                        <table>
+                            <thead>
+                                <th>Отделение</th>
+                                <th>Руководитель</th>
+                                <th>Присутствие</th>
+                            </thead>
+                            <tbody>
+                                {members.map((member, memberIdx) => (
+                                    <tr className={styles.memberItem}>
+                                        <td>{member.officeNumber} отделение</td>
+                                        <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
+                                        <td>
+                                            <select
+                                                value={Number(member.presence)}
+                                                onChange={(event) =>
+                                                    setMembers((state) => {
+                                                        const temp = [...state];
+                                                        temp[memberIdx].presence = Number(event.target.value);
+                                                        return temp;
+                                                    })
+                                                }
+                                            >
+                                                <option value={0}>отсутствует</option>
+                                                <option value={1}>присутствует</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+    }, [members, info]);
+
+    return (
+        <div className={styles.directWrap}>
+            {topInfoBlock}
+            <Mission />
+
+            {headerModal}
 
             {!!tabels.length && <div onClick={() => setIsShowEditHeaders((state) => !state)}>Настройки шапки</div>}
             {isShowEditHeaders && <div className={styles.headersEditBlock}>{headersEditBlock}</div>}
