@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
 import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
@@ -9,7 +9,7 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon } from "@heroicons/react/24/outline";
 import { hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
@@ -111,6 +111,15 @@ export default function DirectiveScreen() {
         docs: 0,
     });
 
+    const [scrollPos, setScrollPos] = useState<number | null>(null);
+    const saveScroll = () => {
+        setScrollPos(window.scrollY);
+    };
+    const goToSavedScroll = () => {
+        window.scrollTo(0, scrollPos as number);
+        setScrollPos(null);
+    };
+
     //FUNCS
     //headers
     const onDelHeader = (id: string) => {
@@ -184,9 +193,16 @@ export default function DirectiveScreen() {
     //TABLE HTML
     const mainTable = useMemo(() => {
         //console.log(tabels);
-        return tabels.map((table) => {
-            return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} />;
-        });
+        return (
+            <>
+                <thead>
+                    <th colSpan={headers.length}>Главные статистики отделения и состояния по ним</th>
+                </thead>
+                {tabels.map((table) => {
+                    return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} />;
+                })}
+            </>
+        );
     }, [tabels, headers, charts]);
 
     const headersEditBlock = useMemo(() => {
@@ -390,6 +406,20 @@ export default function DirectiveScreen() {
         }
     }, [members, info]);
 
+    //SCROLL LOOK
+    useEffect(() => {
+        if (scrollPos !== null) {
+            const scrollLook = () => {
+                scrollPos > window.scrollY && setScrollPos(null);
+            };
+            document.addEventListener("scroll", scrollLook);
+
+            return () => {
+                document.removeEventListener("scroll", scrollLook);
+            };
+        }
+    }, [scrollPos]);
+
     return (
         <div className={styles.directWrap}>
             {topInfoBlock}
@@ -413,6 +443,12 @@ export default function DirectiveScreen() {
             )}
 
             <table className={styles.mainTable}>{mainTable}</table>
+            {scrollPos !== null && (
+                <div className={styles.scrollBtn} onClick={goToSavedScroll}>
+                    <BarsArrowUpIcon width={30} />
+                    <div>Подняться к таблице</div>
+                </div>
+            )}
 
             <Charts charts={charts} />
         </div>

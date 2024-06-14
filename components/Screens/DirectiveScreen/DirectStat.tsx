@@ -14,6 +14,7 @@ export default function DirectStat({
     onStatMoveUp,
     onStatMoveDown,
     onRemoveStat,
+    saveScroll,
 }: {
     headers: IDirectHeader[];
     stat: StatItemLogic;
@@ -23,6 +24,7 @@ export default function DirectStat({
     onStatMoveUp: (statId: number) => void;
     onStatMoveDown: (statId: number) => void;
     onRemoveStat: (statId: number) => void;
+    saveScroll: () => void;
 }) {
     const addChartToggle = (statId: number) => {
         setCharts((state) => {
@@ -71,6 +73,7 @@ export default function DirectStat({
                                                 const chartBlock = document.querySelector(`#statId_${stat.id}`);
 
                                                 if (chartBlock) {
+                                                    saveScroll();
                                                     chartBlock.scrollIntoView();
                                                 }
                                             }}

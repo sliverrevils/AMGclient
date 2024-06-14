@@ -11,7 +11,7 @@ import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
-export default function DirectTable({ table, headers, setTables, fullOrgWithdata, setCharts, charts }: { table: IDirectTable; headers: IDirectHeader[]; setTables: (value: React.SetStateAction<IDirectTable[]>) => void; fullOrgWithdata: IDirectOffice[]; setCharts: React.Dispatch<React.SetStateAction<number[]>>; charts: number[] }) {
+export default function DirectTable({ table, headers, setTables, fullOrgWithdata, setCharts, charts, saveScroll }: { table: IDirectTable; headers: IDirectHeader[]; setTables: (value: React.SetStateAction<IDirectTable[]>) => void; fullOrgWithdata: IDirectOffice[]; setCharts: React.Dispatch<React.SetStateAction<number[]>>; charts: number[]; saveScroll: () => void }) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
         return (
@@ -189,7 +189,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                             logicStrArr: stat.logicStrArr,
                         };
 
-                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} />;
+                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} />;
                     })
                 }
 
