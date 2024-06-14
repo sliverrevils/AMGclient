@@ -442,7 +442,7 @@ export default function DirectiveScreen() {
                 </div>
             )}
 
-            <table className={styles.mainTable}>{mainTable}</table>
+            <table className={styles.mainTable}>{!!tabels.length && mainTable}</table>
             {scrollPos !== null && (
                 <div className={styles.scrollBtn} onClick={goToSavedScroll}>
                     <BarsArrowUpIcon width={30} />
