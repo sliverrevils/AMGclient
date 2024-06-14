@@ -14,7 +14,7 @@ export default function Charts({ charts }: { charts: number[] }) {
 
                 if (currentStat.dateColumn.raportInfo?.chartProps)
                     return (
-                        <div id={`statId_${statId}`}>
+                        <div className={styles.statItemBlock} id={`statId_${statId}`}>
                             <MultiLinesChart2 {...{ ...currentStat.dateColumn.raportInfo.chartProps, chartName: currentStat.name }} chartSchema={[]} showBtns={false} showX={true} linesBtns={true} />
                         </div>
                     );

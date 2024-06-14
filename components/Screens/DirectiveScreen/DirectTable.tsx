@@ -92,6 +92,54 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
         });
     };
 
+    const onStatMoveUp = useCallback(
+        (statId: number) => {
+            setTables((state) => {
+                let tempTabels = JSON.parse(JSON.stringify(state));
+                let curTableIdx = tempTabels.findIndex((tempTable) => tempTable.id === table.id);
+                const statIndex = tempTabels[curTableIdx].stats.findIndex((stat) => stat.id === statId);
+
+                const tempStats = tempTabels[curTableIdx].stats;
+                if (statIndex > 0) {
+                    //console.log(statId, statIndex, curTable);
+                    tempTabels[curTableIdx].stats = tempStats.toSpliced(statIndex - 1, 2, tempStats[statIndex], tempStats[statIndex - 1]);
+                }
+                return tempTabels;
+            });
+        },
+        [table]
+    );
+    const onStatMoveDown = useCallback(
+        (statId: number) => {
+            setTables((state) => {
+                let tempTabels = JSON.parse(JSON.stringify(state));
+                let curTable = tempTabels.find((tempTable) => tempTable.id === table.id) as IDirectTable;
+                const statIndex = curTable.stats.findIndex((stat) => stat.id === statId);
+
+                if (statIndex < curTable.stats.length - 1) {
+                    console.log(statId, statIndex, curTable);
+                    curTable.stats.splice(statIndex, 2, curTable.stats[statIndex + 1], curTable.stats[statIndex]);
+                }
+                return tempTabels;
+            });
+        },
+        [table]
+    );
+
+    const onRemoveStat = useCallback(
+        (statId: number) => {
+            setTables((state) => {
+                let tempTabels = JSON.parse(JSON.stringify(state));
+                let curTable = tempTabels.find((tempTable) => tempTable.id === table.id) as IDirectTable;
+
+                curTable.stats = curTable.stats.filter((curStat) => curStat.id !== statId);
+                return tempTabels;
+            });
+            setCharts((state) => state.filter((curChartId) => curChartId !== statId));
+        },
+        [table, charts]
+    );
+
     //МЕНЮ ДОБАВЛЕНИЯ СТАТИСТИК
     const statList = useMemo(() => {
         return (
@@ -141,7 +189,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                             logicStrArr: stat.logicStrArr,
                         };
 
-                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} />;
+                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} />;
                     })
                 }
 

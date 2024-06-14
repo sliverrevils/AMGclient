@@ -9,7 +9,7 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import { hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
@@ -132,6 +132,27 @@ export default function DirectiveScreen() {
         setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: [...stat.logicStrArr, { headerId: newHeaderId, logicStr: "" }] })) })));
     }, [setHeaders, setTables]);
 
+    const onHeaderMoveLeft = (headerIdx: number) => {
+        if (headerIdx > 1) {
+            setHeaders((state) => {
+                const temp = [...state];
+                temp.splice(headerIdx - 1, 2, temp[headerIdx], temp[headerIdx - 1]);
+
+                return temp;
+            });
+        }
+    };
+    const onHeaderMoveRight = (headerIdx: number) => {
+        if (headerIdx < headers.length - 1) {
+            setHeaders((state) => {
+                const temp = [...state];
+                temp.splice(headerIdx, 2, temp[headerIdx + 1], temp[headerIdx]);
+
+                return temp;
+            });
+        }
+    };
+
     //tabels
     const onAddTable = (item: IDirectOffice) => {
         setTables((state) => [
@@ -170,7 +191,11 @@ export default function DirectiveScreen() {
 
     const headersEditBlock = useMemo(() => {
         return (
-            <>
+            <div className={styles.headersEditBlock}>
+                <div className={styles.headersEditTitle}>Настройки колонок</div>
+                <div className={styles.headersEditClose}>
+                    <XCircleIcon width={30} onClick={() => setIsShowEditHeaders(false)} stroke="white" />
+                </div>
                 {headers.map((header, headerIdx) => {
                     return (
                         <div className={styles.headersItem} onClick={() => headerIdx && setSelectedHeader(headerIdx)} style={{ background: header.color }}>
@@ -186,6 +211,24 @@ export default function DirectiveScreen() {
                                     <XCircleIcon width={20} />
                                 </div>
                             )}
+                            {!!headerIdx && (
+                                <div className={styles.arrowsBlock}>
+                                    <ArrowLeftCircleIcon
+                                        width={20}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            onHeaderMoveLeft(headerIdx);
+                                        }}
+                                    />
+                                    <ArrowRightCircleIcon
+                                        width={20}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            onHeaderMoveRight(headerIdx);
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </div>
                     );
                 })}
@@ -193,7 +236,7 @@ export default function DirectiveScreen() {
                     <span>Добавить колонку</span>
                     <ViewColumnsIcon width={20} />
                 </div>
-            </>
+            </div>
         );
     }, [headers, tabels]);
 
@@ -240,7 +283,7 @@ export default function DirectiveScreen() {
                                     });
                                 }}
                             >
-                                Сбросить цвет
+                                Сбросить цвет до стандартного
                             </div>
                         </div>
                         <div className={styles.okBtn} onClick={() => setSelectedHeader(0)}>
@@ -354,13 +397,13 @@ export default function DirectiveScreen() {
 
             {headerModal}
 
-            {!!tabels.length && (
+            {!!tabels.length && !isShowEditHeaders && (
                 <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
                     <div>Настройки шапки</div>
                     <Cog6ToothIcon width={20} />
                 </div>
             )}
-            {isShowEditHeaders && <div className={styles.headersEditBlock}>{headersEditBlock}</div>}
+            {isShowEditHeaders && headersEditBlock}
 
             {!!!tabels.length && (
                 <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>

@@ -1,1 +1,13 @@
-.chartsWrap {}
+.chartsWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+
+    .statItemBlock {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+    }
+}

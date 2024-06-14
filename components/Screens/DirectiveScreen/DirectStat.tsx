@@ -1,11 +1,29 @@
 import { IDirectHeader, RaportTableInfoI, StatItemLogic } from "@/types/types";
 import DirectCell from "./DirectCell";
 import { clearStatName } from "@/utils/funcs";
-import { ChartBarSquareIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { ChartBarSquareIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, EyeIcon, EyeSlashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import styles from "./stat.module.scss";
 import { toast } from "react-toastify";
 
-export default function DirectStat({ headers, stat, onChangeLogic, setCharts, charts }: { headers: IDirectHeader[]; stat: StatItemLogic; onChangeLogic: (statId: number, logicHeaderId: string, value: string) => void; setCharts: React.Dispatch<React.SetStateAction<number[]>>; charts: number[] }) {
+export default function DirectStat({
+    headers,
+    stat,
+    onChangeLogic,
+    setCharts,
+    charts,
+    onStatMoveUp,
+    onStatMoveDown,
+    onRemoveStat,
+}: {
+    headers: IDirectHeader[];
+    stat: StatItemLogic;
+    onChangeLogic: (statId: number, logicHeaderId: string, value: string) => void;
+    setCharts: React.Dispatch<React.SetStateAction<number[]>>;
+    charts: number[];
+    onStatMoveUp: (statId: number) => void;
+    onStatMoveDown: (statId: number) => void;
+    onRemoveStat: (statId: number) => void;
+}) {
     const addChartToggle = (statId: number) => {
         setCharts((state) => {
             if (!state.includes(statId)) {
@@ -25,8 +43,20 @@ export default function DirectStat({ headers, stat, onChangeLogic, setCharts, ch
                     return (
                         <td>
                             <div className={styles.statNameCell}>
-                                <div> {clearStatName(stat.name)}</div>
+                                <div className={styles.statPositionBlock}>
+                                    <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
+                                    <DocumentArrowDownIcon width={20} onClick={() => onStatMoveDown(stat.id)} />
+                                </div>
+                                <div className={styles.statName}>
+                                    <div> {clearStatName(stat.name)}</div>
+                                </div>
                                 <div className={styles.icoBtns}>
+                                    <XCircleIcon
+                                        width={30}
+                                        onClick={() => {
+                                            confirm(`Убрать статистику? \n \t "${clearStatName(stat.name)}"`) && onRemoveStat(stat.id);
+                                        }}
+                                    />
                                     <ChartBarSquareIcon
                                         width={30}
                                         onClick={() => addChartToggle(stat.id)}
@@ -35,7 +65,7 @@ export default function DirectStat({ headers, stat, onChangeLogic, setCharts, ch
                                     />
                                     {isOnCharts ? (
                                         <EyeIcon
-                                            width={30}
+                                            width={25}
                                             onClick={(event) => {
                                                 event.preventDefault();
                                                 const chartBlock = document.querySelector(`#statId_${stat.id}`);
@@ -46,7 +76,7 @@ export default function DirectStat({ headers, stat, onChangeLogic, setCharts, ch
                                             }}
                                         />
                                     ) : (
-                                        <EyeSlashIcon width={30} />
+                                        <EyeSlashIcon width={25} />
                                     )}
                                 </div>
                             </div>
