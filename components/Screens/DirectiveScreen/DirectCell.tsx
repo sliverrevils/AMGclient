@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./cell.module.scss";
 import { clearStatName } from "@/utils/funcs";
 
-export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string }) {
+export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
     const { statHeaders, statLastRowValues, statFilled } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
@@ -17,6 +17,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                 {statHeaders!.map((statHeader, idx) => {
                     return (
                         <div
+                            key={stat.name + "_cell" + idx}
                             className={styles.helpItem}
                             onClick={() => {
                                 onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @${idx}`);
@@ -69,7 +70,13 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
         <td className={styles.cellWrap} onClick={() => setIsSelectedCell(true)}>
             <div className={styles.cellBlock}>
                 {isSelectedCell && (
-                    <Modal closeModalFunc={() => setIsSelectedCell(false)} fullWidth scrollOnTop={false}>
+                    <Modal
+                        closeModalFunc={() => {
+                            setIsSelectedCell(false), cacheLogic();
+                        }}
+                        fullWidth
+                        scrollOnTop={false}
+                    >
                         <div className={styles.modalBlock}>
                             <div className={styles.field}>
                                 <div className={styles.help}>колонка Директивы РК</div>

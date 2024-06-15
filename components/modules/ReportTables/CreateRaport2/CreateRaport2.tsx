@@ -312,29 +312,22 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 <tbody key={Math.random()}>
                     {filteredOrgItems.map((item) => {
                         const patterns = item.patterns.filter((pattern) => !!pattern); // убираем отсутствующие статистики
-                        return (
-                            <>
-                                <tr key={item.name + "itemMainList"} className={styles[`orgItem_${item.itemType}`]}>
-                                    {/* <th colSpan={1} className={styles.itemFirst}></th> */}
-                                    <th
-                                        colSpan={4}
-                                        className={styles.itemHeader}
-                                        // style={{ background: orgItemsColorsObj[item.itemType] }}
-                                    >
-                                        <div className={styles.itemBlock}>
-                                            <div className={styles.itemTitleBlock}>
-                                                <span className={styles.itemIcon}>{Icons().org[item.itemType]}</span>
-                                                <span className={styles.itemName}>{item.name}</span>
-                                            </div>
-
-                                            <span className={styles.itemLeadership}>{userByID(item.leadership)?.name}</span>
+                        return [
+                            <tr key={item.name + "itemMainList" + Math.random()} className={styles[`orgItem_${item.itemType}`]}>
+                                <th colSpan={4} className={styles.itemHeader}>
+                                    <div className={styles.itemBlock}>
+                                        <div className={styles.itemTitleBlock}>
+                                            <span className={styles.itemIcon}>{Icons().org[item.itemType]}</span>
+                                            <span className={styles.itemName}>{item.name}</span>
                                         </div>
-                                    </th>
-                                </tr>
-                                {!!item.mainPattern && statItem(item.mainPattern)}
-                                {!!patterns.length && patterns.map((pattern) => statItem(pattern))}
-                            </>
-                        );
+
+                                        <span className={styles.itemLeadership}>{userByID(item.leadership)?.name}</span>
+                                    </div>
+                                </th>
+                            </tr>,
+                            !!item.mainPattern && statItem(item.mainPattern),
+                            !!patterns.length && patterns.map((pattern) => statItem(pattern)),
+                        ];
                     })}
                 </tbody>
             );
@@ -420,6 +413,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
             felled,
             //all,
         };
+
         return <PieChart props={props} />;
     }
     return (
@@ -458,7 +452,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                     {isOfficeListShow && (
                         <div style={{ outline: `2px solid tomato` }}>
                             {options.lists.officesListOptions.map((offName) => (
-                                <div key={offName + "optonsFilter"} onClick={() => options.selectsToggle.officeToggle(offName)} style={{ ...(options.selectedLists.officesSelectedList.includes(offName) ? { background: orgItemsColorsObj.office, color: "white" } : {}) }}>
+                                <div key={offName + "optonsFilter" + Math.random()} onClick={() => options.selectsToggle.officeToggle(offName)} style={{ ...(options.selectedLists.officesSelectedList.includes(offName) ? { background: orgItemsColorsObj.office, color: "white" } : {}) }}>
                                     {offName}
                                 </div>
                             ))}

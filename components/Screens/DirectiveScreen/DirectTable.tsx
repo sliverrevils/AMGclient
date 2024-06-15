@@ -1,4 +1,4 @@
-import { IDirectHeader, IDirectOffice, IDirectTable, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
+import { IDirectHeader, IDirectOffice, IDirectTable, ILogicCell, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import DirectStat from "./DirectStat";
@@ -11,12 +11,34 @@ import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
-export default function DirectTable({ table, headers, setTables, fullOrgWithdata, setCharts, charts, saveScroll }: { table: IDirectTable; headers: IDirectHeader[]; setTables: (value: React.SetStateAction<IDirectTable[]>) => void; fullOrgWithdata: IDirectOffice[]; setCharts: React.Dispatch<React.SetStateAction<number[]>>; charts: number[]; saveScroll: () => void }) {
+export default function DirectTable({
+    table,
+    headers,
+    setTables,
+    fullOrgWithdata,
+    setCharts,
+    charts,
+    saveScroll,
+    cacheStatsLogics,
+    cacheLogic,
+}: {
+    table: IDirectTable;
+    headers: IDirectHeader[];
+    setTables: (value: React.SetStateAction<IDirectTable[]>) => void;
+    fullOrgWithdata: IDirectOffice[];
+    setCharts: React.Dispatch<React.SetStateAction<number[]>>;
+    charts: number[];
+    saveScroll: () => void;
+    cacheStatsLogics: Map<string, ILogicCell[]>;
+    cacheLogic: () => void;
+}) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
         return (
             <thead>
-                <th> Отделение не найдено ! </th>
+                <tr>
+                    <th> Отделение не найдено ! </th>
+                </tr>
             </thead>
         );
     }
@@ -37,11 +59,12 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
     const [statFilter, setStatFilter] = useState("");
 
     //HOOKS
-    const { tableById, addingFilledField } = useTableStatistics();
+    const { tableById, addingFilledField, statNameById } = useTableStatistics();
 
     const addStatToTable = useCallback(
         ({ statId }: { statId: number }) => {
             //const stat = allItemStats.find((stat) => stat.id === statId);
+            const currentStatCelarName = clearStatName(statNameById(statId));
             setTables((state) => {
                 return state.map((curTable) => {
                     if (curTable.id !== table.id) return curTable;
@@ -51,13 +74,21 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                         return curTable;
                     }
 
+                    const cache = cacheStatsLogics.get(currentStatCelarName)?.reduce((acc, cell) => ({ ...acc, [cell.headerId]: cell.logicStr }), {});
+                    if (cache) {
+                        console.log("CACHE", cache);
+                    }
+
                     return {
                         ...table,
                         stats: [
                             ...curTable.stats,
                             {
                                 id: statId,
-                                logicStrArr: headers.map((header) => ({ headerId: header.id, logicStr: "" })), //создаем массив строк с логикой колонок
+                                logicStrArr: headers.map((header) => ({
+                                    headerId: header.id,
+                                    logicStr: cache ? cache[header.id] || "" : "",
+                                })), //создаем массив строк с логикой колонок
                             },
                         ],
                     };
@@ -65,7 +96,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
             });
             setSelectedStatId(0);
         },
-        [setTables, headers]
+        [setTables, headers, cacheStatsLogics]
     );
 
     const onChangeLogic = (statId: number, logicHeaderId: string, value: string) => {
@@ -150,7 +181,7 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
                     .filter((stat) => !table.stats.map((stat) => stat.id).includes(stat.id))
                     .map((stat) => {
                         return (
-                            <div className={styles.statItem} onClick={() => addStatToTable({ statId: stat.id })}>
+                            <div key={stat.name} className={styles.statItem} onClick={() => addStatToTable({ statId: stat.id })}>
                                 {clearStatName(stat.name)}
                             </div>
                         );
@@ -159,64 +190,64 @@ export default function DirectTable({ table, headers, setTables, fullOrgWithdata
         );
     }, [table.stats, statFilter]);
 
-    return (
-        <>
-            <thead>
+    return [
+        <thead>
+            <tr>
                 {
                     // ХЭДЕРЫ ТАБЛИЦЫ
                     headers.map((header, headerIdx) => (
-                        <th style={{ background: header.color }}>
+                        <th key={header.id + "_head" + headerIdx} style={{ background: header.color }}>
                             <span>{!headerIdx ? office.name : header.title}</span>
                         </th>
                     ))
                 }
-            </thead>
-            <tbody>
-                {
-                    // СТАТИСТИКИ
-                    table.stats.map((stat, statIdx) => {
-                        const currentStat = tableById(stat.id);
-                        if (!currentStat) {
-                            return (
-                                <tr>
-                                    <td>статистика не найдена</td>
-                                </tr>
-                            );
-                        }
-                        const statReady = addingFilledField(currentStat);
-                        const statItemLogic: StatItemLogic = {
-                            ...statReady,
-                            logicStrArr: stat.logicStrArr,
-                        };
+            </tr>
+        </thead>,
+        <tbody>
+            {
+                // СТАТИСТИКИ
+                table.stats.map((stat, statIdx) => {
+                    const currentStat = tableById(stat.id);
+                    if (!currentStat) {
+                        return (
+                            <tr>
+                                <td>статистика не найдена</td>
+                            </tr>
+                        );
+                    }
+                    const statReady = addingFilledField(currentStat);
+                    const statItemLogic: StatItemLogic = {
+                        ...statReady,
+                        logicStrArr: stat.logicStrArr,
+                    };
 
-                        return <DirectStat headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} />;
-                    })
-                }
+                    return <DirectStat key={stat.id + "statKey"} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} />;
+                })
+            }
 
-                {/* ДОБАВЛЕНИЕ СТАТИСТИКИ */}
-                <tr>
-                    <td colSpan={headers.length}>
-                        <div className={styles.btnsBlock}>
-                            {/* <select value={selectedStatId} onChange={(event) => setSelectedStatId(Number(event.target.value))}>
+            {/* ДОБАВЛЕНИЕ СТАТИСТИКИ */}
+            <tr>
+                <td colSpan={headers.length}>
+                    <div className={styles.btnsBlock}>
+                        {/* <select value={selectedStatId} onChange={(event) => setSelectedStatId(Number(event.target.value))}>
                                 <option value={0}>выбор статистики</option>
                                 {currentOfficeStatsList.map((stat) => (
                                     <option value={stat.id}>{clearStatName(stat.name)}</option>
                                 ))}
                             </select>
                             {!!selectedStatId && <button onClick={() => addStatToTable({ statId: selectedStatId })}>Добавить статистику</button>} */}
-                            <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
-                                <span>Добавить статистику</span>
-                                <DocumentPlusIcon width={20} />
-                            </div>
-                            {isAddStat && (
-                                <Modal fullWidth closeModalFunc={() => setIsAddStat(false)} scrollOnTop={false}>
-                                    {statList}
-                                </Modal>
-                            )}
+                        <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
+                            <span>Добавить статистику</span>
+                            <DocumentPlusIcon width={20} />
                         </div>
-                    </td>
-                </tr>
-            </tbody>
-        </>
-    );
+                        {isAddStat && (
+                            <Modal fullWidth closeModalFunc={() => setIsAddStat(false)} scrollOnTop={false}>
+                                {statList}
+                            </Modal>
+                        )}
+                    </div>
+                </td>
+            </tr>
+        </tbody>,
+    ];
 }

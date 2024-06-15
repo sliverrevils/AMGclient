@@ -1140,9 +1140,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         }
     }, [selectedRow, selectedItem]);
 
-    useEffect(() => {
-        console.log(tableDescriptions);
-    }, [tableDescriptions]);
+    // useEffect(() => {
+    //     console.log(tableDescriptions);
+    // }, [tableDescriptions]);
 
     if (view) {
         return (
@@ -1166,7 +1166,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     {calcedRows.map((row, rowIndex) => {
                         const { isCurrentPeriod } = checkCurrentPeriod(rowIndex); // IS CURRENT PERIOD
                         return (
-                            <div className={`${styles.miniBodyRow} ${isCurrentPeriod ? styles.currentPeriod : ""}`}>
+                            <div key={Math.random()} className={`${styles.miniBodyRow} ${isCurrentPeriod ? styles.currentPeriod : ""}`}>
                                 {row.values.map((item, itemIdx) => {
                                     return (
                                         <div

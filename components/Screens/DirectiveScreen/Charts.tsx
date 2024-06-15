@@ -9,12 +9,12 @@ export default function Charts({ charts }: { charts: number[] }) {
             {charts.map((statId) => {
                 const currentStat = tableStatisticsList.find((listItem) => listItem.id === statId);
                 if (!currentStat) {
-                    return <div>статистика не найдена</div>;
+                    return <div key={statId + "_chart"}>статистика не найдена</div>;
                 }
 
                 if (currentStat.dateColumn.raportInfo?.chartProps)
                     return (
-                        <div className={styles.statItemBlock} id={`statId_${statId}`}>
+                        <div key={statId + "_chart"} className={styles.statItemBlock} id={`statId_${statId}`}>
                             <MultiLinesChart2 {...{ ...currentStat.dateColumn.raportInfo.chartProps, chartName: currentStat.name }} chartSchema={[]} showBtns={false} showX={true} linesBtns={true} />
                         </div>
                     );

@@ -15,6 +15,7 @@ export default function DirectStat({
     onStatMoveDown,
     onRemoveStat,
     saveScroll,
+    cacheLogic,
 }: {
     headers: IDirectHeader[];
     stat: StatItemLogic;
@@ -25,6 +26,7 @@ export default function DirectStat({
     onStatMoveDown: (statId: number) => void;
     onRemoveStat: (statId: number) => void;
     saveScroll: () => void;
+    cacheLogic: () => void;
 }) {
     const addChartToggle = (statId: number) => {
         setCharts((state) => {
@@ -43,7 +45,7 @@ export default function DirectStat({
                 //название статистики
                 if (!headerIdx) {
                     return (
-                        <td>
+                        <td key={header.id + "_row" + headerIdx}>
                             <div className={styles.statNameCell}>
                                 <div className={styles.statPositionBlock}>
                                     <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
@@ -90,10 +92,10 @@ export default function DirectStat({
                 const currentLogic = stat.logicStrArr.find((stat) => stat.headerId === header.id);
                 if (currentLogic === undefined) {
                     console.log("LOGIC", header.id, stat.logicStrArr);
-                    return <td>!!?логика</td>;
+                    return <td key={header.id + "_row" + headerIdx}>!!?логика</td>;
                 }
 
-                return <DirectCell logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} />;
+                return <DirectCell key={header.id + "_row" + headerIdx} logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} cacheLogic={cacheLogic} />;
             })}
         </tr>
     );

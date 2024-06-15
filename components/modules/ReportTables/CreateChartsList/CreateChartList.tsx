@@ -241,8 +241,9 @@ export default function CreateChartList() {
         // console.log(statArr);
         const statListHtml = statArr.length ? (
             <div className={styles.statList}>
-                {statArr.map((stat) => (
+                {statArr.map((stat, idx) => (
                     <div
+                        key={stat.stat.name + idx}
                         className={styles.statItem}
                         // onClick={(event) => {
                         //     event.stopPropagation();
@@ -329,7 +330,7 @@ export default function CreateChartList() {
                 let recordsAll: any = [];
                 let datesAll: DatesI[] = [];
                 let growingArrAll: boolean[][] = [];
-                console.log("All", allStats);
+                //console.log("All", allStats);
                 //setScopeEnd(allStats.length - 1);
                 allStats.forEach((table, tableIDx) => {
                     if (table.dateColumn?.raportInfo?.chartProps?.costumsLines) {
@@ -358,7 +359,7 @@ export default function CreateChartList() {
                     }
                 });
 
-                console.log({ growingArrAll });
+                //console.log({ growingArrAll });
 
                 if (actualStat && actualStat?.dateColumn.raportInfo?.chartProps) {
                     //NEW LINES
@@ -385,7 +386,7 @@ export default function CreateChartList() {
                                 lineTrend.map((_, index) => index + 1),
                                 lineTrend
                             );
-                            console.log("TREND ℹ👍", line, lineTrend);
+                            //console.log("TREND ℹ👍", line, lineTrend);
                             trendLineRecords = result;
                         }
                         const records = trendLineRecords || recordsAll[lineIdx];
@@ -424,7 +425,7 @@ export default function CreateChartList() {
             const selectedStat = tableStatisticsList.find((table) => table.name === selectStat);
             if (selectedStat) {
                 setShowStat(selectedStat);
-                console.log("SELECTED", selectedStat);
+                // console.log("SELECTED", selectedStat);
             }
         }, [selectStat, scopeStart, scopeEnd]);
 
@@ -549,7 +550,7 @@ export default function CreateChartList() {
         if (showOnModal)
             return (
                 <Modal closeModalFunc={() => setShowOnModal(false)} fullWidth={true} black={false} zIndex={99}>
-                    <div className={styles.chartListFullScreen}>{selectedStatsIdArr.map((selectedStat, index) => !selectedStat.isClose && <ChartItem chartItem={selectedStat} index={index} openCloseToggle={() => openCloseChartToggle(selectedStat.id)} />)}</div>
+                    <div className={styles.chartListFullScreen}>{selectedStatsIdArr.map((selectedStat, index) => !selectedStat.isClose && <ChartItem key={Math.random()} chartItem={selectedStat} index={index} openCloseToggle={() => openCloseChartToggle(selectedStat.id)} />)}</div>
                     <div
                         className={styles.printScreenBtn}
                         onClick={(event) => {
@@ -566,20 +567,19 @@ export default function CreateChartList() {
                 // FULL SCREEN BTN 🔍
                 <div className={styles.chartList}>
                     {selectedStatsIdArr.some((stat) => !stat.isClose) && (
-                        <>
-                            <div
-                                className={styles.fullScreenBtn}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    setShowOnModal(true);
-                                }}
-                            >
-                                🔍
-                            </div>
-                        </>
+                        <div
+                            key={Math.random()}
+                            className={styles.fullScreenBtn}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                setShowOnModal(true);
+                            }}
+                        >
+                            🔍
+                        </div>
                     )}
                     {selectedStatsIdArr.map((selectedStat, index) => (
-                        <ChartItem chartItem={selectedStat} index={index} openCloseToggle={() => openCloseChartToggle(selectedStat.id)} />
+                        <ChartItem key={Math.random()} chartItem={selectedStat} index={index} openCloseToggle={() => openCloseChartToggle(selectedStat.id)} />
                     ))}
                 </div>
             );
@@ -632,8 +632,10 @@ export default function CreateChartList() {
                 !!chartsListsArr.length && !isSaveField && (
                     <select className={styles.listsSelect} onChange={(event) => setSelectedListID(Number(event.target.value))} defaultValue={selectedListId}>
                         <option value={0}> {!selectedListId ? "создание нового листа графиков" : "создать новый лист"}</option>
-                        {chartsListsArr.map((listItem) => (
-                            <option value={listItem.id}>{listItem.name}</option>
+                        {chartsListsArr.map((listItem, idx) => (
+                            <option key={listItem.name + idx} value={listItem.id}>
+                                {listItem.name}
+                            </option>
                         ))}
                     </select>
                 )
@@ -738,7 +740,7 @@ export default function CreateChartList() {
                 </div>
                 <div className={styles.menuTitle}>Добавление нового графика на экран 📈</div>
                 {officesWithLatestPeriodStatsAndData.map((office, index) => (
-                    <OrgItem item={office} type="office" leadership={office.leadership} />
+                    <OrgItem key={Math.random()} item={office} type="office" leadership={office.leadership} />
                 ))}
             </div>
 

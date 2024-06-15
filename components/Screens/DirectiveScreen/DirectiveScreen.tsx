@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, IOrgItem, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -10,34 +10,34 @@ import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
 import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon } from "@heroicons/react/24/outline";
-import { hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
+import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
 import Charts from "./Charts";
 
 const defaultHeaders: IDirectHeader[] = [
     {
-        id: nanoid(),
+        id: "baseHeaderID_1",
         title: "Название блока",
         color: "#6FD273",
     },
     {
-        id: nanoid(),
+        id: "baseHeaderID_2",
         title: "План/факт за прошедший период",
         color: "#6FD273",
     },
     {
-        id: nanoid(),
+        id: "baseHeaderID_3",
         title: "Состояние",
         color: "#6FD273",
     },
     {
-        id: nanoid(),
+        id: "baseHeaderID_4",
         title: "Квота на будущий период",
         color: "#6FD273",
     },
     {
-        id: nanoid(),
+        id: "baseHeaderID_5",
         title: "Планируемое состояние на будущий период",
         color: "#6FD273",
     },
@@ -46,8 +46,12 @@ const defaultHeaders: IDirectHeader[] = [
 const memberPresenceCol = ["#B2B2B2", "#FFF545"];
 
 export default function DirectiveScreen() {
+    //LS LOAD
+    const loadedHeaders = JSON.parse(localStorage.getItem("dirHeaders") || "[]") as IDirectHeader[];
+    const loadedStatLogicsMap = new Map<string, ILogicCell[]>(Object.entries(JSON.parse(localStorage.getItem("statLogics") || "{}")));
+
     //HOOKS
-    const { getLatestTable, addingFilledField } = useTableStatistics();
+    const { getLatestTable, addingFilledField, statNameById } = useTableStatistics();
     const { userByID } = useUsers();
 
     //SELECTORS
@@ -95,7 +99,7 @@ export default function DirectiveScreen() {
     // console.log(initOrgItems.filter((item) => item.itemType === "office"));
 
     //STATE
-    const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
+    const [headers, setHeaders] = useState<IDirectHeader[]>(loadedHeaders.length ? loadedHeaders : defaultHeaders);
     const [isShowEditHeaders, setIsShowEditHeaders] = useState(false);
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
@@ -119,6 +123,8 @@ export default function DirectiveScreen() {
         window.scrollTo(0, scrollPos as number);
         setScrollPos(null);
     };
+    //cash cells
+    const [cacheStatsLogics, setCacheStstsLogic] = useState<Map<string, ILogicCell[]>>(loadedStatLogicsMap);
 
     //FUNCS
     //headers
@@ -126,6 +132,7 @@ export default function DirectiveScreen() {
         setHeaders((state) => state.filter((header) => header.id !== id));
         //удаляем логику с ячеек для этой колонки по ID колонки
         setTables((state) => state.map((table) => ({ ...table, stats: table.stats.map((stat) => ({ ...stat, logicStrArr: stat.logicStrArr.filter((logic) => logic.headerId !== id) })) })));
+        removeHeaderFromCache(id); //удаляем с кэша
     };
 
     const onAddHeader = useCallback(() => {
@@ -162,6 +169,25 @@ export default function DirectiveScreen() {
         }
     };
 
+    const headersToDefault = () => {
+        if (confirm("Сбросить все колонки до начального списка?")) {
+            setHeaders(defaultHeaders);
+
+            for (let [key, value] of loadedStatLogicsMap) {
+                loadedStatLogicsMap.set(
+                    key,
+                    value.filter((log) => log.headerId.includes("baseHeaderID"))
+                );
+            }
+
+            //создаем объект с мапа
+            const obj = Object.fromEntries(loadedStatLogicsMap);
+            //сохраняем объект в LS
+            localStorage.setItem("statLogics", JSON.stringify(obj));
+            setCacheStstsLogic(loadedStatLogicsMap);
+        }
+    };
+
     //tabels
     const onAddTable = (item: IDirectOffice) => {
         setTables((state) => [
@@ -190,19 +216,88 @@ export default function DirectiveScreen() {
         });
     };
 
+    //LS SAVE
+    const cacheLogic = () => {
+        // Пробрасываем эту функцию и обновляем при изменении
+        //                         Надо очищать колонки которые удалили кроме дефолтных
+
+        //⭐Для сохранения Map в строку, его надо перевести в объект Object.fromEntries
+        //⭐Для создания Map с объекта его надо сделать массивом Object.entries
+
+        tabels.forEach((table) => {
+            table.stats.forEach((stat) => {
+                const logicsArr = stat.logicStrArr.filter((logic) => logic.logicStr !== "");
+                const statName = clearStatName(statNameById(stat.id));
+                if (logicsArr.length)
+                    if (!loadedStatLogicsMap.has(statName)) {
+                        //создаем новый массив
+                        loadedStatLogicsMap.set(statName, logicsArr);
+                    } else {
+                        // старые значения
+                        let cached = loadedStatLogicsMap.get(statName) as ILogicCell[];
+
+                        //обновляем старые
+                        cached = cached.map((cell) => {
+                            //ищем индекс нового
+                            const newLogicIdx = logicsArr.findIndex((newCell) => newCell.headerId === cell.headerId);
+                            if (newLogicIdx >= 0) {
+                                return logicsArr[newLogicIdx];
+                            } else {
+                                return cell;
+                            }
+                        });
+                        //ищем новые ячейки
+                        const newCells = logicsArr.filter((cell) => !cached.some((cach) => cach.headerId === cell.headerId));
+                        //сохраняем обновленные старые и добавляем новые
+                        loadedStatLogicsMap.set(statName, [...cached, ...newCells]);
+                    }
+            });
+        });
+
+        if (loadedStatLogicsMap.size) {
+            //создаем объект с мапа
+            const obj = Object.fromEntries(loadedStatLogicsMap);
+            //сохраняем объект в LS
+            localStorage.setItem("statLogics", JSON.stringify(obj));
+
+            // console.log("CACHE", Object.entries(obj));
+            setCacheStstsLogic(loadedStatLogicsMap);
+        }
+
+        //new Map(Object.entries(obj))
+    };
+
+    const removeHeaderFromCache = (headerId: string) => {
+        if (headerId.includes("baseHeaderID")) return; //не удаляем базавые
+
+        for (let [key, value] of loadedStatLogicsMap) {
+            loadedStatLogicsMap.set(
+                key,
+                value.filter((log) => log.headerId !== headerId)
+            );
+        }
+
+        //console.log(loadedStatLogicsMap);
+        setCacheStstsLogic(loadedStatLogicsMap);
+        //создаем объект с мапа
+        const obj = Object.fromEntries(loadedStatLogicsMap);
+        //сохраняем объект в LS
+        localStorage.setItem("statLogics", JSON.stringify(obj));
+    };
+
     //TABLE HTML
     const mainTable = useMemo(() => {
         //console.log(tabels);
-        return (
-            <>
-                <thead>
+        return [
+            <thead key={Math.random()}>
+                <tr>
                     <th colSpan={headers.length}>Главные статистики отделения и состояния по ним</th>
-                </thead>
-                {tabels.map((table) => {
-                    return <DirectTable headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} />;
-                })}
-            </>
-        );
+                </tr>
+            </thead>,
+            tabels.map((table) => {
+                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} />;
+            }),
+        ];
     }, [tabels, headers, charts]);
 
     const headersEditBlock = useMemo(() => {
@@ -214,7 +309,7 @@ export default function DirectiveScreen() {
                 </div>
                 {headers.map((header, headerIdx) => {
                     return (
-                        <div className={styles.headersItem} onClick={() => headerIdx && setSelectedHeader(headerIdx)} style={{ background: header.color }}>
+                        <div key={header.id + headerIdx} className={styles.headersItem} onClick={() => headerIdx && setSelectedHeader(headerIdx)} style={{ background: header.color }}>
                             <div className={styles.itemText}> {header.title}</div>
                             {!!headerIdx && (
                                 <div
@@ -251,6 +346,10 @@ export default function DirectiveScreen() {
                 <div className={styles.addBtn} onClick={onAddHeader}>
                     <span>Добавить колонку</span>
                     <ViewColumnsIcon width={20} />
+                </div>
+
+                <div className={styles.toDefault} onClick={() => headersToDefault()}>
+                    сбросить колонки до начальных
                 </div>
             </div>
         );
@@ -372,13 +471,15 @@ export default function DirectiveScreen() {
                         <div className={styles.membersTitle}>Члены РС</div>
                         <table>
                             <thead>
-                                <th>Отделение</th>
-                                <th>Руководитель</th>
-                                <th>Присутствие</th>
+                                <tr>
+                                    <th>Отделение</th>
+                                    <th>Руководитель</th>
+                                    <th>Присутствие</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {members.map((member, memberIdx) => (
-                                    <tr className={styles.memberItem}>
+                                    <tr className={styles.memberItem} key={member.userId + "_userList"}>
                                         <td>{member.officeNumber} отделение</td>
                                         <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
                                         <td>
@@ -420,8 +521,31 @@ export default function DirectiveScreen() {
         }
     }, [scrollPos]);
 
+    //LS
+    //SAVE HEADERS
+    useEffect(() => {
+        if (headers.length) {
+            console.log(headers);
+            localStorage.setItem("dirHeaders", JSON.stringify(headers));
+        }
+    }, [headers]);
+
     return (
         <div className={styles.directWrap}>
+            {process.env.NODE_ENV === "development" && (
+                <div>
+                    <button
+                        onClick={() => {
+                            console.log({ headers, tabels, charts });
+                        }}
+                    >
+                        check
+                    </button>
+                    <button onClick={cacheLogic}>save cache</button>
+                    <button onClick={() => console.log(cacheStatsLogics)}>show</button>
+                    <button onClick={() => removeHeaderFromCache("o5yIJ6I6P3uJ8ggpZbNx5")}>remove</button>
+                </div>
+            )}
             {topInfoBlock}
             <Mission />
 
