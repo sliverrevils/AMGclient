@@ -1,6 +1,8 @@
 .statNameCell {
+    position: relative;
     display: flex;
     justify-content: space-between;
+
 
     .statPositionBlock {
         //border: 1px solid black;
@@ -17,11 +19,51 @@
         }
     }
 
-    .statName {
+    .statNameBlock {
+
         display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-direction: column;
+
+
+        .name {
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1 1 100%;
+
+        }
+
+        .period {
+
+
+
+
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+
+            .periodStr {
+
+                background: rgb(221, 221, 221);
+                text-align: center;
+                padding: 2px 5px;
+                border-radius: 3px;
+
+            }
+
+            .update {
+                opacity: .4;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+        }
     }
+
+
 
     .icoBtns {
         cursor: pointer;

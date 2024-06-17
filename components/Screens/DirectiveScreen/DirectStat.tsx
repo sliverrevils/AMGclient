@@ -1,9 +1,12 @@
-import { IDirectHeader, RaportTableInfoI, StatItemLogic } from "@/types/types";
+import { IDirectHeader, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
 import DirectCell from "./DirectCell";
 import { clearStatName } from "@/utils/funcs";
 import { ChartBarSquareIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, EyeIcon, EyeSlashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import styles from "./stat.module.scss";
 import { toast } from "react-toastify";
+import { useAccessRoutes } from "@/hooks/useAccessRoutes";
+import { useState } from "react";
+import StatView from "@/components/modules/ReportTables/CreateRaport2/StatView/StatView";
 
 export default function DirectStat({
     headers,
@@ -39,6 +42,11 @@ export default function DirectStat({
     };
 
     const isOnCharts = charts.includes(stat.id);
+
+    const { accessedRoutes } = useAccessRoutes();
+    const tabelsRoute = accessedRoutes.find((route) => route.id === 10);
+
+    const [statView, setStatToView] = useState<StatItemReadyWithCoords | null>(null);
     return (
         <tr>
             {headers.map((header, headerIdx) => {
@@ -47,13 +55,33 @@ export default function DirectStat({
                     return (
                         <td key={header.id + "_row" + headerIdx}>
                             <div className={styles.statNameCell}>
+                                <StatView statView={statView} />
                                 <div className={styles.statPositionBlock}>
                                     <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
                                     <DocumentArrowDownIcon width={20} onClick={() => onStatMoveDown(stat.id)} />
                                 </div>
-                                <div className={styles.statName}>
-                                    <div> {clearStatName(stat.name)}</div>
+                                <div
+                                    className={styles.statNameBlock}
+                                    onContextMenu={(event) => {
+                                        event.preventDefault();
+                                        tabelsRoute.clickFunc(stat.id);
+                                    }}
+                                    onMouseEnter={(event) => {
+                                        const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
+
+                                        setStatToView({ ...stat, x, y: y + height + 10, type: "table" });
+                                    }}
+                                    onMouseLeave={() => setStatToView(null)}
+                                >
+                                    <div className={styles.name}>
+                                        <span>{clearStatName(stat.name)}</span>
+                                    </div>
+                                    <div className={styles.period}>
+                                        <div className={styles.periodStr}>{stat.periodStr}</div>
+                                        <div className={styles.update}>{new Date(stat.lastUpdate).toLocaleString()}</div>
+                                    </div>
                                 </div>
+
                                 <div className={styles.icoBtns}>
                                     <XCircleIcon
                                         width={30}

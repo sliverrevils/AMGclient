@@ -551,7 +551,7 @@ export default function DirectiveScreen() {
 
             {headerModal}
 
-            {!!tabels.length && !isShowEditHeaders && (
+            {!isShowEditHeaders && (
                 <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
                     <div>Настройки шапки</div>
                     <Cog6ToothIcon width={20} />
@@ -570,7 +570,7 @@ export default function DirectiveScreen() {
             {scrollPos !== null && (
                 <div className={styles.scrollBtn} onClick={goToSavedScroll}>
                     <BarsArrowUpIcon width={30} />
-                    <div>Подняться к таблице</div>
+                    <div className={styles.text}>Подняться к таблице</div>
                 </div>
             )}
 
