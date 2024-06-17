@@ -35,11 +35,7 @@
         }
 
         .period {
-
-
-
-
-            display: flex;
+            display: none;
             justify-content: space-between;
             font-size: 12px;
 
@@ -58,6 +54,13 @@
                 &:hover {
                     opacity: 1;
                 }
+            }
+
+        }
+
+        &:hover {
+            .period {
+                display: flex;
             }
 
         }
