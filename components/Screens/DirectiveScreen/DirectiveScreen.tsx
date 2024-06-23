@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
 import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
@@ -9,11 +9,12 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/outline";
 import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
 import Charts from "./Charts";
+import { toast } from "react-toastify";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -49,6 +50,9 @@ export default function DirectiveScreen() {
     //LS LOAD
     const loadedHeaders = JSON.parse(localStorage.getItem("dirHeaders") || "[]") as IDirectHeader[];
     const loadedStatLogicsMap = new Map<string, ILogicCell[]>(Object.entries(JSON.parse(localStorage.getItem("statLogics") || "{}")));
+
+    //REFS
+    const usersListRef = useRef<HTMLSelectElement | null>(null);
 
     //HOOKS
     const { getLatestTable, addingFilledField, statNameById } = useTableStatistics();
@@ -127,6 +131,44 @@ export default function DirectiveScreen() {
     const [cacheStatsLogics, setCacheStstsLogic] = useState<Map<string, ILogicCell[]>>(loadedStatLogicsMap);
 
     //FUNCS
+    //members
+    const onAddMember = () => {
+        if (usersListRef.current === null) return;
+
+        const selectedUserID = Number(usersListRef.current.value);
+
+        if (selectedUserID) {
+            if (members.some((member) => member.userId === selectedUserID)) {
+                usersListRef.current.value = "0";
+                toast.error(`${userByID(selectedUserID)?.name} уже в списке !`);
+                return;
+            }
+
+            setMembers((state) => [
+                ...state,
+                {
+                    officeNumber: 0,
+                    presence: 0,
+                    userId: selectedUserID,
+                },
+            ]);
+            usersListRef.current.value = "0";
+        }
+    };
+
+    const onDelMember = () => {
+        if (usersListRef.current === null) return;
+        const selectedUserID = Number(usersListRef.current.value);
+        if (selectedUserID) {
+            if (!members.some((member) => member.userId === selectedUserID)) {
+                usersListRef.current.value = "0";
+                toast.error(`${userByID(selectedUserID)?.name} нет в списках !`);
+                return;
+            }
+
+            setMembers((state) => state.filter((member) => member.userId !== selectedUserID));
+        }
+    };
     //headers
     const onDelHeader = (id: string) => {
         setHeaders((state) => state.filter((header) => header.id !== id));
@@ -480,7 +522,7 @@ export default function DirectiveScreen() {
                             <tbody>
                                 {members.map((member, memberIdx) => (
                                     <tr className={styles.memberItem} key={member.userId + "_userList"}>
-                                        <td>{member.officeNumber} отделение</td>
+                                        {member.officeNumber ? <td>{member.officeNumber} отделение</td> : <td style={{ textAlign: "center" }}>участник</td>}
                                         <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
                                         <td>
                                             <select
@@ -499,6 +541,25 @@ export default function DirectiveScreen() {
                                         </td>
                                     </tr>
                                 ))}
+                                <tr>
+                                    <td style={{ textAlign: "center", cursor: "pointer", display: "flex", justifyContent: "space-between" }}>
+                                        <UserPlusIcon width={24} onClick={onAddMember} />
+                                        <UserMinusIcon width={24} onClick={onDelMember} />
+                                    </td>
+                                    <td colSpan={2} style={{ textAlign: "center" }}>
+                                        <select ref={usersListRef}>
+                                            <option value={0} style={{ textAlign: "center" }}>
+                                                {" "}
+                                                выбрать участника
+                                            </option>
+                                            {users.map((user) => (
+                                                <option key={user.id + "_usersList"} value={user.id}>
+                                                    {user.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

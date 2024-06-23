@@ -27,11 +27,12 @@
         justify-content: space-between;
 
         .infoBlock {
-            align-self: self-end;
-            display: flex;
 
+            display: flex;
+            align-self: flex-start;
             align-items: center;
             gap: 10px;
+            margin-top: 40px;
 
 
             .field {

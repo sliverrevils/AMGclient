@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 export default function DirectTable({
     table,
@@ -178,11 +179,13 @@ export default function DirectTable({
                 <input className={styles.statFilter} type="text" value={statFilter} onChange={(event) => setStatFilter(event.target.value.trimStart())} placeholder="Поиск" />
                 {currentOfficeStatsList
                     .filter((stat) => stat.name.toLowerCase().includes(statFilter.toLowerCase()))
-                    .filter((stat) => !table.stats.map((stat) => stat.id).includes(stat.id))
+                    //.filter((stat) => !table.stats.map((stat) => stat.id).includes(stat.id))
                     .map((stat) => {
+                        const isAdded = table.stats.map((stat) => stat.id).includes(stat.id);
                         return (
-                            <div key={stat.name} className={styles.statItem} onClick={() => addStatToTable({ statId: stat.id })}>
-                                {clearStatName(stat.name)}
+                            <div key={stat.name} className={`${styles.statItem} noselect`} onClick={() => (isAdded ? onRemoveStat(stat.id) : addStatToTable({ statId: stat.id }))}>
+                                <CheckBadgeIcon width={25} fill={isAdded ? "#FF8056" : "gray"} opacity={isAdded ? 1 : 0.2} />
+                                <span>{clearStatName(stat.name)}</span>
                             </div>
                         );
                     })}
