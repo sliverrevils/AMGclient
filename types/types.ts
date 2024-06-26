@@ -475,6 +475,7 @@ export interface IDirectTable {
     //item: IDirectOffice;
     officeID: number;
     stats: ITableStat[];
+    description: string;
     // stats: StatItemLogic[];
 }
 

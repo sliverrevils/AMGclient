@@ -260,6 +260,7 @@ export default function DirectiveScreen() {
             {
                 id: nanoid(),
                 officeID: item.id,
+                description: "",
                 stats: [],
             },
         ]);
@@ -634,7 +635,7 @@ export default function DirectiveScreen() {
                     .filter((item) => (isAdmin ? true : item.members.includes(user.userId)))
                     .map((protocolItem) => (
                         <option key={protocolItem.createdAt + "_protocolListItem"} value={protocolItem.id}>
-                            № : {protocolItem.protocolNumber}, дата проведения : {new Date(protocolItem.createdAt).toLocaleDateString()}
+                            Протокол № :<b> {protocolItem.protocolNumber}</b> 📆 Дата проведения : {new Date(protocolItem.createdAt).toLocaleDateString()}
                         </option>
                     ))}
             </select>
@@ -755,15 +756,6 @@ export default function DirectiveScreen() {
                 </>
             )}
 
-            {mainStatus == "archive" && isAdmin && !!protocolSelectedId && (
-                <>
-                    <div className={styles.headersSettingsBtn} onClick={() => deleteProtocolById({ id: protocolSelectedId, afterFunc: clearStates }).then(() => setMainStatus(null))} style={{ background: "tomato", color: "white" }}>
-                        <div>Удалить протокол</div>
-                        <TrashIcon width={20} />
-                    </div>
-                </>
-            )}
-
             <table className={styles.mainTable}>{!!tabels.length && mainTable}</table>
             {scrollPos !== null && (
                 <div className={styles.scrollBtn} onClick={goToSavedScroll}>
@@ -773,6 +765,14 @@ export default function DirectiveScreen() {
             )}
 
             <Charts charts={charts} />
+            {mainStatus == "archive" && isAdmin && !!protocolSelectedId && (
+                <>
+                    <div className={styles.headersSettingsBtn} onClick={() => deleteProtocolById({ id: protocolSelectedId, afterFunc: clearStates }).then(() => setMainStatus(null))} style={{ background: "tomato", color: "white" }}>
+                        <div>Удалить протокол</div>
+                        <TrashIcon width={20} />
+                    </div>
+                </>
+            )}
             {mainStatus === "new" && !isSavedProtocol && tabels.some((table) => table.stats.length) && (
                 <div className={styles.headersSettingsBtn} onClick={saveDirectOnServer} style={{ background: "#2196F3", color: "white", position: "fixed", right: 10, bottom: 10 }}>
                     <div>Сохранить протокол</div>

@@ -9,8 +9,12 @@ import { clearStatName } from "@/utils/funcs";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
-import { DocumentPlusIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterIcon, CheckCircleIcon, DocumentPlusIcon, NoSymbolIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 
 export default function DirectTable({
     table,
@@ -54,12 +58,14 @@ export default function DirectTable({
     });
     const currentOfficeStatsList = allItemStats.filter((stat) => stat !== undefined) as TableStatisticListItemI[];
 
-    // console.log(allItemStats);
+    const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
 
     //STATE
 
     const [isAddStat, setIsAddStat] = useState(false);
     const [statFilter, setStatFilter] = useState("");
+    const [about, setAbout] = useState(table.description);
+    const [isAddDescription, setIsAddDescription] = useState(false);
 
     //HOOKS
     const { tableById, addingFilledField, statNameById } = useTableStatistics();
@@ -173,6 +179,21 @@ export default function DirectTable({
         [table, charts]
     );
 
+    const onSaveDescription = useCallback(
+        ({ del = false }: { del?: boolean } = {}) => {
+            setTables((state) => {
+                return state.map((curTable) => {
+                    if (curTable.id !== table.id) return curTable;
+
+                    if (!del) return { ...curTable, description: about };
+                    else return { ...curTable, description: "" };
+                });
+            });
+            if (del) setAbout("");
+        },
+        [about]
+    );
+
     //МЕНЮ ДОБАВЛЕНИЯ СТАТИСТИК
     const statList = useMemo(() => {
         return (
@@ -226,9 +247,17 @@ export default function DirectTable({
                 <td colSpan={headers.length}>
                     <div className={styles.btnsBlock}>
                         {!loaded && (
-                            <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
-                                <span>Добавить статистику</span>
-                                <DocumentPlusIcon width={20} />
+                            <div className={styles.addBtnsBlock}>
+                                <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
+                                    <span>Добавить статистику</span>
+                                    <DocumentPlusIcon width={20} />
+                                </div>
+                                {!about && !isAddDescription && (
+                                    <div className={styles.addStatBtn} onClick={() => setIsAddDescription(true)}>
+                                        <span>Добавить описание</span>
+                                        <ChatBubbleBottomCenterIcon width={20} />
+                                    </div>
+                                )}
                             </div>
                         )}
                         {isAddStat && (
@@ -236,6 +265,41 @@ export default function DirectTable({
                                 {statList}
                             </Modal>
                         )}
+                        <div>
+                            {(about || isAddDescription) && (
+                                <div>
+                                    <ReactQuill value={about} onChange={setAbout} readOnly={loaded} theme={!loaded ? "snow" : "bubble"} />
+                                </div>
+                            )}
+                            {isAdmin && !loaded && (
+                                <div className={styles.descriptionsBtns}>
+                                    {about && about !== table.description && (
+                                        <div onClick={() => onSaveDescription()} style={{ background: "#6DA52C" }}>
+                                            <span>сохранить изменения описания</span>
+                                            <CheckCircleIcon width={17} />
+                                        </div>
+                                    )}
+                                    {((isAddDescription && !about) || table.description !== about) && (
+                                        <div
+                                            style={{ background: "#949494" }}
+                                            onClick={() => {
+                                                setAbout(table.description);
+                                                setIsAddDescription(false);
+                                            }}
+                                        >
+                                            <span>отменить изменения описания</span>
+                                            <NoSymbolIcon width={17} />
+                                        </div>
+                                    )}
+                                    {table.description && (
+                                        <div onClick={() => onSaveDescription({ del: true })} style={{ background: "#F44336" }}>
+                                            <span>полностью удалить описание</span>
+                                            <TrashIcon width={15} />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </td>
             </tr>
