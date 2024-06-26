@@ -9,7 +9,7 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
@@ -62,6 +62,7 @@ export default function DirectiveScreen() {
     const { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById } = useDirect();
 
     //SELECTORS
+    const { mainStyle } = useSelector((state: StateReduxI) => state.app);
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
     const { offices } = useSelector((state: StateReduxI) => state.org);
     const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
@@ -106,6 +107,7 @@ export default function DirectiveScreen() {
     // console.log(initOrgItems.filter((item) => item.itemType === "office"));
 
     //STATE
+    const [isSavedProtocol, setIsSavedProtocol] = useState(false);
     const [mainStatus, setMainStatus] = useState<null | "new" | "archive">(isAdmin ? null : "archive");
     const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
     const [isShowEditHeaders, setIsShowEditHeaders] = useState(false);
@@ -140,6 +142,7 @@ export default function DirectiveScreen() {
 
     //FUNCS
     const clearStates = () => {
+        setIsSavedProtocol(false);
         setHeaders([]);
         setIsShowEditHeaders(false);
         setTables([]);
@@ -294,7 +297,7 @@ export default function DirectiveScreen() {
             info: JSON.stringify(info),
             members: JSON.stringify(members),
             tabels: JSON.stringify(tabels),
-        });
+        }).then(() => setIsSavedProtocol(true));
     }, [headers, cacheStatsLogics, info, members, tabels]);
 
     //LS SAVE
@@ -505,7 +508,7 @@ export default function DirectiveScreen() {
     const topInfoBlock = useMemo(() => {
         if (!!tabels.length) {
             return (
-                <div className={styles.topInfoBlock}>
+                <div className={`${styles.topInfoBlock} ${mainStyle === "row" ? styles.topInfoBlockRow : ""}`}>
                     <div className={styles.infoBlock}>
                         <div className={styles.field}>
                             <div className={styles.title}>№ протокола</div>
@@ -631,7 +634,7 @@ export default function DirectiveScreen() {
                     .filter((item) => (isAdmin ? true : item.members.includes(user.userId)))
                     .map((protocolItem) => (
                         <option key={protocolItem.createdAt + "_protocolListItem"} value={protocolItem.id}>
-                            ID:{protocolItem.id}, дата:{new Date(protocolItem.createdAt).toLocaleDateString()}
+                            № : {protocolItem.protocolNumber}, дата проведения : {new Date(protocolItem.createdAt).toLocaleDateString()}
                         </option>
                     ))}
             </select>
@@ -644,12 +647,12 @@ export default function DirectiveScreen() {
             <div className={styles.mainShooceBlock}>
                 {isAdmin && (
                     <div className={`${styles.shooceItem} ${mainStatus === "new" ? styles.selected : ""} noselect`} onClick={() => setMainStatus((state) => (state === "new" ? null : "new"))}>
-                        <div>Создать таблицу по текущим данным</div>
+                        <div>Новый протокол</div>
                         <BuildingOffice2Icon width={25} />
                     </div>
                 )}
                 <div className={`${styles.shooceItem} ${mainStatus === "archive" ? styles.selected : ""} noselect`} onClick={() => setMainStatus((state) => (state === "archive" ? null : "archive"))}>
-                    <div>Загрузить из архива</div>
+                    <div>Архив протоколов</div>
                     <CloudArrowDownIcon width={25} />
                 </div>
             </div>
@@ -727,40 +730,28 @@ export default function DirectiveScreen() {
                     <button onClick={() => console.log(members)}>members show</button>
                 </div>
             )}
-
+            {mainStatusShooceHtml}
+            {mainStatus === "archive" && protocolListSelectHtml}
             {topInfoBlock}
             <Mission />
-
-            {mainStatusShooceHtml}
-
-            {mainStatus === "archive" && protocolListSelectHtml}
 
             {headerModal}
 
             {mainStatus === "new" && (
                 <>
-                    {!isShowEditHeaders && (
-                        <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
-                            <div>Настройки шапки</div>
-                            <Cog6ToothIcon width={20} />
+                    <div className={styles.topBtnsBlock}>
+                        {!isShowEditHeaders && (
+                            <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)} style={{ background: "rgb(111, 210, 115)" }}>
+                                <div>Настройки колонок</div>
+                                <Cog6ToothIcon width={20} />
+                            </div>
+                        )}
+                        <div className={styles.headersSettingsBtn} onClick={saveSettingsOnServer} style={{ background: "#05C1DA", position: "absolute", right: 20 }}>
+                            <div>Сохранить изменения колонок и ячеек</div>
+                            <ArrowUpTrayIcon width={20} />
                         </div>
-                    )}
-                    <div className={styles.headersSettingsBtn} onClick={saveSettingsOnServer}>
-                        <div>Сохранить изменения колонок и ячеек</div>
-                        <ArrowDownCircleIcon width={20} />
-                    </div>
-                    <div className={styles.headersSettingsBtn} onClick={saveDirectOnServer} style={{ background: "lightgreen" }}>
-                        <div>Сохранить протокол</div>
-                        <ArrowDownCircleIcon width={20} />
                     </div>
                     {isShowEditHeaders && headersEditBlock}
-
-                    {!!!tabels.length && (
-                        <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>
-                            <span>Создать таблицу по текущим данным</span>
-                            <BuildingOffice2Icon width={25} />
-                        </div>
-                    )}
                 </>
             )}
 
@@ -782,6 +773,12 @@ export default function DirectiveScreen() {
             )}
 
             <Charts charts={charts} />
+            {mainStatus === "new" && !isSavedProtocol && tabels.some((table) => table.stats.length) && (
+                <div className={styles.headersSettingsBtn} onClick={saveDirectOnServer} style={{ background: "#2196F3", color: "white", position: "fixed", right: 10, bottom: 10 }}>
+                    <div>Сохранить протокол</div>
+                    <CloudArrowUpIcon width={20} />
+                </div>
+            )}
         </div>
     );
 }

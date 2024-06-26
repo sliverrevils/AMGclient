@@ -543,4 +543,5 @@ export interface IProtocolListItem {
     id: number;
     createdAt: string;
     members: number[];
+    protocolNumber: number;
 }
