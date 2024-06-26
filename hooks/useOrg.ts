@@ -1,5 +1,6 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
+import { setUserOnDirectRedux } from "@/redux/mainSlice";
 import { setOfficesRedux } from "@/redux/orgSlice";
 import { setAccessPatternsRedux, setPatternsRedux, setTableHeadersRedux } from "@/redux/patternsSlce";
 import { setTableStatisticsListRedux } from "@/redux/statsSlice";
@@ -17,7 +18,7 @@ export default function useOrg() {
         dispatch(setLoadingRedux(true));
         axiosClient
             .get("info")
-            .then(({ data: { offices, users, patterns, patternAccesses, tablePatterns, tableStatistics } }) => {
+            .then(({ data: { offices, users, patterns, patternAccesses, tablePatterns, tableStatistics, userOnDirect } }) => {
                 //set on state
                 setOrgScheme && setOrgScheme(offices);
                 setOrgScheme && setUsers(users);
@@ -54,6 +55,8 @@ export default function useOrg() {
                     // console.log("TABELS📅", tableStatistics);
                     dispatch(setTableStatisticsListRedux(tableStatistics));
                 }
+                //USER ON DIRECT
+                dispatch(setUserOnDirectRedux(userOnDirect));
             })
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));

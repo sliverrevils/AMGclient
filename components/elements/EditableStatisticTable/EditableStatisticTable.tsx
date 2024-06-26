@@ -1435,6 +1435,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                     <div> сохранить изменения</div>
                                 </div>
                             )}
+
                             {isAdmin && (
                                 <>
                                     {(!selectedTable || selectedTable == "clear" || createdNextPeriod) && (
@@ -1470,7 +1471,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                         </div>
                     )}
 
-                    {!createdNextPeriod && dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
+                    {isAdmin && !createdNextPeriod && dateColumn && dateColumn.autoRenewal && selectedTable && fullFileldsStatsChecks() && (
                         <div className={styles.createNextPeriodBtn} onClick={onCreateNextPeriodStatistic}>
                             Создать статистику на следующий период
                         </div>

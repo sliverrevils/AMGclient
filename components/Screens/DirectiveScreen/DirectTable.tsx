@@ -1,4 +1,4 @@
-import { IDirectHeader, IDirectOffice, IDirectTable, ILogicCell, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, IDirectOffice, IDirectTable, ILogicCell, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import DirectStat from "./DirectStat";
@@ -22,16 +22,18 @@ export default function DirectTable({
     saveScroll,
     cacheStatsLogics,
     cacheLogic,
+    loaded,
 }: {
     table: IDirectTable;
     headers: IDirectHeader[];
     setTables: (value: React.SetStateAction<IDirectTable[]>) => void;
     fullOrgWithdata: IDirectOffice[];
-    setCharts: React.Dispatch<React.SetStateAction<number[]>>;
-    charts: number[];
+    setCharts: React.Dispatch<React.SetStateAction<IChartPropListItem[]>>;
+    charts: IChartPropListItem[];
     saveScroll: () => void;
     cacheStatsLogics: Map<string, ILogicCell[]>;
     cacheLogic: () => void;
+    loaded: boolean;
 }) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
@@ -55,7 +57,7 @@ export default function DirectTable({
     // console.log(allItemStats);
 
     //STATE
-    const [selectedStatId, setSelectedStatId] = useState(0);
+
     const [isAddStat, setIsAddStat] = useState(false);
     const [statFilter, setStatFilter] = useState("");
 
@@ -63,14 +65,14 @@ export default function DirectTable({
     const { tableById, addingFilledField, statNameById } = useTableStatistics();
 
     const addStatToTable = useCallback(
-        ({ statId }: { statId: number }) => {
+        ({ stat }: { stat: TableStatisticListItemI }) => {
             //const stat = allItemStats.find((stat) => stat.id === statId);
-            const currentStatCelarName = clearStatName(statNameById(statId));
+            const currentStatCelarName = clearStatName(statNameById(stat.id));
             setTables((state) => {
                 return state.map((curTable) => {
                     if (curTable.id !== table.id) return curTable;
 
-                    if (curTable.stats.some((st) => st.id === statId)) {
+                    if (curTable.stats.some((st) => st.id === stat.id)) {
                         toast.warning(`Эта статистика уже добавлена !`);
                         return curTable;
                     }
@@ -85,7 +87,7 @@ export default function DirectTable({
                         stats: [
                             ...curTable.stats,
                             {
-                                id: statId,
+                                ...stat,
                                 logicStrArr: headers.map((header) => ({
                                     headerId: header.id,
                                     logicStr: cache ? cache[header.id] || "" : "",
@@ -95,7 +97,6 @@ export default function DirectTable({
                     };
                 });
             });
-            setSelectedStatId(0);
         },
         [setTables, headers, cacheStatsLogics]
     );
@@ -167,7 +168,7 @@ export default function DirectTable({
                 curTable.stats = curTable.stats.filter((curStat) => curStat.id !== statId);
                 return tempTabels;
             });
-            setCharts((state) => state.filter((curChartId) => curChartId !== statId));
+            setCharts((state) => state.filter((curChart) => curChart.statId !== statId));
         },
         [table, charts]
     );
@@ -183,7 +184,7 @@ export default function DirectTable({
                     .map((stat) => {
                         const isAdded = table.stats.map((stat) => stat.id).includes(stat.id);
                         return (
-                            <div key={stat.name} className={`${styles.statItem} noselect`} onClick={() => (isAdded ? onRemoveStat(stat.id) : addStatToTable({ statId: stat.id }))}>
+                            <div key={stat.name} className={`${styles.statItem} noselect`} onClick={() => (isAdded ? onRemoveStat(stat.id) : addStatToTable({ stat }))}>
                                 <CheckBadgeIcon width={25} fill={isAdded ? "#FF8056" : "gray"} opacity={isAdded ? 1 : 0.2} />
                                 <span>{clearStatName(stat.name)}</span>
                             </div>
@@ -210,21 +211,13 @@ export default function DirectTable({
             {
                 // СТАТИСТИКИ
                 table.stats.map((stat, statIdx) => {
-                    const currentStat = tableById(stat.id);
-                    if (!currentStat) {
-                        return (
-                            <tr>
-                                <td>статистика не найдена</td>
-                            </tr>
-                        );
-                    }
-                    const statReady = addingFilledField(currentStat);
+                    const statReady = addingFilledField(stat);
                     const statItemLogic: StatItemLogic = {
                         ...statReady,
                         logicStrArr: stat.logicStrArr,
                     };
 
-                    return <DirectStat key={stat.id + "statKey"} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} />;
+                    return <DirectStat key={stat.id + "statKey"} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
                 })
             }
 
@@ -232,17 +225,12 @@ export default function DirectTable({
             <tr>
                 <td colSpan={headers.length}>
                     <div className={styles.btnsBlock}>
-                        {/* <select value={selectedStatId} onChange={(event) => setSelectedStatId(Number(event.target.value))}>
-                                <option value={0}>выбор статистики</option>
-                                {currentOfficeStatsList.map((stat) => (
-                                    <option value={stat.id}>{clearStatName(stat.name)}</option>
-                                ))}
-                            </select>
-                            {!!selectedStatId && <button onClick={() => addStatToTable({ statId: selectedStatId })}>Добавить статистику</button>} */}
-                        <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
-                            <span>Добавить статистику</span>
-                            <DocumentPlusIcon width={20} />
-                        </div>
+                        {!loaded && (
+                            <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
+                                <span>Добавить статистику</span>
+                                <DocumentPlusIcon width={20} />
+                            </div>
+                        )}
                         {isAddStat && (
                             <Modal fullWidth closeModalFunc={() => setIsAddStat(false)} scrollOnTop={false}>
                                 {statList}

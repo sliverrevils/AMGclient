@@ -1,4 +1,4 @@
-import { IDirectHeader, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
 import DirectCell from "./DirectCell";
 import { clearStatName } from "@/utils/funcs";
 import { ChartBarSquareIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, EyeIcon, EyeSlashIcon, XCircleIcon } from "@heroicons/react/24/outline";
@@ -19,29 +19,31 @@ export default function DirectStat({
     onRemoveStat,
     saveScroll,
     cacheLogic,
+    loaded,
 }: {
     headers: IDirectHeader[];
     stat: StatItemLogic;
     onChangeLogic: (statId: number, logicHeaderId: string, value: string) => void;
-    setCharts: React.Dispatch<React.SetStateAction<number[]>>;
-    charts: number[];
+    setCharts: React.Dispatch<React.SetStateAction<IChartPropListItem[]>>;
+    charts: IChartPropListItem[];
     onStatMoveUp: (statId: number) => void;
     onStatMoveDown: (statId: number) => void;
     onRemoveStat: (statId: number) => void;
     saveScroll: () => void;
     cacheLogic: () => void;
+    loaded: boolean;
 }) {
     const addChartToggle = (statId: number) => {
         setCharts((state) => {
-            if (!state.includes(statId)) {
-                return [...state, statId];
+            if (!state.some((curChart) => curChart.statId === statId) && stat.dateColumn.raportInfo?.chartProps) {
+                return [...state, { ...stat.dateColumn.raportInfo?.chartProps, statId, name: clearStatName(stat.name) }];
             } else {
-                return state.filter((id) => id !== statId);
+                return state.filter((chart) => chart.statId !== statId);
             }
         });
     };
 
-    const isOnCharts = charts.includes(stat.id);
+    const isOnCharts = charts.some((curChart) => curChart.statId === stat.id);
 
     const { accessedRoutes } = useAccessRoutes();
     const tabelsRoute = accessedRoutes.find((route) => route.id === 10);
@@ -67,11 +69,13 @@ export default function DirectStat({
                                         tabelsRoute.clickFunc(stat.id);
                                     }}
                                     onMouseEnter={(event) => {
-                                        const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
+                                        if (!loaded) {
+                                            const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
 
-                                        setStatToView({ ...stat, x, y: y + height + 10, type: "table" });
+                                            setStatToView({ ...stat, x, y: y + height + 10, type: "table" });
+                                        }
                                     }}
-                                    onMouseLeave={() => setStatToView(null)}
+                                    onMouseLeave={() => !loaded && setStatToView(null)}
                                 >
                                     <div className={styles.name}>
                                         <span>{clearStatName(stat.name)}</span>
@@ -84,9 +88,10 @@ export default function DirectStat({
 
                                 <div className={styles.icoBtns}>
                                     <XCircleIcon
+                                        display={loaded ? "none" : "block"}
                                         width={30}
                                         onClick={() => {
-                                            confirm(`Убрать статистику? \n \t "${clearStatName(stat.name)}"`) && onRemoveStat(stat.id);
+                                            !loaded && confirm(`Убрать статистику? \n \t "${clearStatName(stat.name)}"`) && onRemoveStat(stat.id);
                                         }}
                                     />
                                     <ChartBarSquareIcon
@@ -123,7 +128,7 @@ export default function DirectStat({
                     return <td key={header.id + "_row" + headerIdx}>!!?логика</td>;
                 }
 
-                return <DirectCell key={header.id + "_row" + headerIdx} logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} cacheLogic={cacheLogic} />;
+                return <DirectCell key={header.id + "_row" + headerIdx} logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} cacheLogic={cacheLogic} loaded={loaded} />;
             })}
         </tr>
     );

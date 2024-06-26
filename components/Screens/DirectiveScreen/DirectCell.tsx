@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./cell.module.scss";
 import { clearStatName } from "@/utils/funcs";
 
-export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void }) {
+export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
     const { statHeaders, statLastRowValues, statFilled } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
@@ -67,7 +67,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
     };
 
     return (
-        <td className={styles.cellWrap} onClick={() => setIsSelectedCell(true)}>
+        <td className={styles.cellWrap} onClick={() => !loaded && setIsSelectedCell(true)}>
             <div className={styles.cellBlock}>
                 {isSelectedCell && (
                     <Modal

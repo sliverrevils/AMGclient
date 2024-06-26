@@ -5,6 +5,38 @@
     gap: 10px;
     //border: 1px solid rgb(151, 151, 151);
 
+    .mainShooceBlock {
+        // border: 1px solid black;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        .shooceItem {
+            padding: 10px 20px;
+            outline: 1px solid green;
+            font-size: 17px;
+            cursor: pointer;
+            opacity: .6;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .selected {
+            opacity: 1;
+            outline: 2px solid green;
+            font-weight: 600;
+        }
+    }
+
+    .loadProtocolSelect {
+        align-self: center;
+        padding: 10px 20px;
+        font-size: 17px;
+        display: flex;
+        justify-content: center;
+    }
+
     .headersSettingsBtn {
         border: 2px solid rgb(207, 207, 207);
         cursor: pointer;

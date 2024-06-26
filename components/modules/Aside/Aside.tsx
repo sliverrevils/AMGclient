@@ -8,7 +8,7 @@ import Icons from "@/components/icons/Icons";
 
 export default function Aside() {
     const { mainStyle } = useSelector((state: StateReduxI) => state.app);
-    const { user } = useSelector((state: any) => state.main);
+    const { userOnDirect } = useSelector((state: StateReduxI) => state.main);
     const { accessedRoutes } = useAccessRoutes();
 
     const { logout } = useAuth();
@@ -17,35 +17,15 @@ export default function Aside() {
 
     const currentStyle = mainStyle === "row" ? stylesRow : stylesColumn;
 
-    // if (mainStyle === "column") {
-    //     return (
-    //         <aside className={currentStyle.menuWrap}>
-    //             <ul>
-    //                 {accessedRoutes
-    //                     .filter((el) => el.id !== 777)
-    //                     .map((el) => (
-    //                         <li
-    //                             key={el.id + "_btn"}
-    //                             // className={`${el.active} noselect`}
-    //                             className={`${currentStyle[`menu_${el.active}`]} noselect`}
-    //                             onClick={() => el.clickFunc()}
-    //                         >
-    //                             <span>{el.title}</span>
-    //                         </li>
-    //                     ))}
-    //                 {/* <li className={`${settingsMenu.active} noselect`} onClick={() => settingsMenu.clickFunc()}>
-    //                     {settingsMenu.title}
-    //                 </li> */}
-    //                 {/* <li onClick={logout}>Выход</li> */}
-    //             </ul>
-    //         </aside>
-    //     );
-    // }
     return (
         <aside className={currentStyle.menuWrap}>
             <ul>
                 {accessedRoutes
                     .filter((el) => el.id !== 777)
+                    .filter((el) => {
+                        if (el.name === "directive") return userOnDirect;
+                        else return true;
+                    })
                     .map((el) => (
                         <li key={el.id + "_btn"} className={`${el.active} noselect`} onClick={() => el.clickFunc()}>
                             <div className={currentStyle.menuIco}>{Icons().mainMenu[el.name]}</div>

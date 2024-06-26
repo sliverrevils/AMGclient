@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, IProtocolListItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -9,12 +9,13 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
 import Charts from "./Charts";
 import { toast } from "react-toastify";
+import useDirect from "@/hooks/useDirect";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -48,8 +49,9 @@ const memberPresenceCol = ["#B2B2B2", "#FFF545"];
 
 export default function DirectiveScreen() {
     //LS LOAD
-    const loadedHeaders = JSON.parse(localStorage.getItem("dirHeaders") || "[]") as IDirectHeader[];
-    const loadedStatLogicsMap = new Map<string, ILogicCell[]>(Object.entries(JSON.parse(localStorage.getItem("statLogics") || "{}")));
+    // const loadedHeaders = JSON.parse(localStorage.getItem("dirHeaders") || "[]") as IDirectHeader[];
+    // const loadedStatLogicsMap = new Map<string, ILogicCell[]>(Object.entries(JSON.parse(localStorage.getItem("statLogics") || "{}")));
+    const loadedStatLogicsMap = new Map<string, ILogicCell[]>();
 
     //REFS
     const usersListRef = useRef<HTMLSelectElement | null>(null);
@@ -57,6 +59,7 @@ export default function DirectiveScreen() {
     //HOOKS
     const { getLatestTable, addingFilledField, statNameById } = useTableStatistics();
     const { userByID } = useUsers();
+    const { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById } = useDirect();
 
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -103,21 +106,26 @@ export default function DirectiveScreen() {
     // console.log(initOrgItems.filter((item) => item.itemType === "office"));
 
     //STATE
-    const [headers, setHeaders] = useState<IDirectHeader[]>(loadedHeaders.length ? loadedHeaders : defaultHeaders);
+    const [mainStatus, setMainStatus] = useState<null | "new" | "archive">(isAdmin ? null : "archive");
+    const [headers, setHeaders] = useState<IDirectHeader[]>(defaultHeaders);
     const [isShowEditHeaders, setIsShowEditHeaders] = useState(false);
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
     const [members, setMembers] = useState<IDirectMembers[]>([]);
-    const [charts, setCharts] = useState<number[]>([]);
-    const [info, setInfo] = useState<IDirectInfoDoc>({
-        protocol: 1,
+    const [charts, setCharts] = useState<IChartPropListItem[]>([]);
+    const INFO_INIT = {
+        protocol: 0,
         date: new Date().getTime(),
         chairmanId: generalDirector,
         lastProtocol: 0,
         strategy: 0,
         directFP: 0,
         docs: 0,
-    });
+    };
+    const [info, setInfo] = useState<IDirectInfoDoc>(INFO_INIT);
+
+    const [protocolList, setProtocolList] = useState<IProtocolListItem[]>([]);
+    const [protocolSelectedId, setProtocolSelectedId] = useState(0);
 
     const [scrollPos, setScrollPos] = useState<number | null>(null);
     const saveScroll = () => {
@@ -131,6 +139,15 @@ export default function DirectiveScreen() {
     const [cacheStatsLogics, setCacheStstsLogic] = useState<Map<string, ILogicCell[]>>(loadedStatLogicsMap);
 
     //FUNCS
+    const clearStates = () => {
+        setHeaders([]);
+        setIsShowEditHeaders(false);
+        setTables([]);
+        setMembers([]);
+        setInfo(INFO_INIT);
+        setCharts([]);
+        setProtocolSelectedId(0);
+    };
     //members
     const onAddMember = () => {
         if (usersListRef.current === null) return;
@@ -215,18 +232,21 @@ export default function DirectiveScreen() {
         if (confirm("Сбросить все колонки до начального списка?")) {
             setHeaders(defaultHeaders);
 
-            for (let [key, value] of loadedStatLogicsMap) {
-                loadedStatLogicsMap.set(
-                    key,
-                    value.filter((log) => log.headerId.includes("baseHeaderID"))
-                );
-            }
-
             //создаем объект с мапа
-            const obj = Object.fromEntries(loadedStatLogicsMap);
+            // const obj = Object.fromEntries(loadedStatLogicsMap);
             //сохраняем объект в LS
-            localStorage.setItem("statLogics", JSON.stringify(obj));
-            setCacheStstsLogic(loadedStatLogicsMap);
+            //localStorage.setItem("statLogics", JSON.stringify(obj));
+            setCacheStstsLogic((state) => {
+                const newCache = new Map(state);
+                for (let [key, value] of newCache) {
+                    newCache.set(
+                        key,
+                        value.filter((log) => log.headerId.includes("baseHeaderID"))
+                    );
+                }
+
+                return newCache;
+            });
         }
     };
 
@@ -244,6 +264,7 @@ export default function DirectiveScreen() {
 
     const addAllOffices = () => {
         fullOrgWithdata.forEach((office, officeIDx) => {
+            setInfo({ ...INFO_INIT, protocol: protocolList.length + 1 });
             onAddTable(office);
             setMembers((state) => {
                 return [
@@ -257,6 +278,24 @@ export default function DirectiveScreen() {
             });
         });
     };
+
+    //SAVE SETTINGS ON SERVER
+    const saveSettingsOnServer = useCallback(() => {
+        console.log("SAVE SETTINGS ✅✅✅", headers);
+        saveHeaders({ headers: JSON.stringify(headers) });
+        saveLogic({ cacheStatsLogics: JSON.stringify(Object.fromEntries(cacheStatsLogics)) });
+    }, [headers, cacheStatsLogics]);
+
+    //SAVE PROTOCOL ON SERVER
+    const saveDirectOnServer = useCallback(() => {
+        saveDirect({
+            columns: JSON.stringify(headers),
+            cacheStatsLogics: JSON.stringify(Object.fromEntries(cacheStatsLogics)),
+            info: JSON.stringify(info),
+            members: JSON.stringify(members),
+            tabels: JSON.stringify(tabels),
+        });
+    }, [headers, cacheStatsLogics, info, members, tabels]);
 
     //LS SAVE
     const cacheLogic = () => {
@@ -300,7 +339,7 @@ export default function DirectiveScreen() {
             //создаем объект с мапа
             const obj = Object.fromEntries(loadedStatLogicsMap);
             //сохраняем объект в LS
-            localStorage.setItem("statLogics", JSON.stringify(obj));
+            // localStorage.setItem("statLogics", JSON.stringify(obj));
 
             // console.log("CACHE", Object.entries(obj));
             setCacheStstsLogic(loadedStatLogicsMap);
@@ -312,19 +351,30 @@ export default function DirectiveScreen() {
     const removeHeaderFromCache = (headerId: string) => {
         if (headerId.includes("baseHeaderID")) return; //не удаляем базавые
 
-        for (let [key, value] of loadedStatLogicsMap) {
-            loadedStatLogicsMap.set(
-                key,
-                value.filter((log) => log.headerId !== headerId)
-            );
-        }
+        // for (let [key, value] of loadedStatLogicsMap) {
+        //     loadedStatLogicsMap.set(
+        //         key,
+        //         value.filter((log) => log.headerId !== headerId)
+        //     );
+        // }
 
-        //console.log(loadedStatLogicsMap);
-        setCacheStstsLogic(loadedStatLogicsMap);
+        //setCacheStstsLogic(loadedStatLogicsMap);
+
+        setCacheStstsLogic((state) => {
+            const newCache = new Map(state);
+            for (let [key, value] of newCache) {
+                newCache.set(
+                    key,
+                    value.filter((log) => log.headerId !== headerId)
+                );
+            }
+            return newCache;
+        });
+
         //создаем объект с мапа
-        const obj = Object.fromEntries(loadedStatLogicsMap);
+        // const obj = Object.fromEntries(loadedStatLogicsMap);
         //сохраняем объект в LS
-        localStorage.setItem("statLogics", JSON.stringify(obj));
+        //localStorage.setItem("statLogics", JSON.stringify(obj));
     };
 
     //TABLE HTML
@@ -337,11 +387,12 @@ export default function DirectiveScreen() {
                 </tr>
             </thead>,
             tabels.map((table) => {
-                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} />;
+                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} />;
             }),
         ];
     }, [tabels, headers, charts]);
 
+    // HEADERS EDIT BLOCK -- HTML
     const headersEditBlock = useMemo(() => {
         return (
             <div className={styles.headersEditBlock}>
@@ -475,34 +526,34 @@ export default function DirectiveScreen() {
                         </div>
                         <div className={styles.values}>
                             <div className={styles.value}>
-                                <input type="number" value={info.protocol} onChange={(event) => setInfo((state) => ({ ...state, protocol: Number(event.target.value) }))} />
+                                <input type="number" value={info.protocol} onChange={(event) => setInfo((state) => ({ ...state, protocol: Number(event.target.value) }))} disabled />
                             </div>
                             <div className={styles.value}>
                                 {/* {info.date} */}
 
-                                <input type="date" value={timeNumberToString(info.date)} onChange={(event) => setInfo((state) => ({ ...state, date: timeStrToNumber(event.target.value) }))} />
+                                <input type="date" value={timeNumberToString(info.date)} onChange={(event) => setInfo((state) => ({ ...state, date: timeStrToNumber(event.target.value) }))} disabled={mainStatus === "archive"} />
                             </div>
                             <div className={styles.value}>{userByID(info.chairmanId)?.name}</div>
                             <div className={styles.value}>
-                                <select value={info.lastProtocol} onChange={(event) => setInfo((state) => ({ ...state, lastProtocol: Number(event.target.value) }))}>
+                                <select value={info.lastProtocol} onChange={(event) => setInfo((state) => ({ ...state, lastProtocol: Number(event.target.value) }))} disabled={mainStatus === "archive"}>
                                     <option value={0}>нет</option>
                                     <option value={1}>есть</option>
                                 </select>
                             </div>
                             <div className={styles.value}>
-                                <select value={info.strategy} onChange={(event) => setInfo((state) => ({ ...state, strategy: Number(event.target.value) }))}>
+                                <select value={info.strategy} onChange={(event) => setInfo((state) => ({ ...state, strategy: Number(event.target.value) }))} disabled={mainStatus === "archive"}>
                                     <option value={0}>нет</option>
                                     <option value={1}>есть</option>
                                 </select>
                             </div>
                             <div className={styles.value}>
-                                <select value={info.directFP} onChange={(event) => setInfo((state) => ({ ...state, directFP: Number(event.target.value) }))}>
+                                <select value={info.directFP} onChange={(event) => setInfo((state) => ({ ...state, directFP: Number(event.target.value) }))} disabled={mainStatus === "archive"}>
                                     <option value={0}>нет</option>
                                     <option value={1}>есть</option>
                                 </select>
                             </div>
                             <div className={styles.value}>
-                                <select value={info.docs} onChange={(event) => setInfo((state) => ({ ...state, docs: Number(event.target.value) }))}>
+                                <select value={info.docs} onChange={(event) => setInfo((state) => ({ ...state, docs: Number(event.target.value) }))} disabled={mainStatus === "archive"}>
                                     <option value={0}>нет</option>
                                     <option value={1}>есть</option>
                                 </select>
@@ -526,6 +577,7 @@ export default function DirectiveScreen() {
                                         <td style={{ background: memberPresenceCol[member.presence] }}>{userByID(member.userId)?.name}</td>
                                         <td>
                                             <select
+                                                disabled={mainStatus === "archive"}
                                                 value={Number(member.presence)}
                                                 onChange={(event) =>
                                                     setMembers((state) => {
@@ -541,32 +593,70 @@ export default function DirectiveScreen() {
                                         </td>
                                     </tr>
                                 ))}
-                                <tr>
-                                    <td style={{ textAlign: "center", cursor: "pointer", display: "flex", justifyContent: "space-between" }}>
-                                        <UserPlusIcon width={24} onClick={onAddMember} />
-                                        <UserMinusIcon width={24} onClick={onDelMember} />
-                                    </td>
-                                    <td colSpan={2} style={{ textAlign: "center" }}>
-                                        <select ref={usersListRef}>
-                                            <option value={0} style={{ textAlign: "center" }}>
-                                                {" "}
-                                                выбрать участника
-                                            </option>
-                                            {users.map((user) => (
-                                                <option key={user.id + "_usersList"} value={user.id}>
-                                                    {user.name}
+                                {mainStatus === "new" && (
+                                    <tr>
+                                        <td style={{ textAlign: "center", cursor: "pointer", display: "flex", justifyContent: "space-between" }}>
+                                            <UserPlusIcon width={24} onClick={onAddMember} />
+                                            <UserMinusIcon width={24} onClick={onDelMember} />
+                                        </td>
+                                        <td colSpan={2} style={{ textAlign: "center" }}>
+                                            <select ref={usersListRef}>
+                                                <option value={0} style={{ textAlign: "center" }}>
+                                                    {" "}
+                                                    выбрать участника
                                                 </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                </tr>
+                                                {users.map((user) => (
+                                                    <option key={user.id + "_usersList"} value={user.id}>
+                                                        {user.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </div>
             );
         }
-    }, [members, info]);
+    }, [members, info, mainStatus]);
+
+    //PROTOCOL LIST SELECT-HTML
+    const protocolListSelectHtml = useMemo(() => {
+        return (
+            <select className={styles.loadProtocolSelect} value={protocolSelectedId} onChange={(event) => setProtocolSelectedId(Number(event.target.value))}>
+                <option value={0}> выбор загружаемого протокола</option>
+                {protocolList
+                    .filter((item) => (isAdmin ? true : item.members.includes(user.userId)))
+                    .map((protocolItem) => (
+                        <option key={protocolItem.createdAt + "_protocolListItem"} value={protocolItem.id}>
+                            ID:{protocolItem.id}, дата:{new Date(protocolItem.createdAt).toLocaleDateString()}
+                        </option>
+                    ))}
+            </select>
+        );
+    }, [protocolList, protocolSelectedId]);
+
+    //MAIN STATUS HTML
+    const mainStatusShooceHtml = useMemo(() => {
+        return (
+            <div className={styles.mainShooceBlock}>
+                {isAdmin && (
+                    <div className={`${styles.shooceItem} ${mainStatus === "new" ? styles.selected : ""} noselect`} onClick={() => setMainStatus((state) => (state === "new" ? null : "new"))}>
+                        <div>Создать таблицу по текущим данным</div>
+                        <BuildingOffice2Icon width={25} />
+                    </div>
+                )}
+                <div className={`${styles.shooceItem} ${mainStatus === "archive" ? styles.selected : ""} noselect`} onClick={() => setMainStatus((state) => (state === "archive" ? null : "archive"))}>
+                    <div>Загрузить из архива</div>
+                    <CloudArrowDownIcon width={25} />
+                </div>
+            </div>
+        );
+    }, [mainStatus]);
+
+    //EFFECTS
 
     //SCROLL LOOK
     useEffect(() => {
@@ -582,14 +672,39 @@ export default function DirectiveScreen() {
         }
     }, [scrollPos]);
 
-    //LS
-    //SAVE HEADERS
+    //ЗАГРУЖАЕМ ПО ВЫБОРУ ПРОТОКОЛ
     useEffect(() => {
-        if (headers.length) {
-            console.log(headers);
-            localStorage.setItem("dirHeaders", JSON.stringify(headers));
+        if (protocolSelectedId) {
+            getProtocolById({ id: protocolSelectedId, setCacheStstsLogic, setHeaders, setInfo, setMembers, setTables });
         }
-    }, [headers]);
+    }, [protocolSelectedId]);
+
+    //ON MOUNT⭐
+    //сохраняем на сервере
+
+    useEffect(() => {
+        if (mainStatus !== null) {
+            {
+                clearStates();
+                // process.nextTick(() => {
+                if (mainStatus === "new") {
+                    Promise.all([getDirectSettings({ setHeaders, setCacheStstsLogic, defaultHeaders }), getProtocolList({ setProtocolList })]).then(() => {
+                        addAllOffices();
+                    });
+                    // getDirectSettings({ setHeaders, setCacheStstsLogic, defaultHeaders }).then(() => addAllOffices()); // начальная загрузка не реализована на уровне хука
+                    // getProtocolList({ setProtocolList });
+                }
+
+                if (mainStatus === "archive") {
+                    getProtocolList({ setProtocolList });
+                }
+                // });
+            }
+        } else {
+            clearStates();
+            getProtocolList({ setProtocolList });
+        }
+    }, [mainStatus]);
 
     return (
         <div className={styles.directWrap}>
@@ -605,26 +720,57 @@ export default function DirectiveScreen() {
                     <button onClick={cacheLogic}>save cache</button>
                     <button onClick={() => console.log(cacheStatsLogics)}>show</button>
                     <button onClick={() => removeHeaderFromCache("o5yIJ6I6P3uJ8ggpZbNx5")}>remove</button>
+                    <hr />
+                    <button onClick={() => console.log(tabels)}>show tabels</button>
+                    <button onClick={() => console.log(protocolList)}>show protocols list</button>
+                    <hr />
+                    <button onClick={() => console.log(members)}>members show</button>
                 </div>
             )}
+
             {topInfoBlock}
             <Mission />
 
+            {mainStatusShooceHtml}
+
+            {mainStatus === "archive" && protocolListSelectHtml}
+
             {headerModal}
 
-            {!isShowEditHeaders && (
-                <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
-                    <div>Настройки шапки</div>
-                    <Cog6ToothIcon width={20} />
-                </div>
-            )}
-            {isShowEditHeaders && headersEditBlock}
+            {mainStatus === "new" && (
+                <>
+                    {!isShowEditHeaders && (
+                        <div className={styles.headersSettingsBtn} onClick={() => setIsShowEditHeaders((state) => !state)}>
+                            <div>Настройки шапки</div>
+                            <Cog6ToothIcon width={20} />
+                        </div>
+                    )}
+                    <div className={styles.headersSettingsBtn} onClick={saveSettingsOnServer}>
+                        <div>Сохранить изменения колонок и ячеек</div>
+                        <ArrowDownCircleIcon width={20} />
+                    </div>
+                    <div className={styles.headersSettingsBtn} onClick={saveDirectOnServer} style={{ background: "lightgreen" }}>
+                        <div>Сохранить протокол</div>
+                        <ArrowDownCircleIcon width={20} />
+                    </div>
+                    {isShowEditHeaders && headersEditBlock}
 
-            {!!!tabels.length && (
-                <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>
-                    <span>Добавить таблицы орг-схемы</span>
-                    <BuildingOffice2Icon width={25} />
-                </div>
+                    {!!!tabels.length && (
+                        <div className={styles.addOrgOfficesBtn} onClick={addAllOffices}>
+                            <span>Создать таблицу по текущим данным</span>
+                            <BuildingOffice2Icon width={25} />
+                        </div>
+                    )}
+                </>
+            )}
+
+            {mainStatus == "archive" && isAdmin && !!protocolSelectedId && (
+                <>
+                    <div className={styles.headersSettingsBtn} onClick={() => deleteProtocolById({ id: protocolSelectedId, afterFunc: clearStates }).then(() => setMainStatus(null))} style={{ background: "tomato", color: "white" }}>
+                        <div>Удалить протокол</div>
+                        <TrashIcon width={20} />
+                    </div>
+                </>
             )}
 
             <table className={styles.mainTable}>{!!tabels.length && mainTable}</table>

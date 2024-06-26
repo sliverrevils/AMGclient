@@ -385,6 +385,14 @@ export interface UserPostsI {
     workerOnSections: SectionI[];
 }
 
+export interface IChartPropListItem {
+    statId: number;
+    name: string;
+    costumsLines: CostumLineI[];
+    dates: DatesI[];
+    reverseTrend: boolean;
+}
+
 export interface RaportTableInfoI {
     lastUpdate?: number;
     statFilled: "full" | "notFull" | "clean";
@@ -457,8 +465,8 @@ export interface IDirectHeader {
     color: string;
 }
 
-export interface ITableStat {
-    id: number;
+export interface ITableStat extends TableStatisticListItemI {
+    //id: number;
     logicStrArr: ILogicCell[];
 }
 
@@ -529,4 +537,10 @@ export interface IDirectInfoDoc {
     strategy: number;
     directFP: number;
     docs: number;
+}
+
+export interface IProtocolListItem {
+    id: number;
+    createdAt: string;
+    members: number[];
 }
