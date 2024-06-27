@@ -49,6 +49,12 @@
         gap: 5px;
 
         &>:nth-child(2) {
+            background: rgb(255, 255, 255);
+            color: rgb(95, 95, 95);
+            border: 2px solid rgb(209, 209, 209);
+        }
+
+        &>:nth-child(3) {
             background: rgb(196, 196, 196);
             color: white;
             border: 0;

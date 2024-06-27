@@ -9,12 +9,14 @@ import { clearStatName } from "@/utils/funcs";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
-import { ChatBubbleBottomCenterIcon, CheckCircleIcon, DocumentPlusIcon, NoSymbolIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterIcon, CheckCircleIcon, DocumentPlusIcon, EllipsisHorizontalIcon, NoSymbolIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import { nanoid } from "@reduxjs/toolkit";
+import BlankCell from "./BlankCell";
 
 export default function DirectTable({
     table,
@@ -70,42 +72,45 @@ export default function DirectTable({
     //HOOKS
     const { tableById, addingFilledField, statNameById } = useTableStatistics();
 
-    const addStatToTable = useCallback(
-        ({ stat }: { stat: TableStatisticListItemI }) => {
-            //const stat = allItemStats.find((stat) => stat.id === statId);
-            const currentStatCelarName = clearStatName(statNameById(stat.id));
-            setTables((state) => {
-                return state.map((curTable) => {
-                    if (curTable.id !== table.id) return curTable;
+    const addStatToTable = ({ stat }: { stat: TableStatisticListItemI }) => {
+        //const stat = allItemStats.find((stat) => stat.id === statId);
+        const currentStatCelarName = clearStatName(statNameById(stat.id));
+        setTables((state) => {
+            return state.map((curTable, tableIdx) => {
+                if (curTable.id !== table.id) return curTable;
 
-                    if (curTable.stats.some((st) => st.id === stat.id)) {
-                        toast.warning(`Эта статистика уже добавлена !`);
-                        return curTable;
-                    }
+                if (curTable.stats.some((st) => st.id === stat.id)) {
+                    toast.warning(`Эта статистика уже добавлена !`);
+                    return curTable;
+                }
 
-                    const cache = cacheStatsLogics.get(currentStatCelarName)?.reduce((acc, cell) => ({ ...acc, [cell.headerId]: cell.logicStr }), {});
-                    if (cache) {
-                        console.log("CACHE", cache);
-                    }
+                const cache = cacheStatsLogics.get(currentStatCelarName)?.reduce((acc, cell) => ({ ...acc, [cell.headerId]: cell.logicStr }), {});
+                if (cache) {
+                    console.log("CACHE", cache);
+                }
+                if (!tableIdx) {
+                    console.log(table);
+                }
 
-                    return {
-                        ...table,
-                        stats: [
-                            ...curTable.stats,
-                            {
-                                ...stat,
-                                logicStrArr: headers.map((header) => ({
-                                    headerId: header.id,
-                                    logicStr: cache ? cache[header.id] || "" : "",
-                                })), //создаем массив строк с логикой колонок
-                            },
-                        ],
-                    };
-                });
+                return {
+                    ...curTable,
+
+                    stats: [
+                        ...curTable.stats,
+                        {
+                            ...stat,
+                            type: "stat",
+
+                            logicStrArr: headers.map((header) => ({
+                                headerId: header.id,
+                                logicStr: cache ? cache[header.id] || "" : "",
+                            })), //создаем массив строк с логикой колонок
+                        },
+                    ],
+                };
             });
-        },
-        [setTables, headers, cacheStatsLogics]
-    );
+        });
+    };
 
     const onChangeLogic = (statId: number, logicHeaderId: string, value: string) => {
         setTables((state) => {
@@ -119,6 +124,7 @@ export default function DirectTable({
 
                         return {
                             ...stat,
+                            type: "stat",
                             logicStrArr: stat.logicStrArr.map((curLogic) => {
                                 if (curLogic.headerId !== logicHeaderId) return curLogic;
 
@@ -194,6 +200,26 @@ export default function DirectTable({
         [about]
     );
 
+    const addBlankRow = () => {
+        setTables((state) =>
+            state.map((curTable) => {
+                if (curTable.id !== table.id) return curTable;
+                return {
+                    ...curTable,
+                    blankRows: [
+                        ...curTable.blankRows,
+                        {
+                            id: nanoid(),
+                            type: "blank",
+
+                            values: new Array(headers.length).fill(""),
+                        },
+                    ],
+                };
+            })
+        );
+    };
+
     //МЕНЮ ДОБАВЛЕНИЯ СТАТИСТИК
     const statList = useMemo(() => {
         return (
@@ -214,6 +240,41 @@ export default function DirectTable({
             </div>
         );
     }, [table.stats, statFilter]);
+
+    const onChangeBlank = (rowId: string, idx: number, value: string) => {
+        setTables((state) =>
+            state.map((curTable) => {
+                if (curTable.id !== table.id) return curTable;
+
+                return {
+                    ...curTable,
+                    blankRows: curTable.blankRows.map((row) => {
+                        if (row.id !== rowId) return row;
+
+                        return {
+                            ...row,
+                            values: row.values.map((curValue, curIdx) => {
+                                if (curIdx !== idx) return curValue;
+
+                                return value;
+                            }),
+                        };
+                    }),
+                };
+            })
+        );
+    };
+
+    const onDelBlankRow = (id: string) =>
+        setTables((state) =>
+            state.map((curTable) => {
+                if (curTable.id !== table.id) return curTable;
+                return {
+                    ...curTable,
+                    blankRows: curTable.blankRows.filter((curBlank) => curBlank.id !== id),
+                };
+            })
+        );
 
     return [
         <thead>
@@ -241,6 +302,17 @@ export default function DirectTable({
                     return <DirectStat key={stat.id + "statKey"} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
                 })
             }
+            {table.blankRows?.map((blankRow) => {
+                return (
+                    <tr key={Math.random()}>
+                        {blankRow.values.map((value, idx) => {
+                            const onChange = onChangeBlank.bind(null, blankRow.id, idx);
+                            const onDelRow = onDelBlankRow.bind(null, blankRow.id);
+                            return <BlankCell value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
+                        })}
+                    </tr>
+                );
+            })}
 
             {/* ДОБАВЛЕНИЕ СТАТИСТИКИ */}
             <tr>
@@ -251,6 +323,10 @@ export default function DirectTable({
                                 <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
                                     <span>Добавить статистику</span>
                                     <DocumentPlusIcon width={20} />
+                                </div>
+                                <div className={styles.addStatBtn} onClick={addBlankRow}>
+                                    <span>Добавить пустой ряд</span>
+                                    <EllipsisHorizontalIcon width={20} />
                                 </div>
                                 {!about && !isAddDescription && (
                                     <div className={styles.addStatBtn} onClick={() => setIsAddDescription(true)}>

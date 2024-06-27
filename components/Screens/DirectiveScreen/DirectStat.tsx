@@ -78,7 +78,7 @@ export default function DirectStat({
                                     onMouseLeave={() => !loaded && setStatToView(null)}
                                 >
                                     <div className={styles.name}>
-                                        <span>{clearStatName(stat.name)}</span>
+                                        <span id="cell-value">{clearStatName(stat.name)}</span>
                                     </div>
                                     <div className={styles.period}>
                                         <div className={styles.periodStr}>{stat.periodStr}</div>

@@ -103,7 +103,9 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                         </div>
                     </Modal>
                 )}
-                <div className={styles.cellResult}>{calcCell(logicStr)}</div>
+                <div className={styles.cellResult} id="cell-value">
+                    {calcCell(logicStr)}
+                </div>
             </div>
         </td>
     );

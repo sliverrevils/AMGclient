@@ -468,6 +468,13 @@ export interface IDirectHeader {
 export interface ITableStat extends TableStatisticListItemI {
     //id: number;
     logicStrArr: ILogicCell[];
+    type: "stat";
+}
+
+export interface IBlankRow {
+    id: string;
+    type: "blank";
+    values: string[];
 }
 
 export interface IDirectTable {
@@ -476,6 +483,7 @@ export interface IDirectTable {
     officeID: number;
     stats: ITableStat[];
     description: string;
+    blankRows: IBlankRow[];
     // stats: StatItemLogic[];
 }
 

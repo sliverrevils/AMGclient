@@ -508,3 +508,16 @@
     box-shadow: 3px 3px 3px rgb(128, 128, 128);
     color: white;
 }
+
+.exelBtn {
+    cursor: pointer;
+    color: white;
+    background: #2E9132;
+    padding: 5px 10px;
+    border-radius: 5px;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 3px 3px 3px rgb(128, 128, 128);
+}

@@ -9,7 +9,7 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon, DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
@@ -261,6 +261,7 @@ export default function DirectiveScreen() {
                 id: nanoid(),
                 officeID: item.id,
                 description: "",
+                blankRows: [],
                 stats: [],
             },
         ]);
@@ -710,6 +711,38 @@ export default function DirectiveScreen() {
         }
     }, [mainStatus]);
 
+    //EXCEL SAVE
+    interface ITableParcedRow {
+        type: string;
+        cells: string[];
+    }
+    const onSaveExcel = () => {
+        // Получите ссылку на вашу таблицу
+        const table = document.querySelector("#mainTable");
+        if (!table) return;
+
+        table.querySelectorAll("th");
+        // console.log(table.children);
+        const parsedArr: ITableParcedRow[] = [];
+        for (let child of table.children) {
+            if (child.nodeName === "THEAD") {
+                const row = child.querySelector("tr");
+                console.log(row);
+            }
+            if (child.nodeName === "TBODY") {
+                const rows = [...child.querySelectorAll("tr")];
+                rows.forEach((row) => {
+                    parsedArr.push({
+                        type: "row",
+                        cells: [...row.querySelectorAll("#cell-value")].map((el) => el.innerHTML),
+                    });
+                });
+            }
+        }
+
+        // console.log(parsedArr);
+    };
+
     return (
         <div className={styles.directWrap}>
             {process.env.NODE_ENV === "development" && (
@@ -756,7 +789,9 @@ export default function DirectiveScreen() {
                 </>
             )}
 
-            <table className={styles.mainTable}>{!!tabels.length && mainTable}</table>
+            <table className={styles.mainTable} id="mainTable">
+                {!!tabels.length && mainTable}
+            </table>
             {scrollPos !== null && (
                 <div className={styles.scrollBtn} onClick={goToSavedScroll}>
                     <BarsArrowUpIcon width={30} />
@@ -767,7 +802,7 @@ export default function DirectiveScreen() {
             <Charts charts={charts} />
             {mainStatus == "archive" && isAdmin && !!protocolSelectedId && (
                 <>
-                    <div className={styles.headersSettingsBtn} onClick={() => deleteProtocolById({ id: protocolSelectedId, afterFunc: clearStates }).then(() => setMainStatus(null))} style={{ background: "tomato", color: "white" }}>
+                    <div className={styles.headersSettingsBtn} onClick={() => confirm("Удалить протокол из архива ?") && deleteProtocolById({ id: protocolSelectedId, afterFunc: clearStates }).then(() => setMainStatus(null))} style={{ background: "tomato", color: "white" }}>
                         <div>Удалить протокол</div>
                         <TrashIcon width={20} />
                     </div>
@@ -777,6 +812,14 @@ export default function DirectiveScreen() {
                 <div className={styles.headersSettingsBtn} onClick={saveDirectOnServer} style={{ background: "#2196F3", color: "white", position: "fixed", right: 10, bottom: 10 }}>
                     <div>Сохранить протокол</div>
                     <CloudArrowUpIcon width={20} />
+                </div>
+            )}
+            {tabels.some((table) => table.stats.length) && (
+                <div className={styles.exelBtn} onClick={onSaveExcel}>
+                    <span>
+                        Cохранить в <b>Excel</b>
+                    </span>
+                    <DocumentArrowDownIcon width={20} />
                 </div>
             )}
         </div>
