@@ -19,7 +19,7 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn }: 
             )} */}
                 {!loaded ? (
                     <>
-                        <textarea value={input} onChange={(event) => setInput(event.target.value)} onBlur={() => onChange(input)} />
+                        <textarea value={input} onChange={(event) => setInput(event.target.value)} onBlur={() => onChange(input)} id="cell-value" />
                         {first && (
                             <div onClick={() => delRowFn()} className={styles.delBtn}>
                                 <XCircleIcon width={30} />
@@ -27,7 +27,9 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn }: 
                         )}
                     </>
                 ) : (
-                    <div className={styles.loaded}>{value}</div>
+                    <div className={styles.loaded} id="cell-value">
+                        {value}
+                    </div>
                 )}
 
                 {/* <div>{value}</div> */}

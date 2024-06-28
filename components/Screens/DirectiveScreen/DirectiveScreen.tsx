@@ -16,6 +16,7 @@ import Mission from "@/components/elements/Mission/Mission";
 import Charts from "./Charts";
 import { toast } from "react-toastify";
 import useDirect from "@/hooks/useDirect";
+import * as ExelJs from "exceljs";
 
 const defaultHeaders: IDirectHeader[] = [
     {
@@ -717,7 +718,38 @@ export default function DirectiveScreen() {
         cells: string[];
     }
     const onSaveExcel = () => {
-        // Получите ссылку на вашу таблицу
+        const workbook = new ExelJs.Workbook();
+        const sheet = workbook.addWorksheet(`Директива РС `);
+        const fileName = `Протокол № ${info.protocol} 📆${new Date(info.date).toLocaleDateString()}`;
+
+        // //border
+        // sheet.getRow(1).border = {
+        //     top: { style: "medium", color: { argb: "FF8056" } },
+        //     left: { style: "medium", color: { argb: "FF8056" } },
+        //     right: { style: "medium", color: { argb: "FF8056" } },
+        //     bottom: { style: "medium", color: { argb: "FF8056" } },
+        // };
+
+        // //fill
+        // sheet.getRow(1).fill = {
+        //     type: "pattern",
+        //     pattern: "solid",
+        //     bgColor: { argb: "FF8056" },
+        // };
+
+        // //font
+        // sheet.getRow(1).font = {
+        //     name: "Arial",
+        //     family: 4,
+        //     size: 11,
+        //     bold: false,
+        //     color: { argb: "FFFFFF" },
+        // };
+
+        // PARSE TABLE ---------------
+
+        //headers
+
         const table = document.querySelector("#mainTable");
         if (!table) return;
 
@@ -727,20 +759,129 @@ export default function DirectiveScreen() {
         for (let child of table.children) {
             if (child.nodeName === "THEAD") {
                 const row = child.querySelector("tr");
-                console.log(row);
+                //console.log(row);
+                const cells = [...row!.querySelectorAll("#head")].map((el) => el.innerHTML);
+                parsedArr.push({
+                    type: "head",
+                    cells,
+                });
+                if (!sheet.columns?.length) {
+                    sheet.columns = cells.map((value, idx) => ({
+                        header: value,
+                        width: value.length + 10,
+
+                        key: idx + "_column",
+                    }));
+                    const curRow = sheet.getRow(1);
+                    curRow.fill = {
+                        type: "pattern",
+                        pattern: "darkVertical",
+                        fgColor: { argb: "3DA041" },
+                    };
+                    curRow.font = {
+                        name: "Arial",
+                        family: 4,
+                        size: 11,
+                        bold: true,
+                        color: { argb: "000000" },
+                    };
+                    curRow.height = 35;
+                } else {
+                    const curRow = sheet.addRow(cells.reduce((acc, value, idx) => ({ ...acc, [idx + "_column"]: value }), {}));
+                    curRow.alignment = { vertical: "middle", horizontal: "center" };
+                    curRow.fill = {
+                        type: "pattern",
+                        pattern: "darkVertical",
+                        fgColor: { argb: "3DA041" },
+                    };
+                    curRow.font = {
+                        name: "Arial",
+                        family: 4,
+                        size: 11,
+                        bold: true,
+                        color: { argb: "000000" },
+                    };
+                    curRow.height = 35;
+                }
             }
             if (child.nodeName === "TBODY") {
                 const rows = [...child.querySelectorAll("tr")];
                 rows.forEach((row) => {
+                    const cells = [...row.querySelectorAll("#cell-value")].map((el) => el.innerHTML);
                     parsedArr.push({
                         type: "row",
-                        cells: [...row.querySelectorAll("#cell-value")].map((el) => el.innerHTML),
+                        cells,
                     });
+
+                    const curRow = sheet.addRow(cells.reduce((acc, value, idx) => ({ ...acc, [idx + "_column"]: value }), {}));
+                    curRow.alignment = { vertical: "middle", horizontal: "center" };
+                    curRow.height = 35;
                 });
             }
         }
 
-        // console.log(parsedArr);
+        // Установка свойства wrapText для каждой ячейки на true
+        sheet.eachRow((row) => {
+            row.eachCell((cell) => {
+                cell.alignment = {
+                    wrapText: true,
+                    horizontal: "centerContinuous",
+                    vertical: "middle",
+                };
+            });
+        });
+
+        console.log(parsedArr.filter((row) => !!row.cells.length));
+        //--------------- PARSE TABLE
+
+        //IMG-----------------
+        const width = 700;
+        const height = 370;
+        const canvasArr = [...document.querySelectorAll("canvas")];
+        canvasArr.forEach((canvas, idx) => {
+            // const ctx = canvas.getContext("2d");
+
+            // // Получите данные изображения с помощью getImageData
+            // const imgData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+            // const data = imgData.data;
+
+            // // Пройдитесь по данным пикселей и установите неполностью непрозрачные пиксели в белый цвет
+            // for (let i = 0; i < data.length; i += 4) {
+            //     if (data[i + 3] < 255) {
+            //         data[i] = 255; // Красный
+            //         data[i + 1] = 255; // Зеленый
+            //         data[i + 2] = 255; // Синий
+            //         data[i + 3] = 255; // Альфа-канал (непрозрачность)
+            //     }
+            // }
+
+            // // Поместите обработанные данные обратно на канвас
+            // ctx!.putImageData(imgData, 0, 0);
+            sheet.addImage(
+                workbook.addImage({
+                    base64: canvas.toDataURL("image/jpg", 1),
+                    extension: "jpeg",
+                }),
+                {
+                    tl: { col: idx % 2 ? 3 : 0, row: parsedArr.length + 19 * (Math.ceil((idx + 1) / 2) - 1) },
+                    ext: { width, height },
+                }
+            );
+        });
+        //------------------IMG
+
+        workbook.xlsx.writeBuffer().then((data) => {
+            const blob = new Blob([data], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
+            });
+            const url = window.URL.createObjectURL(blob);
+            //console.log("URL", url);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName + ".xlsx";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
     };
 
     return (
@@ -814,14 +955,17 @@ export default function DirectiveScreen() {
                     <CloudArrowUpIcon width={20} />
                 </div>
             )}
-            {tabels.some((table) => table.stats.length) && (
-                <div className={styles.exelBtn} onClick={onSaveExcel}>
-                    <span>
-                        Cохранить в <b>Excel</b>
-                    </span>
-                    <DocumentArrowDownIcon width={20} />
-                </div>
-            )}
+            {
+                //tabels.some((table) => table.stats.length)
+                true && (
+                    <div className={styles.exelBtn} onClick={onSaveExcel}>
+                        <span>
+                            Cохранить в <b>Excel</b>
+                        </span>
+                        <DocumentArrowDownIcon width={20} />
+                    </div>
+                )
+            }
         </div>
     );
 }

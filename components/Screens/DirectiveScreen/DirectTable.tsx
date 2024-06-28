@@ -283,7 +283,7 @@ export default function DirectTable({
                     // ХЭДЕРЫ ТАБЛИЦЫ
                     headers.map((header, headerIdx) => (
                         <th key={header.id + "_head" + headerIdx} style={{ background: header.color }}>
-                            <span>{!headerIdx ? office.name : header.title}</span>
+                            <span id="head">{!headerIdx ? office.name : header.title}</span>
                         </th>
                     ))
                 }

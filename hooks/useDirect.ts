@@ -13,7 +13,7 @@ export default function useDirect() {
         try {
             const res: any = await axiosClient.get(`direct/settings`);
             dispatch(setLoadingRedux(false));
-            console.log("⭐⭐⭐SETTINGS RES", res.data);
+            // console.log("⭐⭐⭐SETTINGS RES", res.data);
             const headersLoaded = JSON.parse(res.data.columns || "[]");
             const cacheStatsLogicsLoaded = new Map<string, ILogicCell[]>(Object.entries(JSON.parse(res.data.cacheStatsLogics || "{}")));
             setHeaders(headersLoaded.length ? headersLoaded : defaultHeaders);
@@ -31,7 +31,7 @@ export default function useDirect() {
             const res = await axiosClient.get(`direct/dir-list`);
             dispatch(setLoadingRedux(false));
 
-            console.log("📃 LIST RES", res.data);
+            //console.log("📃 LIST RES", res.data);
             if (res.data) {
                 setProtocolList(res.data);
             }
@@ -47,7 +47,7 @@ export default function useDirect() {
             const res = await axiosClient.get(`direct/dir-by-id/${id}`);
             dispatch(setLoadingRedux(false));
 
-            console.log("➡️ PROTOCOL BY ID", res.data);
+            //console.log("➡️ PROTOCOL BY ID", res.data);
             if (res.data) {
                 const { cacheStatsLogics, columns, info, members, tabels } = res.data;
                 const headersLoaded = JSON.parse(columns || "[]");
@@ -91,7 +91,7 @@ export default function useDirect() {
                 headers,
             });
             dispatch(setLoadingRedux(false));
-            console.log("😲HEADERS RES", res.data);
+            // console.log("😲HEADERS RES", res.data);
         } catch (error) {
             dispatch(setLoadingRedux(false));
             axiosError(error);
@@ -105,7 +105,7 @@ export default function useDirect() {
                 cacheStatsLogics,
             });
             dispatch(setLoadingRedux(false));
-            console.log("⚙️LOGIC RES", res.data);
+            // console.log("⚙️LOGIC RES", res.data);
         } catch (error) {
             dispatch(setLoadingRedux(false));
             axiosError(error);
@@ -125,7 +125,7 @@ export default function useDirect() {
             });
             dispatch(setLoadingRedux(false));
             toast.success(res.data.message);
-            console.log("✅ SAVE DIR RES", res.data);
+            // console.log("✅ SAVE DIR RES", res.data);
         } catch (error) {
             dispatch(setLoadingRedux(false));
             axiosError(error);
