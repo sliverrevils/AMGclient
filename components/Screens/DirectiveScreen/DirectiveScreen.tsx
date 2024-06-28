@@ -718,9 +718,9 @@ export default function DirectiveScreen() {
         cells: string[];
     }
     const onSaveExcel = () => {
-        const workbook = new ExelJs.Workbook();
-        const sheet = workbook.addWorksheet(`Директива РС `);
         const fileName = `Протокол № ${info.protocol} 📆${new Date(info.date).toLocaleDateString()}`;
+        const workbook = new ExelJs.Workbook();
+        const sheet = workbook.addWorksheet(fileName);
 
         // //border
         // sheet.getRow(1).border = {
@@ -955,17 +955,14 @@ export default function DirectiveScreen() {
                     <CloudArrowUpIcon width={20} />
                 </div>
             )}
-            {
-                //tabels.some((table) => table.stats.length)
-                true && (
-                    <div className={styles.exelBtn} onClick={onSaveExcel}>
-                        <span>
-                            Cохранить в <b>Excel</b>
-                        </span>
-                        <DocumentArrowDownIcon width={20} />
-                    </div>
-                )
-            }
+            {tabels.some((table) => table.stats.length) && (
+                <div className={styles.exelBtn} onClick={onSaveExcel}>
+                    <span>
+                        Cохранить в <b>Excel</b>
+                    </span>
+                    <DocumentArrowDownIcon width={20} />
+                </div>
+            )}
         </div>
     );
 }
