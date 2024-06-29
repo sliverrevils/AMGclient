@@ -36,7 +36,7 @@ export default function AuthPage() {
             <Head>
                 <title>Авторизация</title>
             </Head>
-            <h4>Auth {process.env.NEXT_PUBLIC_SERVER_URL}</h4>
+            <h4>{process.env.NEXT_PUBLIC_SERVER_URL}</h4>
             <AuthLayout>
                 <div className={styles.wrapper}>
                     <Logo loading={loading} />

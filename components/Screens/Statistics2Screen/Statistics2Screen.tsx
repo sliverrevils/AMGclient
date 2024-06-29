@@ -13,6 +13,7 @@ import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import FilterStat from "./FilterPanel/FilterStat";
 import Modal from "@/components/elements/Modal/Modal";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export default function Statistics2Screen() {
     const { param } = useSelector((state: StateReduxI) => state.content);
@@ -249,6 +250,7 @@ export default function Statistics2Screen() {
                     <div className={styles.shooseStatBlock}>
                         <div className={styles.filterBlock}>
                             <input
+                                className={styles.statFilter}
                                 type="text"
                                 value={filterStats}
                                 onChange={(event) => {
@@ -259,7 +261,7 @@ export default function Statistics2Screen() {
                             />
                             {!!filterStats.trim().length && (
                                 <div className={styles.close} onClick={() => setFilterStats("")}>
-                                    ❌
+                                    <XCircleIcon width={25} />
                                 </div>
                             )}
                         </div>
@@ -284,7 +286,7 @@ export default function Statistics2Screen() {
                     <div className={styles.orgFilterBlock}>
                         {!!officeSelect && (
                             <div className={styles.orgFilterClose} onClick={() => setOfficeSelect(0)}>
-                                ❌
+                                <XCircleIcon width={25} />
                             </div>
                         )}
                         <select className={styles.officeList} value={officeSelect} onChange={(event) => setOfficeSelect(+event.target.value)}>

@@ -32,11 +32,14 @@
             display: flex;
             gap: 5px;
             align-items: center;
+            filter: grayscale(60%);
+            transition: all 150ms ease-in-out;
         }
 
 
 
         .selected {
+            filter: grayscale(0%);
             opacity: 1;
 
             font-weight: 600;

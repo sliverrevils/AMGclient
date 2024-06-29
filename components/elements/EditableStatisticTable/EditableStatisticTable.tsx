@@ -22,6 +22,7 @@ import useUsers from "@/hooks/useUsers";
 import { daySec } from "@/utils/vars";
 import Chart24Test from "../Chart24/Chart24";
 import { createExelFile, createExelFile2 } from "@/utils/exelFuncs";
+import { FolderPlusIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 
 interface ILinearRes {
     result: any[];
@@ -1220,7 +1221,8 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             !param &&
                             !headers.length && (
                                 <div className={styles.createNewTableBtn} onClick={() => setIsCreateTableBlock(true)}>
-                                    создать новую статистику
+                                    <span>создать новую статистику</span>
+                                    <TableCellsIcon width={25} />
                                 </div>
                             )
                         )

@@ -35,12 +35,16 @@
     .createNewTableBtn {
         cursor: pointer;
         font-size: 17px;
-        padding: 5px 10px;
+        padding: 10px 10px;
         background: #56b9ff;
         border-radius: 5px;
         font-weight: 500;
         color: white;
         margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.671);
     }
 
     .saveTableBlock {
