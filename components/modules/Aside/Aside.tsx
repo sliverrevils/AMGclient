@@ -28,7 +28,7 @@ export default function Aside() {
                     })
                     .map((el) => (
                         <li key={el.id + "_btn"} className={`${el.active} noselect`} onClick={() => el.clickFunc()}>
-                            <div className={currentStyle.menuIco}>{Icons().mainMenu[el.name]}</div>
+                            <div className={currentStyle.menuIco}>{Icons(el.active ? "currentColor" : "#FF8056").mainMenu[el.name]}</div>
                             <div className={currentStyle.menuTitle}>{el.title}</div>
                         </li>
                     ))}

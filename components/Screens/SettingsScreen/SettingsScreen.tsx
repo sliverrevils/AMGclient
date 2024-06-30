@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { replaceFio } from "@/utils/funcs";
 import { useDispatch } from "react-redux";
 import { setMainStyleRedux } from "@/redux/appSlice";
+import { CreditCardIcon, RectangleGroupIcon } from "@heroicons/react/24/outline";
 
 export default function SettingsScreen() {
     const { mainStyle } = useSelector((state: StateReduxI) => state.app);
@@ -41,6 +42,7 @@ export default function SettingsScreen() {
             <div className={styles.changeMenuStyleBtn} onClick={() => dispatch(setMainStyleRedux(mainStyle === "row" ? "column" : "row"))}>
                 <span>Положение главного меню : </span>
                 <span>{mainStyle === "row" ? "сбоку" : "сверху"}</span>
+                {mainStyle === "row" ? <RectangleGroupIcon width={30} color="#FF8056" /> : <CreditCardIcon width={30} color="#FF8056" />}
             </div>
 
             <PropLine title={`ID пользователя`} value={user.userId} />

@@ -40,3 +40,5 @@ export const accessRoutesArray: Array<{ id: number; name: string; title: string;
 
     { id: 777, name: "settings", title: "Настройки", access: ["admin", "user"], Component: SettingsScreen },
 ];
+
+export type TAccessRoutesArray = typeof accessRoutesArray;
