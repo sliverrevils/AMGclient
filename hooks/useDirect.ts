@@ -1,6 +1,6 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
-import { IDirectHeader, ILogicCell } from "@/types/types";
+import { IDirectHeader, ILogicCell, ISelectedStatsListItem } from "@/types/types";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -133,5 +133,62 @@ export default function useDirect() {
         }
     };
 
-    return { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById };
+    //SELECTED LISTS
+    const getSelectedLists = async ({ setSelectedStatsList }: { setSelectedStatsList: Function }) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const res = await axiosClient.get(`direct/all_selected_lists`);
+            dispatch(setLoadingRedux(false));
+
+            //console.log("📃 LIST RES", res.data);
+            if (res.data) {
+                const parcedList = res.data.map((list) => ({ id: list.id, name: list.name, selectedStats: JSON.parse(list.selectedStats) }));
+                setSelectedStatsList(parcedList);
+            }
+        } catch (error) {
+            dispatch(setLoadingRedux(false));
+            axiosError(error);
+            return null;
+        }
+    };
+
+    const saveSelectedList = async ({ name, selectedStats, setSelectedStatsList }: ISelectedStatsListItem & { setSelectedStatsList: Function }) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const res: any = await axiosClient.post(`direct/save_selected_list`, {
+                name,
+                selectedStats: JSON.stringify(selectedStats),
+            });
+            dispatch(setLoadingRedux(false));
+            if (res.data) {
+                const parcedList = res.data.map((list) => ({ id: list.id, name: list.name, selectedStats: JSON.parse(list.selectedStats) }));
+                setSelectedStatsList(parcedList);
+            }
+            toast.success("лист успешно сохранен");
+            // console.log("✅ SAVE DIR RES", res.data);
+        } catch (error) {
+            dispatch(setLoadingRedux(false));
+            axiosError(error);
+            return null;
+        }
+    };
+    const deleteListById = async ({ id, setSelectedStatsList }: { id: number; setSelectedStatsList: Function }) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const res: any = await axiosClient.get(`direct/delete_list/${id}`);
+            dispatch(setLoadingRedux(false));
+            if (res.data) {
+                const parcedList = res.data.map((list) => ({ id: list.id, name: list.name, selectedStats: JSON.parse(list.selectedStats) }));
+                setSelectedStatsList(parcedList);
+            }
+            toast.success("Лист успешно удален");
+            // console.log("✅ SAVE DIR RES", res.data);
+        } catch (error) {
+            dispatch(setLoadingRedux(false));
+            axiosError(error);
+            return null;
+        }
+    };
+
+    return { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById, getSelectedLists, saveSelectedList, deleteListById };
 }

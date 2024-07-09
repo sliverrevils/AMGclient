@@ -1,5 +1,5 @@
 import { IChartPropListItem, IDirectHeader, IDirectOffice, IDirectTable, ILogicCell, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import DirectStat from "./DirectStat";
 import styles from "./table.module.scss";
@@ -29,6 +29,8 @@ export default function DirectTable({
     cacheStatsLogics,
     cacheLogic,
     loaded,
+    selectedStats,
+    setSelectedStats,
 }: {
     table: IDirectTable;
     headers: IDirectHeader[];
@@ -40,6 +42,8 @@ export default function DirectTable({
     cacheStatsLogics: Map<string, ILogicCell[]>;
     cacheLogic: () => void;
     loaded: boolean;
+    selectedStats: string[];
+    setSelectedStats: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
@@ -72,15 +76,16 @@ export default function DirectTable({
     //HOOKS
     const { tableById, addingFilledField, statNameById } = useTableStatistics();
 
-    const addStatToTable = ({ stat }: { stat: TableStatisticListItemI }) => {
+    const addStatToTable = ({ stat, noToasty = false }: { stat: TableStatisticListItemI; noToasty?: boolean }) => {
         //const stat = allItemStats.find((stat) => stat.id === statId);
         const currentStatCelarName = clearStatName(statNameById(stat.id));
+        setSelectedStats((state) => [...new Set([...state, currentStatCelarName])]);
         setTables((state) => {
             return state.map((curTable, tableIdx) => {
                 if (curTable.id !== table.id) return curTable;
 
                 if (curTable.stats.some((st) => st.id === stat.id)) {
-                    toast.warning(`Эта статистика уже добавлена !`);
+                    !noToasty && toast.warning(`Эта статистика уже добавлена !`);
                     return curTable;
                 }
 
@@ -177,7 +182,13 @@ export default function DirectTable({
                 let tempTabels = JSON.parse(JSON.stringify(state));
                 let curTable = tempTabels.find((tempTable) => tempTable.id === table.id) as IDirectTable;
 
-                curTable.stats = curTable.stats.filter((curStat) => curStat.id !== statId);
+                curTable.stats = curTable.stats.filter((curStat) => {
+                    if (curStat.id !== statId) {
+                        return true;
+                    }
+                    setSelectedStats((state) => state.filter((curStatName) => curStatName !== clearStatName(curStat.name)));
+                    return false;
+                });
                 return tempTabels;
             });
             setCharts((state) => state.filter((curChart) => curChart.statId !== statId));
@@ -239,7 +250,7 @@ export default function DirectTable({
                     })}
             </div>
         );
-    }, [table.stats, statFilter]);
+    }, [table.stats, statFilter, setSelectedStats]);
 
     const onChangeBlank = (rowId: string, idx: number, value: string) => {
         setTables((state) =>
@@ -275,6 +286,19 @@ export default function DirectTable({
                 };
             })
         );
+
+    useEffect(() => {
+        if (selectedStats.length) {
+            //console.log({ currentOfficeStatsList });
+            const tableSelectedStats = table.stats.map((stat) => clearStatName(stat.name));
+            currentOfficeStatsList.forEach((stat) => {
+                if (selectedStats.includes(clearStatName(stat.name)) && !tableSelectedStats.includes(clearStatName(stat.name))) {
+                    console.log("INCLUDE");
+                    addStatToTable({ stat, noToasty: true });
+                }
+            });
+        }
+    }, [selectedStats]);
 
     return [
         <thead>

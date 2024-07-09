@@ -554,3 +554,9 @@ export interface IProtocolListItem {
     members: number[];
     protocolNumber: number;
 }
+
+export interface ISelectedStatsListItem {
+    id?: number;
+    name: string;
+    selectedStats: string[];
+}

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ElementRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IChartPropListItem, IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, IProtocolListItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, IProtocolListItem, ISelectedStatsListItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -9,7 +9,7 @@ import DirectTable from "./DirectTable";
 import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
-import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon, DocumentArrowDownIcon } from "@heroicons/react/24/outline";
+import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon, DocumentArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
@@ -60,7 +60,7 @@ export default function DirectiveScreen() {
     //HOOKS
     const { getLatestTable, addingFilledField, statNameById } = useTableStatistics();
     const { userByID } = useUsers();
-    const { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById } = useDirect();
+    const { getDirectSettings, saveHeaders, saveLogic, saveDirect, getProtocolList, getProtocolById, deleteProtocolById, getSelectedLists, saveSelectedList, deleteListById } = useDirect();
 
     //SELECTORS
     const { mainStyle } = useSelector((state: StateReduxI) => state.app);
@@ -138,6 +138,11 @@ export default function DirectiveScreen() {
         window.scrollTo(0, scrollPos as number);
         setScrollPos(null);
     };
+
+    const [selectedStats, setSelectedStats] = useState<string[]>([
+        // "Количество главных растущих статистик 2 года + текущий, РО1 📅", "Количество главных статистик по предприятию/количество главных растущих, РО1 📅", "Просроченная дебиторская задолженность, РО2 📅", "Отклонение факта реализации от месячного плана, РО2 📅"
+    ]);
+    const [selectedStatsList, setSelectedStatsList] = useState<ISelectedStatsListItem[]>([]);
     //cash cells
     const [cacheStatsLogics, setCacheStstsLogic] = useState<Map<string, ILogicCell[]>>(loadedStatLogicsMap);
 
@@ -393,10 +398,10 @@ export default function DirectiveScreen() {
                 </tr>
             </thead>,
             tabels.map((table) => {
-                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} />;
+                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} selectedStats={selectedStats} setSelectedStats={setSelectedStats} />;
             }),
         ];
-    }, [tabels, headers, charts]);
+    }, [tabels, headers, charts, selectedStats]);
 
     // HEADERS EDIT BLOCK -- HTML
     const headersEditBlock = useMemo(() => {
@@ -662,6 +667,83 @@ export default function DirectiveScreen() {
         );
     }, [mainStatus]);
 
+    //SELECTED STATS LIST
+    const saveListInputRef = useRef<ElementRef<"input">>(null);
+    const [selectedListIdx, setSelectedListIdx] = useState(0);
+    const onDeleteList = useCallback(() => {
+        if (!confirm("Удалить текущий выбранный лист ?")) return;
+        const delListIdx = selectedStatsList[selectedListIdx - 1].id as number;
+        console.log(delListIdx, selectedStatsList[selectedListIdx - 1]);
+        if (selectedListIdx > 0)
+            deleteListById({ id: delListIdx, setSelectedStatsList }).then(() => {
+                setSelectedListIdx(0);
+                setTables((state) => state.map((table) => ({ ...table, stats: [] })));
+            });
+        else toast.error("Лист не выбран");
+    }, [selectedListIdx, selectedStatsList]);
+    const selectedStatsListHtml = useMemo(() => {
+        if (!!selectedStatsList.length || tabels.some((table) => !!table.stats.length))
+            return (
+                <div className={styles.loadListBlock}>
+                    <div className={styles.title}>
+                        <div>Настройки списков статистик</div>
+                        <Cog6ToothIcon width={30} color="white" />
+                    </div>
+                    {!!selectedStatsList.length && (
+                        <div className={styles.selectBlock}>
+                            <CloudArrowDownIcon width={35} color="white" />
+                            <select
+                                value={selectedListIdx}
+                                onChange={(event) => {
+                                    const selectIdx = Number(event.target.value);
+                                    setSelectedListIdx(selectIdx);
+                                    if (selectIdx > 0) {
+                                        setSelectedStats(selectedStatsList[selectIdx - 1].selectedStats);
+                                    } else {
+                                        setSelectedStats([]);
+                                        setTables((state) => state.map((table) => ({ ...table, stats: [] })));
+                                    }
+                                }}
+                            >
+                                <option value={0}> выбрать сохранённый список статистик ?</option>
+                                {selectedStatsList.map((selStats, idx) => (
+                                    <option value={idx + 1}>{selStats.name}</option>
+                                ))}
+                            </select>
+                            {!!selectedListIdx && (
+                                <div onClick={onDeleteList} className={styles.delListBtn}>
+                                    <span>Удалить лист</span>
+                                    <TrashIcon width={25} color="white" />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {tabels.some((table) => !!table.stats.length) && (
+                        <div className={styles.controlBlock}>
+                            <div
+                                className={styles.dropStatsBtn}
+                                onClick={() => {
+                                    setTables((state) => state.map((table) => ({ ...table, stats: [] })));
+                                    setSelectedListIdx(0);
+                                }}
+                            >
+                                <span> Сбросить все добавленные статистики</span>
+                                <XMarkIcon width={25} />
+                            </div>
+                            <div className={styles.saveBlock}>
+                                <input type="text" ref={saveListInputRef} placeholder="название листа ?" />
+                                <div className={styles.saveBtn} onClick={() => saveSelectedList({ name: saveListInputRef.current?.value || `лист выбора № ${selectedStatsList.length + 1} : ` + new Date().toLocaleDateString(), selectedStats, setSelectedStatsList }).then(() => (saveListInputRef.current!.value = ""))}>
+                                    <span> Cохранить как новый лист статистик</span>
+                                    <CloudArrowUpIcon width={25} color="white" />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+    }, [selectedStatsList, setSelectedStatsList, selectedStats, selectedListIdx, tabels]);
+
     //EFFECTS
 
     //SCROLL LOOK
@@ -685,7 +767,6 @@ export default function DirectiveScreen() {
         }
     }, [protocolSelectedId]);
 
-    //ON MOUNT⭐
     //сохраняем на сервере
 
     useEffect(() => {
@@ -711,6 +792,12 @@ export default function DirectiveScreen() {
             getProtocolList({ setProtocolList });
         }
     }, [mainStatus]);
+
+    //ON MOUNT⭐
+
+    useEffect(() => {
+        getSelectedLists({ setSelectedStatsList });
+    }, []);
 
     //EXCEL SAVE
     interface ITableParcedRow {
@@ -903,9 +990,12 @@ export default function DirectiveScreen() {
                     <button onClick={() => console.log(protocolList)}>show protocols list</button>
                     <hr />
                     <button onClick={() => console.log(members)}>members show</button>
+                    <hr />
+                    <button onClick={() => console.log(selectedStats)}>selected stats show</button>
                 </div>
             )}
             {mainStatusShooceHtml}
+            {mainStatus === "new" && selectedStatsListHtml}
             {mainStatus === "archive" && protocolListSelectHtml}
             {topInfoBlock}
             <Mission />
