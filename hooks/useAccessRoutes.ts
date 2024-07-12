@@ -10,7 +10,10 @@ export const useAccessRoutes = () => {
     const dispatch = useDispatch();
 
     const accessedRoutes = accessRoutesArray
-        .filter((route) => route.access.some((role) => role === user.role) || user.post.includes(route.name))
+        .filter(
+            (route) => route.access.some((role) => role === user.role)
+            //|| user.post.includes(route.name)
+        )
         .map((el: any) => ({
             ...el,
             clickFunc: (param = "") => {
