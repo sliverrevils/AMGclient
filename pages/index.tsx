@@ -21,7 +21,7 @@ export default function Main() {
     const dispatch = useDispatch();
 
     const { loadingFullScreen, loading } = useSelector((state: any) => state.app);
-    const { user } = useSelector((state: any) => state.main);
+    const isLogIn = useSelector((state: any) => !!state.main.user);
 
     useEffect(() => {
         if (initFirst.current) {
@@ -51,7 +51,7 @@ export default function Main() {
             <Loader loading={loading} />
 
             {/* <button onClick={()=>toast()}>toast</button> */}
-            {user ? <MainPage /> : <AuthPage />}
+            {isLogIn ? <MainPage /> : <AuthPage />}
         </>
     );
 }
