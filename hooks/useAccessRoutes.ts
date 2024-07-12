@@ -1,6 +1,6 @@
 import { setCurrentContentRedux } from "@/redux/contentSlice";
 import { accessRoutesArray } from "@/routes/contentRouter";
-import { useEffect } from "react";
+
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
@@ -10,7 +10,7 @@ export const useAccessRoutes = () => {
     const dispatch = useDispatch();
 
     const accessedRoutes = accessRoutesArray
-        .filter((route) => route.access.some((role) => role === user.role) || user.post.includes(route.name))
+        //.filter((route) => route.access.some((role) => role === user.role) || user.post.includes(route.name))
         .map((el: any) => ({
             ...el,
             clickFunc: (param = "") => {
