@@ -246,6 +246,7 @@ export default function UsersScreen() {
                     <tbody>
                         {users
                             .toSorted((a, b) => replaceFio(a.name).localeCompare(replaceFio(b.name)))
+                            .filter((user) => user.name !== "admin@admin.com")
                             .filter((user) => user.name.toLowerCase().includes(filterName.toLowerCase()))
                             .map((user, index) => (
                                 <tr key={user.id + "users_list"} onClick={() => setCurrentUser(user)}>

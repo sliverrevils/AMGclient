@@ -421,7 +421,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
         <div className={styles.mainWrap}>
             <StatView statView={statView} />
             {!!statViewArr.length && <StatChartBox statViewArr={statViewArr} />}
-            <div>view {String(isViewOnly)}</div>
+
             <div className={styles.btnsBlock}>
                 <div
                     title="Сбросить выделения"
