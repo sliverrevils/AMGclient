@@ -92,6 +92,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
     const user: UserI = useSelector((state: any) => state.main.user);
     const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
+    const isViewOnly = useSelector((state: any) => state.main.user.post.includes("raports")) as boolean;
     const initOrgItems = useSelector((state: StateReduxI) => {
         //ФУНКЦИЯ  ПРОВЕРКИ ЗАПОЛНЕНОГО ПЕРИОДА✍️⌛
         const addingFilledField = (stat: TableStatisticListItemI, main = false): StatItemReady => {
@@ -278,7 +279,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                 //console.log("CLICK");
                                 event.preventDefault();
                                 // window.location.search = `statId=${item.id}`;
-                                tabelsRoute.clickFunc(item.id);
+                                !isViewOnly && tabelsRoute.clickFunc(item.id);
                             }}
                         >
                             {clearStatName(item.name)}
@@ -420,7 +421,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
         <div className={styles.mainWrap}>
             <StatView statView={statView} />
             {!!statViewArr.length && <StatChartBox statViewArr={statViewArr} />}
-
+            <div>view {String(isViewOnly)}</div>
             <div className={styles.btnsBlock}>
                 <div
                     title="Сбросить выделения"

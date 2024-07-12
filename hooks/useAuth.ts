@@ -54,7 +54,11 @@ export const useAuth = () => {
                         progress: undefined,
                         theme: "light",
                     });
-                    dispatch(logInRedux(data.user));
+                    const user = {
+                        ...data.user,
+                        post: JSON.parse(data.user.post || "[]"),
+                    };
+                    dispatch(logInRedux(user));
                 }
             })
             .catch(axiosError)
@@ -247,6 +251,28 @@ export const useAuth = () => {
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
+
+    //ПОСТ (открывает доступ к закрытым для юзера роутам)- Массив доступов к вкладком у пользователя (доступ по name из contentRouter)
+    const userPost = async (id: number, curPost: string, setUsersFunc: any = false) => {
+        dispatch(setLoadingRedux(true));
+        axiosClient
+            .post("users/post", { id, curPost })
+            .then(({ data }) => {
+                toast.success(data.message, {
+                    position: "top-right",
+                    autoClose: 10000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                if (setUsersFunc) allUsers(setUsersFunc);
+            })
+            .catch(axiosError)
+            .finally(() => dispatch(setLoadingRedux(false)));
+    };
     const adminToggle = async (id: number, setUsersFunc: any = false) => {
         dispatch(setLoadingRedux(true));
         axiosClient
@@ -288,5 +314,5 @@ export const useAuth = () => {
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
-    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass, deleteUser, adminToggle };
+    return { logout, singIn, singUp, allUsers, verificateUser, blockUserToggle, createUser, updateUser, changeUserPass, deleteUser, adminToggle, userPost };
 };

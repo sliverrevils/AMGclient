@@ -9,7 +9,7 @@ import { StateReduxI } from "@/redux/store";
 
 export default function UsersScreen() {
     const [users, setUsers] = useState<UserFullI[]>([]);
-    const { allUsers, verificateUser, blockUserToggle, adminToggle } = useAuth();
+    const { allUsers, verificateUser, blockUserToggle, adminToggle, userPost } = useAuth();
     let { current: init } = useRef(true);
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
@@ -171,6 +171,15 @@ export default function UsersScreen() {
                                 {currentUser.role === "user" ? "Сделать пользователя администратором" : "Снять права администратора"}
                             </div>
                         )}
+
+                        <div
+                            className="btn"
+                            onClick={() => {
+                                userPost(currentUser.id, "raports");
+                            }}
+                        >
+                            Доступ к отчетам (да/нет)
+                        </div>
 
                         {[editUserName, editUserPatronymic, editUserSurname].join(" ") !== currentUser.name && (
                             <div className="btn" onClick={updateProfile} style={{ background: "#339966" }}>
