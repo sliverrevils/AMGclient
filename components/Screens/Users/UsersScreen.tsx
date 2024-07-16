@@ -10,6 +10,7 @@ import { StateReduxI } from "@/redux/store";
 export default function UsersScreen() {
     const [users, setUsers] = useState<UserFullI[]>([]);
     const { allUsers, verificateUser, blockUserToggle, adminToggle, userPost } = useAuth();
+    const { getOrgFullScheme } = useOrg();
     let { current: init } = useRef(true);
     const [currentUser, setCurrentUser] = useState<UserFullI | null>(null);
     const [addUserField, setAddUserField] = useState(false);
@@ -175,7 +176,9 @@ export default function UsersScreen() {
                         <div
                             className="btn"
                             onClick={() => {
-                                userPost(currentUser.id, "raports");
+                                userPost(currentUser.id, "raports").then(() => {
+                                    allUsers(setUsers);
+                                });
                             }}
                         >
                             Доступ к отчетам (да/нет)
@@ -227,20 +230,21 @@ export default function UsersScreen() {
                     </div>
                 )}
 
-                <input type="text" value={filterName} onChange={(event) => setFilterName(event.target.value.trim())} placeholder="поиск" />
+                <input className={styles.findInput} type="text" value={filterName} onChange={(event) => setFilterName(event.target.value.trim())} placeholder="поиск" />
                 {!!filterName.length && <span onClick={() => setFilterName("")}>❌</span>}
 
                 <table>
-                    <thead>
+                    <thead style={{ width: "100%" }}>
                         <tr>
                             <th style={{ color: "tomato" }}>№</th>
+                            <th>Роль</th>
                             <th>Имя</th>
                             <th>Логин</th>
 
-                            <th>Роль</th>
                             <th>Регистрация</th>
                             <th>Верификация</th>
                             <th>Блок</th>
+                            <th>Доступ к отчетам</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -250,15 +254,17 @@ export default function UsersScreen() {
                             .filter((user) => user.name.toLowerCase().includes(filterName.toLowerCase()))
                             .map((user, index) => (
                                 <tr key={user.id + "users_list"} onClick={() => setCurrentUser(user)}>
-                                    <td style={{ color: "tomato" }}>
+                                    <td style={{ color: "tomato", textAlign: "center" }}>
                                         <b>{index + 1}</b>
                                     </td>
+                                    <td style={{ textAlign: "center", fontSize: 17 }}>{user.role === "admin" ? "👑" : "👤"}</td>
                                     <td>{replaceFio(user.name)}</td>
                                     <td>{user.email}</td>
-                                    <td>{user.role === "admin" ? "👑" : "👤"}</td>
+
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                    <td>{user.is_verificated ? "✅" : "🆕"}</td>
-                                    <td>{user.is_blocked ? "🚫" : "🆗"}</td>
+                                    <td style={{ textAlign: "center" }}>{user.is_verificated ? "✅" : "🆕"}</td>
+                                    <td style={{ textAlign: "center" }}>{user.is_blocked ? "🚫" : "🆗"}</td>
+                                    <td style={{ textAlign: "center" }}>{user.post.includes("raports") ? "✅" : "🚫"}</td>
                                 </tr>
                             ))}
                     </tbody>

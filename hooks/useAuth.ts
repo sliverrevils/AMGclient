@@ -226,7 +226,7 @@ export const useAuth = () => {
         axiosClient
             .get("users/all-users")
             .then(({ data }: { data: UserFullI[] }) => {
-                setUsersFunc(data);
+                setUsersFunc(data.map((user) => ({ ...user, post: JSON.parse((user.post as string) || "[]") })));
             })
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));

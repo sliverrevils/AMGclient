@@ -14,7 +14,7 @@ export interface UserFullI {
     email: string;
     password: string;
     name: string;
-    post: string;
+    post: string[] | string;
     structure: string;
     is_verificated: boolean;
     is_blocked: boolean;

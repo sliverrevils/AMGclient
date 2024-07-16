@@ -27,7 +27,17 @@ export default function useOrg() {
                 //REDUX
                 //users
                 if (users) {
-                    dispatch(setUsersRedux(users.map((user) => ({ ...user, name: replaceFio(user.name) }))));
+                    dispatch(
+                        setUsersRedux(
+                            users.map((user) => {
+                                return {
+                                    ...user,
+                                    name: replaceFio(user.name),
+                                    post: JSON.parse(user.post || "[]"),
+                                };
+                            })
+                        )
+                    );
                 }
 
                 //patterns
