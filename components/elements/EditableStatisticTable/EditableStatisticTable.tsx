@@ -1406,7 +1406,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                                 ❌
                                             </div>
 
-                                            <input className={styles.descriptionsName} value={tableDescriptionsName} onChange={(event) => setTableDescriptionsName(clearForInput(event.target.value))} disabled={!isAdmin} />
+                                            <input className={styles.descriptionsName} value={tableDescriptionsName} onChange={(event) => setTableDescriptionsName(event.target.value)} disabled={!isAdmin} />
 
                                             <EditableTable saveFunc={setTableDescriptions} descriptionsStr={tableDescriptions} />
                                         </div>
