@@ -1262,7 +1262,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     {!!headers.length && (
                         <>
                             <div className={styles.tableNameWrap}>
-                                <input type="text" value={clearStatName(tableName)} onChange={(event) => setTableName(clearSmiels(event.target.value.trimStart()))} placeholder="название статистики" disabled={selectedTable !== "clear"} />
+                                <input type="text" value={clearStatName(tableName)} onChange={(event) => setTableName(event.target.value.trimStart())} placeholder="название статистики" disabled={selectedTable !== "clear"} />
                             </div>
                         </>
                     )}
