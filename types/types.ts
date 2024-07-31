@@ -396,8 +396,10 @@ export interface IChartPropListItem {
 export interface RaportTableInfoI {
     lastUpdate?: number;
     statFilled: "full" | "notFull" | "clean";
+
     lastFilledPeriod: DatesI;
     statLastRowValues?: string[];
+    statPrevRowValues?: string[];
     statHeaders?: string[];
     trendType: string;
     trendStatus: string;

@@ -92,6 +92,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
     const getRaportInfo = (isAlert = false) => {
         let statFilled: "full" | "notFull" | "clean" = "full";
         let lastFilledRow: StatRowI | null = null;
+        let prevFilledRow: StatRowI | null = null;
         let lastRowIndex: number | null = null;
 
         calcedRows.forEach((row, rowIdx) => {
@@ -102,6 +103,9 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     statFilled = "clean";
                 } else {
                     lastFilledRow = calcedRows[rowIdx - 1];
+                    if (rowIdx - 2 >= 0) {
+                        prevFilledRow = calcedRows[rowIdx - 2];
+                    }
                     lastRowIndex = rowIdx - 1;
                     statFilled = "notFull";
                 }
@@ -136,8 +140,10 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         const result: RaportTableInfoI = {
             lastUpdate: new Date().getTime(),
             statFilled,
+
             lastFilledPeriod: dateColumn!?.datesArr[lastRowIndex!] || null,
             statLastRowValues: lastFilledRow?.values.map((item) => String(item.value)) || [],
+            statPrevRowValues: prevFilledRow!?.values.map((item) => String(item.value)) || [],
             statHeaders: headers.map((header) => header.name),
             trendType,
             trendStatus,

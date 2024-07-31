@@ -6,7 +6,7 @@ import { clearStatName } from "@/utils/funcs";
 
 export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
-    const { statHeaders, statLastRowValues, statFilled } = stat.dateColumn.raportInfo as RaportTableInfoI;
+    const { statHeaders, statLastRowValues, statFilled, statPrevRowValues } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
     //STATE
     const [isSelectedCell, setIsSelectedCell] = useState(false);
@@ -40,10 +40,37 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
             </>
         );
     };
+    const prevStatHelpMenu = () => {
+        return (
+            <>
+                {statHeaders!.map((statHeader, idx) => {
+                    return (
+                        <div
+                            key={stat.name + "_cell" + idx}
+                            className={styles.helpItem}
+                            onClick={() => {
+                                onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @@${idx}`);
+                            }}
+                        >
+                            <div className={styles.decor}>@@{idx}</div>
+                            <div className={styles.name}>{statHeader}</div>
+                        </div>
+                    );
+                })}
+            </>
+        );
+    };
 
     const calcCell = (logic: string): string => {
         logic = logic.replace("@status", isGrowing);
-        const replacedLogic = logic.replaceAll(/@\d{1,3}/g, (decorator, a, b) => {
+        let replacedLogic = logic.replaceAll(/@@\d{1,3}/g, (decorator, a, b) => {
+            const targetIndex = Number(decorator.replace("@@", ""));
+            // console.log(statLastRowValues?.[targetIndex]);
+            if (statPrevRowValues?.length && targetIndex > statPrevRowValues?.length - 1) return "ошибка";
+            return statPrevRowValues?.[targetIndex] || "";
+        });
+        //logic = logic.replace("@@", "");
+        replacedLogic = replacedLogic.replaceAll(/@\d{1,3}/g, (decorator, a, b) => {
             const targetIndex = Number(decorator.replace("@", ""));
             // console.log(statLastRowValues?.[targetIndex]);
             if (statLastRowValues?.length && targetIndex > statLastRowValues?.length - 1) return "ошибка";
@@ -86,7 +113,19 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 <div className={styles.help}>используемая статистика ( последнее обновление в {new Date(lastUpdate).toLocaleString()} )</div>
                                 <div className={styles.statName}>{clearStatName(stat.name)}</div>
                             </div>
+                            {statPrevRowValues && statPrevRowValues.length && (
+                                <div className={styles.field}>
+                                    <div className={styles.help} style={{ textAlign: "end", fontWeight: 600 }}>
+                                        ⤴️ предпоследняя запись
+                                    </div>
+                                    <div className={styles.help}>колонки статистики c данными за {statPrevRowValues[0]}</div>
+                                    <div className={styles.helpBlock}>{prevStatHelpMenu()}</div>
+                                </div>
+                            )}
                             <div className={styles.field}>
+                                <div className={styles.help} style={{ textAlign: "end", fontWeight: 600 }}>
+                                    ➡️ последняя запись
+                                </div>
                                 <div className={styles.help}>колонки статистики c данными за {periodStr}</div>
                                 <div className={styles.helpBlock}>{statHelpMenu()}</div>
                             </div>
@@ -100,6 +139,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 <div className={styles.help}>результат колонки</div>
                                 <div className={styles.resultBlock}>{calcCell(logicStr)}</div>
                             </div>
+                            {process.env.NODE_ENV !== "production" && <button onClick={() => console.log("PREV PERIOD", statPrevRowValues)}>check raport info</button>}
                         </div>
                     </Modal>
                 )}
