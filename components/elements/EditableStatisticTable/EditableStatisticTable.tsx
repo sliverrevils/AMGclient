@@ -94,6 +94,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
         let lastFilledRow: StatRowI | null = null;
         let prevFilledRow: StatRowI | null = null;
         let lastRowIndex: number | null = null;
+        let futureRow: StatRowI | null = null;
 
         calcedRows.forEach((row, rowIdx) => {
             // ИЩЕМ КОЛОНКИ С ТРЕНДОМ И ПО НИМ РАБОТАЕМ
@@ -106,6 +107,13 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                     if (rowIdx - 2 >= 0) {
                         prevFilledRow = calcedRows[rowIdx - 2];
                     }
+                    //! prev period
+                    if (calcedRows[rowIdx].values.some((value, idx) => value.value && idx && String(value.value).trim() !== "❓")) {
+                        futureRow = calcedRows[rowIdx];
+                        console.log("FUTURE ROW", futureRow);
+                    }
+                    //! /prev period
+
                     lastRowIndex = rowIdx - 1;
                     statFilled = "notFull";
                 }
@@ -144,6 +152,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
             lastFilledPeriod: dateColumn!?.datesArr[lastRowIndex!] || null,
             statLastRowValues: lastFilledRow?.values.map((item) => String(item.value)) || [],
             statPrevRowValues: prevFilledRow!?.values.map((item) => String(item.value)) || [],
+            statFutureRowValues: futureRow!?.values.map((item) => String(item.value)) || [],
             statHeaders: headers.map((header) => header.name),
             trendType,
             trendStatus,

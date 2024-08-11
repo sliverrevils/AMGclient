@@ -400,6 +400,7 @@ export interface RaportTableInfoI {
     lastFilledPeriod: DatesI;
     statLastRowValues?: string[];
     statPrevRowValues?: string[];
+    statFutureRowValues: string[];
     statHeaders?: string[];
     trendType: string;
     trendStatus: string;

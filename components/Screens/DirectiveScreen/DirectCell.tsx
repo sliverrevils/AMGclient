@@ -6,7 +6,7 @@ import { clearStatName } from "@/utils/funcs";
 
 export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
-    const { statHeaders, statLastRowValues, statFilled, statPrevRowValues } = stat.dateColumn.raportInfo as RaportTableInfoI;
+    const { statHeaders, statLastRowValues, statFilled, statPrevRowValues, statFutureRowValues } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
     //STATE
     const [isSelectedCell, setIsSelectedCell] = useState(false);
@@ -60,10 +60,39 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
             </>
         );
     };
+    const futureStatHelpMenu = () => {
+        return (
+            <>
+                {statHeaders!.map((statHeader, idx) => {
+                    return (
+                        <div
+                            key={stat.name + "_cell" + idx}
+                            className={styles.helpItem}
+                            onClick={() => {
+                                onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @@@${idx}`);
+                            }}
+                        >
+                            <div className={styles.decor}>@@{idx}</div>
+                            <div className={styles.name}>{statHeader}</div>
+                        </div>
+                    );
+                })}
+            </>
+        );
+    };
 
     const calcCell = (logic: string): string => {
         logic = logic.replace("@status", isGrowing);
-        let replacedLogic = logic.replaceAll(/@@\d{1,3}/g, (decorator, a, b) => {
+
+        let replacedLogic = logic.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {
+            const targetIndex = Number(decorator.replace("@@@", ""));
+
+            // console.log(statLastRowValues?.[targetIndex]);
+            if (statFutureRowValues?.length && targetIndex > statFutureRowValues?.length - 1) return "ошибка";
+            return statFutureRowValues?.[targetIndex] || "";
+        });
+
+        replacedLogic = replacedLogic.replaceAll(/@@\d{1,3}/g, (decorator, a, b) => {
             const targetIndex = Number(decorator.replace("@@", ""));
             // console.log(statLastRowValues?.[targetIndex]);
             if (statPrevRowValues?.length && targetIndex > statPrevRowValues?.length - 1) return "ошибка";
@@ -130,6 +159,16 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 <div className={styles.helpBlock}>{statHelpMenu()}</div>
                             </div>
 
+                            {statFutureRowValues && statFutureRowValues.length && (
+                                <div className={styles.field}>
+                                    <div className={styles.help} style={{ textAlign: "end", fontWeight: 600 }}>
+                                        ⤵️ следующая запись
+                                    </div>
+                                    <div className={styles.help}>колонки статистики c данными за {periodStr}</div>
+                                    <div className={styles.helpBlock}>{futureStatHelpMenu()}</div>
+                                </div>
+                            )}
+
                             <div className={styles.field}>
                                 <div className={styles.help}>логическая строка</div>
                                 <input className={styles.logicStr} value={logicStr} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" />
@@ -139,7 +178,12 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 <div className={styles.help}>результат колонки</div>
                                 <div className={styles.resultBlock}>{calcCell(logicStr)}</div>
                             </div>
-                            {process.env.NODE_ENV !== "production" && <button onClick={() => console.log("PREV PERIOD", statPrevRowValues)}>check raport info</button>}
+                            {process.env.NODE_ENV !== "production" && (
+                                <div>
+                                    <button onClick={() => console.log("PREV PERIOD", statPrevRowValues)}>check raport info</button>
+                                    <button onClick={() => console.log("FUTURE PERIOD", statFutureRowValues)}>check future</button>
+                                </div>
+                            )}
                         </div>
                     </Modal>
                 )}
