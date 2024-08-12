@@ -809,37 +809,13 @@ export default function DirectiveScreen() {
         const workbook = new ExelJs.Workbook();
         const sheet = workbook.addWorksheet(fileName);
 
-        // //border
-        // sheet.getRow(1).border = {
-        //     top: { style: "medium", color: { argb: "FF8056" } },
-        //     left: { style: "medium", color: { argb: "FF8056" } },
-        //     right: { style: "medium", color: { argb: "FF8056" } },
-        //     bottom: { style: "medium", color: { argb: "FF8056" } },
-        // };
-
-        // //fill
-        // sheet.getRow(1).fill = {
-        //     type: "pattern",
-        //     pattern: "solid",
-        //     bgColor: { argb: "FF8056" },
-        // };
-
-        // //font
-        // sheet.getRow(1).font = {
-        //     name: "Arial",
-        //     family: 4,
-        //     size: 11,
-        //     bold: false,
-        //     color: { argb: "FFFFFF" },
-        // };
-
-        // PARSE TABLE ---------------
-
-        //headers
-
         const table = document.querySelector("#mainTable");
         if (!table) return;
 
+        // TODO info && members - создать ряды шапкм
+        // Создание первой таблицы
+
+        // ! Парсинг таблицы - вторая таблица
         table.querySelectorAll("th");
         // console.log(table.children);
         const parsedArr: ITableParcedRow[] = [];
@@ -862,7 +838,7 @@ export default function DirectiveScreen() {
                     const curRow = sheet.getRow(1);
                     curRow.fill = {
                         type: "pattern",
-                        pattern: "darkVertical",
+                        pattern: "solid",
                         fgColor: { argb: "3DA041" },
                     };
                     curRow.font = {
@@ -870,7 +846,7 @@ export default function DirectiveScreen() {
                         family: 4,
                         size: 11,
                         bold: true,
-                        color: { argb: "000000" },
+                        color: { argb: "FFFFFFFF" },
                     };
                     curRow.height = 35;
                 } else {
@@ -878,7 +854,7 @@ export default function DirectiveScreen() {
                     curRow.alignment = { vertical: "middle", horizontal: "center" };
                     curRow.fill = {
                         type: "pattern",
-                        pattern: "darkVertical",
+                        pattern: "solid",
                         fgColor: { argb: "3DA041" },
                     };
                     curRow.font = {
@@ -886,7 +862,7 @@ export default function DirectiveScreen() {
                         family: 4,
                         size: 11,
                         bold: true,
-                        color: { argb: "000000" },
+                        color: { argb: "FFFFFFFF" },
                     };
                     curRow.height = 35;
                 }

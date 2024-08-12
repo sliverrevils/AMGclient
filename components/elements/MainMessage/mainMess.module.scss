@@ -1,0 +1,23 @@
+.mainBlockWrap {
+    //border: 1px solid black;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+
+    .quillWrap {
+        // border: 1px solid red;
+
+    }
+
+    .saveBtn {
+        margin-top: 10px;
+        align-self: flex-end;
+        background: cornflowerblue;
+        padding: 5px 20px;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+
+    }
+}
