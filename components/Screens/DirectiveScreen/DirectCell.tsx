@@ -72,7 +72,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 onCurrentChangeLogic(`${stat.logicStrArr[cellIndex].logicStr} @@@${idx}`);
                             }}
                         >
-                            <div className={styles.decor}>@@{idx}</div>
+                            <div className={styles.decor}>@@@{idx}</div>
                             <div className={styles.name}>{statHeader}</div>
                         </div>
                     );
@@ -164,7 +164,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                     <div className={styles.help} style={{ textAlign: "end", fontWeight: 600 }}>
                                         ⤵️ следующая запись
                                     </div>
-                                    <div className={styles.help}>колонки статистики c данными за {periodStr}</div>
+                                    <div className={styles.help}>колонки статистики c данными за {statFutureRowValues[0]}</div>
                                     <div className={styles.helpBlock}>{futureStatHelpMenu()}</div>
                                 </div>
                             )}
