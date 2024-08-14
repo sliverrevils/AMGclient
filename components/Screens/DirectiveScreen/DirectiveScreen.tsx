@@ -681,6 +681,8 @@ export default function DirectiveScreen() {
             });
         else toast.error("Лист не выбран");
     }, [selectedListIdx, selectedStatsList]);
+
+    // TODO  SELECTED LIST
     const selectedStatsListHtml = useMemo(() => {
         if (!!selectedStatsList.length || tabels.some((table) => !!table.stats.length))
             return (

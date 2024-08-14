@@ -289,12 +289,13 @@ export default function DirectTable({
 
     useEffect(() => {
         if (selectedStats.length) {
-            //console.log({ currentOfficeStatsList });
             const tableSelectedStats = table.stats.map((stat) => clearStatName(stat.name));
-            currentOfficeStatsList.forEach((stat) => {
-                if (selectedStats.includes(clearStatName(stat.name)) && !tableSelectedStats.includes(clearStatName(stat.name))) {
-                    console.log("INCLUDE");
-                    addStatToTable({ stat, noToasty: true });
+
+            selectedStats.forEach((stat) => {
+                const curStat = currentOfficeStatsList.find((offStat) => clearStatName(offStat.name) == clearStatName(stat));
+                if (curStat && !tableSelectedStats.includes(clearStatName(curStat.name))) {
+                    console.log("ADDED");
+                    addStatToTable({ stat: curStat, noToasty: true });
                 }
             });
         }
