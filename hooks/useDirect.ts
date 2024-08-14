@@ -142,7 +142,7 @@ export default function useDirect() {
 
             //console.log("📃 LIST RES", res.data);
             if (res.data) {
-                const parcedList = res.data.map((list) => ({ id: list.id, name: list.name, selectedStats: JSON.parse(list.selectedStats) }));
+                const parcedList = res.data.map((list) => ({ id: list.id, name: list.name, selectedStats: JSON.parse(list.selectedStats), blankRows: JSON.parse(list.blankRows) }));
                 setSelectedStatsList(parcedList);
             }
         } catch (error) {
@@ -152,12 +152,13 @@ export default function useDirect() {
         }
     };
 
-    const saveSelectedList = async ({ name, selectedStats, setSelectedStatsList }: ISelectedStatsListItem & { setSelectedStatsList: Function }) => {
+    const saveSelectedList = async ({ name, selectedStats, setSelectedStatsList, blankRows }: ISelectedStatsListItem & { setSelectedStatsList: Function }) => {
         dispatch(setLoadingRedux(true));
         try {
             const res: any = await axiosClient.post(`direct/save_selected_list`, {
                 name,
                 selectedStats: JSON.stringify(selectedStats),
+                blankRows: JSON.stringify(blankRows),
             });
             dispatch(setLoadingRedux(false));
             if (res.data) {

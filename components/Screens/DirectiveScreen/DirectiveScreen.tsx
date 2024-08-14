@@ -142,6 +142,9 @@ export default function DirectiveScreen() {
     const [selectedStats, setSelectedStats] = useState<string[]>([
         // "Количество главных растущих статистик 2 года + текущий, РО1 📅", "Количество главных статистик по предприятию/количество главных растущих, РО1 📅", "Просроченная дебиторская задолженность, РО2 📅", "Отклонение факта реализации от месячного плана, РО2 📅"
     ]);
+
+    const [blankRows, setBlankRows] = useState<{ officeID: number; blankRowsValues: string[][] }[]>([]);
+
     const [selectedStatsList, setSelectedStatsList] = useState<ISelectedStatsListItem[]>([]);
     //cash cells
     const [cacheStatsLogics, setCacheStstsLogic] = useState<Map<string, ILogicCell[]>>(loadedStatLogicsMap);
@@ -398,10 +401,10 @@ export default function DirectiveScreen() {
                 </tr>
             </thead>,
             tabels.map((table) => {
-                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} selectedStats={selectedStats} setSelectedStats={setSelectedStats} />;
+                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} selectedStats={selectedStats} setSelectedStats={setSelectedStats} blankRows={blankRows} />;
             }),
         ];
-    }, [tabels, headers, charts, selectedStats]);
+    }, [tabels, headers, charts, selectedStats, blankRows]);
 
     // HEADERS EDIT BLOCK -- HTML
     const headersEditBlock = useMemo(() => {
@@ -683,10 +686,23 @@ export default function DirectiveScreen() {
     }, [selectedListIdx, selectedStatsList]);
 
     // TODO  SELECTED LIST
+
+    const onSaveList = () => {
+        const blankRows = tabels.map((table) => ({ officeID: table.officeID, blankRowsValues: table.blankRows.map((blankRow) => blankRow.values) }));
+        console.log(blankRows);
+        saveSelectedList({ name: saveListInputRef.current?.value || `лист выбора № ${selectedStatsList.length + 1} : ` + new Date().toLocaleDateString(), selectedStats, setSelectedStatsList, blankRows }).then(() => (saveListInputRef.current!.value = ""));
+    };
+
     const selectedStatsListHtml = useMemo(() => {
         if (!!selectedStatsList.length || tabels.some((table) => !!table.stats.length))
             return (
                 <div className={styles.loadListBlock}>
+                    {process.env.NODE_ENV !== "production" && (
+                        <>
+                            <button onClick={() => console.log(selectedStatsList)}>check list</button>
+                            <button onClick={() => console.log(blankRows)}>check blank rows</button>
+                        </>
+                    )}
                     <div className={styles.title}>
                         <div>Настройки списков статистик</div>
                         <Cog6ToothIcon width={30} color="white" />
@@ -701,9 +717,11 @@ export default function DirectiveScreen() {
                                     setSelectedListIdx(selectIdx);
                                     if (selectIdx > 0) {
                                         setSelectedStats(selectedStatsList[selectIdx - 1].selectedStats);
+                                        setBlankRows(selectedStatsList[selectIdx - 1].blankRows);
                                     } else {
                                         setSelectedStats([]);
-                                        setTables((state) => state.map((table) => ({ ...table, stats: [] })));
+                                        setBlankRows([]);
+                                        setTables((state) => state.map((table) => ({ ...table, stats: [], blankRows: [] })));
                                     }
                                 }}
                             >
@@ -735,7 +753,7 @@ export default function DirectiveScreen() {
                             </div>
                             <div className={styles.saveBlock}>
                                 <input type="text" ref={saveListInputRef} placeholder="название листа ?" />
-                                <div className={styles.saveBtn} onClick={() => saveSelectedList({ name: saveListInputRef.current?.value || `лист выбора № ${selectedStatsList.length + 1} : ` + new Date().toLocaleDateString(), selectedStats, setSelectedStatsList }).then(() => (saveListInputRef.current!.value = ""))}>
+                                <div className={styles.saveBtn} onClick={onSaveList}>
                                     <span> Cохранить как новый лист статистик</span>
                                     <CloudArrowUpIcon width={25} color="white" />
                                 </div>
@@ -744,7 +762,7 @@ export default function DirectiveScreen() {
                     )}
                 </div>
             );
-    }, [selectedStatsList, setSelectedStatsList, selectedStats, selectedListIdx, tabels]);
+    }, [selectedStatsList, setSelectedStatsList, selectedStats, selectedListIdx, tabels, blankRows]);
 
     //EFFECTS
 

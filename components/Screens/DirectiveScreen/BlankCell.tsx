@@ -9,14 +9,6 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn }: 
     return (
         <td onClick={() => setIsModal(true)} className={styles.blankCellMain}>
             <div className={styles.wrap}>
-                {/* {isModal && (
-                <Modal closeModalFunc={() => setIsModal(false)} scrollOnTop={false} fullWidth={true}>
-                    <div className={styles.modalMain}>
-                        <textarea value={input} onChange={(event) => setInput(event.target.value)} />
-                        <div onClick={() => onChange(input)}>Сохранить</div>
-                    </div>
-                </Modal>
-            )} */}
                 {!loaded ? (
                     <>
                         <textarea value={input} onChange={(event) => setInput(event.target.value)} onBlur={() => onChange(input)} id="cell-value" />
@@ -31,8 +23,6 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn }: 
                         {value}
                     </div>
                 )}
-
-                {/* <div>{value}</div> */}
             </div>
         </td>
     );

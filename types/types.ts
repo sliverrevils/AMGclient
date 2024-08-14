@@ -558,8 +558,11 @@ export interface IProtocolListItem {
     protocolNumber: number;
 }
 
+export interface IBlankRow {}
+
 export interface ISelectedStatsListItem {
     id?: number;
     name: string;
     selectedStats: string[];
+    blankRows: { officeID: number; blankRowsValues: string[][] }[];
 }

@@ -1,5 +1,5 @@
 import { IChartPropListItem, IDirectHeader, IDirectOffice, IDirectTable, ILogicCell, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI } from "@/types/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import DirectStat from "./DirectStat";
 import styles from "./table.module.scss";
@@ -31,6 +31,7 @@ export default function DirectTable({
     loaded,
     selectedStats,
     setSelectedStats,
+    blankRows,
 }: {
     table: IDirectTable;
     headers: IDirectHeader[];
@@ -44,6 +45,7 @@ export default function DirectTable({
     loaded: boolean;
     selectedStats: string[];
     setSelectedStats: React.Dispatch<React.SetStateAction<string[]>>;
+    blankRows: { officeID: number; blankRowsValues: string[][] }[];
 }) {
     const office = fullOrgWithdata.find((off) => off.id === table.officeID);
     if (!office) {
@@ -211,10 +213,11 @@ export default function DirectTable({
         [about]
     );
 
-    const addBlankRow = () => {
+    const addBlankRow = ({ values }: { values?: string[] } = {}) => {
         setTables((state) =>
             state.map((curTable) => {
                 if (curTable.id !== table.id) return curTable;
+
                 return {
                     ...curTable,
                     blankRows: [
@@ -222,8 +225,7 @@ export default function DirectTable({
                         {
                             id: nanoid(),
                             type: "blank",
-
-                            values: new Array(headers.length).fill(""),
+                            values: values?.length ? headers.map((_, idx) => values[idx] || "") : new Array(headers.length).fill(""),
                         },
                     ],
                 };
@@ -287,19 +289,38 @@ export default function DirectTable({
             })
         );
 
+    //! Добавление статистик и пустых рядов из листа
+    const curOffId = useRef(0);
     useEffect(() => {
         if (selectedStats.length) {
             const tableSelectedStats = table.stats.map((stat) => clearStatName(stat.name));
-
+            //добавление статистик
             selectedStats.forEach((stat) => {
                 const curStat = currentOfficeStatsList.find((offStat) => clearStatName(offStat.name) == clearStatName(stat));
                 if (curStat && !tableSelectedStats.includes(clearStatName(curStat.name))) {
-                    console.log("ADDED");
                     addStatToTable({ stat: curStat, noToasty: true });
                 }
             });
+
+            //добавление пустых рядов
         }
-    }, [selectedStats]);
+
+        if (blankRows.length) {
+            if (curOffId.current !== table.officeID) {
+                curOffId.current = table.officeID;
+                console.log("UPDATE 💡", curOffId.current == table.officeID);
+                const curBlankRows = blankRows.find((blank) => blank.officeID == table.officeID);
+                if (curBlankRows && curBlankRows.blankRowsValues.length) {
+                    console.log("CURRENT BLANK ROWS ➡️", curBlankRows);
+                    curBlankRows.blankRowsValues.forEach((blankRow) => {
+                        addBlankRow({ values: blankRow });
+                    });
+                }
+            }
+        } else {
+            curOffId.current = 0;
+        }
+    }, [selectedStats, blankRows]);
 
     return [
         <thead>
@@ -343,13 +364,19 @@ export default function DirectTable({
             <tr>
                 <td colSpan={headers.length}>
                     <div className={styles.btnsBlock}>
+                        {process.env.NODE_ENV !== "production" && (
+                            <>
+                                <button onClick={() => console.log(table)}>check table</button>
+                                <button onClick={() => console.log(blankRows)}>check blanks</button>
+                            </>
+                        )}
                         {!loaded && (
                             <div className={styles.addBtnsBlock}>
                                 <div className={styles.addStatBtn} onClick={() => setIsAddStat(true)}>
                                     <span>Добавить статистику</span>
                                     <DocumentPlusIcon width={20} />
                                 </div>
-                                <div className={styles.addStatBtn} onClick={addBlankRow}>
+                                <div className={styles.addStatBtn} onClick={() => addBlankRow()}>
                                     <span>Добавить пустой ряд</span>
                                     <EllipsisHorizontalIcon width={20} />
                                 </div>
