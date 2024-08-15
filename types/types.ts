@@ -564,5 +564,6 @@ export interface ISelectedStatsListItem {
     id?: number;
     name: string;
     selectedStats: string[];
+    selectedCharts: string[];
     blankRows: { officeID: number; blankRowsValues: string[][] }[];
 }

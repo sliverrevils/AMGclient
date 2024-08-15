@@ -139,9 +139,8 @@ export default function DirectiveScreen() {
         setScrollPos(null);
     };
 
-    const [selectedStats, setSelectedStats] = useState<string[]>([
-        // "Количество главных растущих статистик 2 года + текущий, РО1 📅", "Количество главных статистик по предприятию/количество главных растущих, РО1 📅", "Просроченная дебиторская задолженность, РО2 📅", "Отклонение факта реализации от месячного плана, РО2 📅"
-    ]);
+    const [selectedStats, setSelectedStats] = useState<string[]>([]);
+    const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
 
     const [blankRows, setBlankRows] = useState<{ officeID: number; blankRowsValues: string[][] }[]>([]);
 
@@ -160,6 +159,7 @@ export default function DirectiveScreen() {
         setCharts([]);
         setProtocolSelectedId(0);
     };
+
     //members
     const onAddMember = () => {
         if (usersListRef.current === null) return;
@@ -401,7 +401,25 @@ export default function DirectiveScreen() {
                 </tr>
             </thead>,
             tabels.map((table) => {
-                return <DirectTable key={table.id} headers={headers} table={table} setTables={setTables} fullOrgWithdata={fullOrgWithdata} setCharts={setCharts} charts={charts} saveScroll={saveScroll} cacheStatsLogics={cacheStatsLogics} cacheLogic={cacheLogic} loaded={mainStatus === "archive"} selectedStats={selectedStats} setSelectedStats={setSelectedStats} blankRows={blankRows} />;
+                return (
+                    <DirectTable
+                        key={table.id}
+                        headers={headers}
+                        table={table}
+                        setTables={setTables}
+                        fullOrgWithdata={fullOrgWithdata}
+                        setCharts={setCharts}
+                        charts={charts}
+                        saveScroll={saveScroll}
+                        cacheStatsLogics={cacheStatsLogics}
+                        cacheLogic={cacheLogic}
+                        loaded={mainStatus === "archive"}
+                        selectedStats={selectedStats}
+                        setSelectedStats={setSelectedStats}
+                        blankRows={blankRows}
+                        selectedCharts={selectedCharts}
+                    />
+                );
             }),
         ];
     }, [tabels, headers, charts, selectedStats, blankRows]);
@@ -685,12 +703,13 @@ export default function DirectiveScreen() {
         else toast.error("Лист не выбран");
     }, [selectedListIdx, selectedStatsList]);
 
-    // TODO  SELECTED LIST
+    // TODO  SELECTED CHARTS LIST
 
     const onSaveList = () => {
         const blankRows = tabels.map((table) => ({ officeID: table.officeID, blankRowsValues: table.blankRows.map((blankRow) => blankRow.values) }));
+        const selectedCharts = charts.map((chart) => clearStatName(chart.name));
         console.log(blankRows);
-        saveSelectedList({ name: saveListInputRef.current?.value || `лист выбора № ${selectedStatsList.length + 1} : ` + new Date().toLocaleDateString(), selectedStats, setSelectedStatsList, blankRows }).then(() => (saveListInputRef.current!.value = ""));
+        saveSelectedList({ name: saveListInputRef.current?.value || `лист выбора № ${selectedStatsList.length + 1} : ` + new Date().toLocaleDateString(), selectedStats, setSelectedStatsList, blankRows, selectedCharts }).then(() => (saveListInputRef.current!.value = ""));
     };
 
     const selectedStatsListHtml = useMemo(() => {
@@ -718,7 +737,9 @@ export default function DirectiveScreen() {
                                     if (selectIdx > 0) {
                                         setSelectedStats(selectedStatsList[selectIdx - 1].selectedStats);
                                         setBlankRows(selectedStatsList[selectIdx - 1].blankRows);
+                                        setSelectedCharts(selectedStatsList[selectIdx - 1].selectedCharts);
                                     } else {
+                                        setCharts([]);
                                         setSelectedStats([]);
                                         setBlankRows([]);
                                         setTables((state) => state.map((table) => ({ ...table, stats: [], blankRows: [] })));
@@ -744,7 +765,10 @@ export default function DirectiveScreen() {
                             <div
                                 className={styles.dropStatsBtn}
                                 onClick={() => {
-                                    setTables((state) => state.map((table) => ({ ...table, stats: [] })));
+                                    setCharts([]);
+                                    setSelectedCharts([]);
+                                    setSelectedStats([]);
+                                    setTables((state) => state.map((table) => ({ ...table, stats: [], blankRows: [] })));
                                     setSelectedListIdx(0);
                                 }}
                             >
@@ -762,7 +786,7 @@ export default function DirectiveScreen() {
                     )}
                 </div>
             );
-    }, [selectedStatsList, setSelectedStatsList, selectedStats, selectedListIdx, tabels, blankRows]);
+    }, [selectedStatsList, setSelectedStatsList, selectedStats, selectedListIdx, tabels, blankRows, charts]);
 
     //EFFECTS
 
@@ -988,6 +1012,10 @@ export default function DirectiveScreen() {
                     <button onClick={() => console.log(members)}>members show</button>
                     <hr />
                     <button onClick={() => console.log(selectedStats)}>selected stats show</button>
+                    <hr />
+                    <button onClick={() => console.log(charts)}>show charts</button>
+                    <hr />
+                    <button onClick={() => console.log(selectedCharts)}>show selected charts</button>
                 </div>
             )}
             {mainStatusShooceHtml}

@@ -202,7 +202,7 @@ export default function UsersScreen() {
                 <h2>Список всех сотрудников</h2>
                 {addUserField ? (
                     <div className={styles.addForm}>
-                        <h3>Создание новго пользователя</h3>
+                        <h3>Создание нового пользователя</h3>
 
                         <span className={styles.addHelp}>Имя</span>
                         <input type="text" value={newUserName} onChange={(event) => setNewUserName(clearSmiels(event.target.value.trim()))} placeholder="" />

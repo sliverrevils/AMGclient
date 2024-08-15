@@ -32,6 +32,7 @@ export default function DirectTable({
     selectedStats,
     setSelectedStats,
     blankRows,
+    selectedCharts,
 }: {
     table: IDirectTable;
     headers: IDirectHeader[];
@@ -44,6 +45,7 @@ export default function DirectTable({
     cacheLogic: () => void;
     loaded: boolean;
     selectedStats: string[];
+    selectedCharts: string[];
     setSelectedStats: React.Dispatch<React.SetStateAction<string[]>>;
     blankRows: { officeID: number; blankRowsValues: string[][] }[];
 }) {
@@ -299,13 +301,19 @@ export default function DirectTable({
                 const curStat = currentOfficeStatsList.find((offStat) => clearStatName(offStat.name) == clearStatName(stat));
                 if (curStat && !tableSelectedStats.includes(clearStatName(curStat.name))) {
                     addStatToTable({ stat: curStat, noToasty: true });
+                    if (selectedCharts?.includes(clearStatName(curStat.name))) {
+                        if (stat && curStat.dateColumn.raportInfo?.chartProps && !charts.some((chart) => chart.statId === curStat.id)) {
+                            const { clickFunc, ...statProps } = curStat.dateColumn.raportInfo?.chartProps;
+                            setCharts((state) => [...state, { ...statProps, statId: curStat.id, name: curStat.name }]);
+                        }
+                    }
                 }
             });
 
             //добавление пустых рядов
         }
 
-        if (blankRows.length) {
+        if (blankRows?.length) {
             if (curOffId.current !== table.officeID) {
                 curOffId.current = table.officeID;
                 console.log("UPDATE 💡", curOffId.current == table.officeID);
@@ -320,7 +328,7 @@ export default function DirectTable({
         } else {
             curOffId.current = 0;
         }
-    }, [selectedStats, blankRows]);
+    }, [selectedStats, blankRows, selectedCharts]);
 
     return [
         <thead>
