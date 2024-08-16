@@ -10,7 +10,7 @@ import Modal from "@/components/elements/Modal/Modal";
 import useTableStatistics from "@/hooks/useTableStatistics";
 
 import { ViewColumnsIcon, XCircleIcon, BuildingOffice2Icon, Cog6ToothIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, BarsArrowUpIcon, UserPlusIcon, UserMinusIcon, ArrowDownCircleIcon, CloudArrowDownIcon, TrashIcon, CloudArrowUpIcon, ArrowUpTrayIcon, DocumentArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { clearStatName, hexToRgba, rgbToHex, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
+import { clearStatName, hexToRgba, rgbToHex, saveExcelFile, timeNumberToString, timeStrToNumber } from "@/utils/funcs";
 import useUsers from "@/hooks/useUsers";
 import Mission from "@/components/elements/Mission/Mission";
 import Charts from "./Charts";
@@ -703,8 +703,6 @@ export default function DirectiveScreen() {
         else toast.error("Лист не выбран");
     }, [selectedListIdx, selectedStatsList]);
 
-    // TODO  SELECTED CHARTS LIST
-
     const onSaveList = () => {
         const blankRows = tabels.map((table) => ({ officeID: table.officeID, blankRowsValues: table.blankRows.map((blankRow) => blankRow.values) }));
         const selectedCharts = charts.map((chart) => clearStatName(chart.name));
@@ -844,15 +842,101 @@ export default function DirectiveScreen() {
     }, []);
 
     //EXCEL SAVE
+    const onSaveExcel0 = () => {
+        // Создаем новый рабочий файл
+        const workbook = new ExelJs.Workbook();
+
+        // Добавляем первый лист и таблицу
+        const worksheet1 = workbook.addWorksheet("Таблица 1");
+        worksheet1.columns = [
+            { header: "Имя", key: "name", width: 30 },
+            { header: "Возраст", key: "age", width: 10 },
+        ];
+
+        worksheet1.addRow({ name: "Иван", age: 25 });
+        worksheet1.addRow({ name: "Мария", age: 30 });
+
+        // Добавляем второй лист и таблицу
+        const worksheet2 = workbook.addWorksheet("Таблица 2");
+        worksheet2.columns = [
+            { header: "Продукт", key: "product", width: 30 },
+            { header: "Цена", key: "price", width: 10 },
+        ];
+
+        worksheet2.addRow({ product: "Яблоко", price: 50 });
+        worksheet2.addRow({ product: "Банан", price: 30 });
+
+        // Сохраняем файл
+        saveExcelFile(workbook, "test");
+    };
+
+    //!-------------------------------------MY
     interface ITableParcedRow {
         type: string;
         cells: string[];
     }
+
     const onSaveExcel = () => {
         const fileName = `Протокол № ${info.protocol} 📆${new Date(info.date).toLocaleDateString()}`;
         const workbook = new ExelJs.Workbook();
+        const infoProtocol = workbook.addWorksheet("Информация протакола");
+        const membersRC = workbook.addWorksheet("Члены РС");
         const sheet = workbook.addWorksheet(fileName);
 
+        //➡️INFO
+        infoProtocol.columns = [
+            { header: "Информация протокола", key: "key", width: 40 },
+            { header: "", key: "value", width: 15 },
+        ];
+
+        const infohead = infoProtocol.getRow(1);
+        infohead.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF8056" },
+        };
+        infohead.font = {
+            name: "Arial",
+            family: 4,
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+        };
+        infohead.height = 35;
+
+        infoProtocol.addRow({ key: "№ протокола", value: info.protocol });
+        infoProtocol.addRow({ key: "Дата проведения ", value: new Date(info.date).toLocaleDateString() });
+        infoProtocol.addRow({ key: "Протокол прошлого РС", value: info.lastProtocol ? "есть" : "нет" });
+        infoProtocol.addRow({ key: "Стратегия филиала", value: info.strategy ? "есть" : "нет" });
+        infoProtocol.addRow({ key: "Директива ФП", value: info.directFP ? "есть" : "нет" });
+        infoProtocol.addRow({ key: "Перечень программ и проектов ", value: info.docs ? "есть" : "нет" });
+
+        //➡️MEMBERS
+        membersRC.columns = [
+            { header: "Отделения", key: "office", width: 30 },
+            { header: "Члены РС", key: "member", width: 50 },
+            { header: "Присутствие", key: "value", width: 30 },
+        ];
+        const memhead = membersRC.getRow(1);
+        memhead.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF8056" },
+        };
+        memhead.font = {
+            name: "Arial",
+            family: 4,
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+        };
+        memhead.height = 35;
+
+        members.forEach((member) => {
+            membersRC.addRow({ office: member.officeNumber ? `${member.officeNumber} отделение` : "участник", member: userByID(member.userId)?.name, value: member.presence ? "присутствует" : "отсутствует" });
+        });
+
+        //➡️TABLE
         const table = document.querySelector("#mainTable");
         if (!table) return;
 
@@ -937,8 +1021,28 @@ export default function DirectiveScreen() {
                 };
             });
         });
+        membersRC.eachRow((row) => {
+            row.height = 20;
+            row.eachCell((cell) => {
+                cell.alignment = {
+                    wrapText: true,
+                    horizontal: "centerContinuous",
+                    vertical: "middle",
+                };
+            });
+        });
+        infoProtocol.eachRow((row) => {
+            row.height = 20;
+            row.eachCell((cell, cellIdx) => {
+                if (cellIdx)
+                    cell.alignment = {
+                        wrapText: true,
+                        horizontal: "centerContinuous",
+                        vertical: "middle",
+                    };
+            });
+        });
 
-        console.log(parsedArr.filter((row) => !!row.cells.length));
         //--------------- PARSE TABLE
 
         //IMG-----------------
@@ -977,18 +1081,10 @@ export default function DirectiveScreen() {
         });
         //------------------IMG
 
-        workbook.xlsx.writeBuffer().then((data) => {
-            const blob = new Blob([data], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
-            });
-            const url = window.URL.createObjectURL(blob);
-            //console.log("URL", url);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileName + ".xlsx";
-            a.click();
-            window.URL.revokeObjectURL(url);
-        });
+        //SAVE FILE
+        console.log(parsedArr.filter((row) => !!row.cells.length));
+
+        saveExcelFile(workbook, fileName);
     };
 
     return (

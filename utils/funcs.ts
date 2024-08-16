@@ -1,5 +1,5 @@
 import { TableStatisticListItemI } from "@/types/types";
-
+import * as ExelJs from "exceljs";
 export const logicMath = (logic, fields, index, lastFields?) => {
     //logic- string(ИНДЕКС ПОЛЯ @ С 1)  fields []
     let clearData = false;
@@ -212,4 +212,19 @@ export function rgbToHex(RGBstring: string | undefined): string {
 
 export function splitNumberStr(num: string | number): string {
     return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+export function saveExcelFile(workbook: ExelJs.Workbook, fileName: string) {
+    workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+        //console.log("URL", url);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName + ".xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
 }
