@@ -1,6 +1,6 @@
 import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
-import { IDirectHeader, ILogicCell, ISelectedStatsListItem } from "@/types/types";
+import { IDirectHeader, ILoadedTable, ILogicCell, ISelectedStatsListItem } from "@/types/types";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -41,7 +41,7 @@ export default function useDirect() {
             return null;
         }
     };
-    const getProtocolById = async ({ id, setCacheStstsLogic, setHeaders, setInfo, setMembers, setTables }: { id: number; setCacheStstsLogic: Function; setHeaders: Function; setInfo: Function; setMembers: Function; setTables: Function }) => {
+    const getProtocolById = async ({ id, setCacheStstsLogic, setHeaders, setInfo, setMembers, setLoadedTabels }: { id: number; setCacheStstsLogic: Function; setHeaders: Function; setInfo: Function; setMembers: Function; setLoadedTabels: Function }): Promise<ILoadedTable[]> => {
         dispatch(setLoadingRedux(true));
         try {
             const res = await axiosClient.get(`direct/dir-by-id/${id}`);
@@ -59,13 +59,15 @@ export default function useDirect() {
                 setCacheStstsLogic(cacheStatsLogicsLoaded);
                 setInfo(infoLoaded);
                 setMembers(membersLoaded);
-                setTables(tabelsLoaded);
+                setLoadedTabels(tabelsLoaded);
+                return tabelsLoaded;
             }
         } catch (error) {
             dispatch(setLoadingRedux(false));
             axiosError(error);
-            return null;
+            return [];
         }
+        return [];
     };
     const deleteProtocolById = async ({ id, afterFunc }: { id: number; afterFunc: Function }) => {
         dispatch(setLoadingRedux(true));

@@ -567,3 +567,10 @@ export interface ISelectedStatsListItem {
     selectedCharts: string[];
     blankRows: { officeID: number; blankRowsValues: string[][] }[];
 }
+
+export interface ILoadedTable {
+    officeID: number;
+    stats: number[];
+    description: string;
+    blankRows: IBlankRow[];
+}

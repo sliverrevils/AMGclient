@@ -1,7 +1,7 @@
 import { ElementRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./direct.module.scss";
 import { nanoid } from "@reduxjs/toolkit";
-import { IChartPropListItem, IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILogicCell, IOrgItem, IProtocolListItem, ISelectedStatsListItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, IDirectInfoDoc, IDirectMembers, IDirectOffice, IDirectTable, ILoadedTable, ILogicCell, IOrgItem, IProtocolListItem, ISelectedStatsListItem, ITableStat, OfficeI, RaportTableInfoI, StatItemLogic, StatItemReady, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
 import { daySec } from "@/utils/vars";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
@@ -114,6 +114,7 @@ export default function DirectiveScreen() {
     const [isShowEditHeaders, setIsShowEditHeaders] = useState(false);
     const [selectedHeader, setSelectedHeader] = useState(0);
     const [tabels, setTables] = useState<IDirectTable[]>([]);
+    const [loadedTabels, setLoadedTabels] = useState<ILoadedTable[]>([]);
     const [members, setMembers] = useState<IDirectMembers[]>([]);
     const [charts, setCharts] = useState<IChartPropListItem[]>([]);
     const INFO_INIT = {
@@ -263,33 +264,71 @@ export default function DirectiveScreen() {
     };
 
     //tabels
-    const onAddTable = (item: IDirectOffice) => {
+    const onAddTable = ({ office, loadedTable }: { office: IDirectOffice; loadedTable?: ILoadedTable }) => {
+        let statsWithLogic: ITableStat[] = [];
+        if (loadedTable) {
+            const stats = loadedTable.stats.reduce<TableStatisticListItemI[]>((acc, curStatId) => {
+                const curStat = tableStatisticsList.find((stat) => stat.id === curStatId);
+                if (curStat) {
+                    return [...acc, curStat];
+                } else {
+                    return acc;
+                }
+            }, []);
+
+            statsWithLogic = stats.map((stat, statId) => {
+                const currentStatCelarName = clearStatName(statNameById(stat.id));
+                setSelectedStats((state) => [...new Set([...state, currentStatCelarName])]);
+                const cache = cacheStatsLogics.get(currentStatCelarName)?.reduce((acc, cell) => ({ ...acc, [cell.headerId]: cell.logicStr }), {});
+                return {
+                    ...stat,
+                    type: "stat",
+
+                    logicStrArr: headers.map((header) => ({
+                        headerId: header.id,
+                        logicStr: cache ? cache[header.id] || "" : "",
+                    })), //создаем массив строк с логикой колонок
+                };
+            });
+            console.log("CUR STATS", statsWithLogic);
+        }
+
         setTables((state) => [
             ...state,
             {
                 id: nanoid(),
-                officeID: item.id,
+                officeID: office.id,
                 description: "",
                 blankRows: [],
-                stats: [],
+                stats: statsWithLogic,
             },
         ]);
     };
 
-    const addAllOffices = () => {
+    const addAllOffices = ({ loadedTabels = [] }: { loadedTabels?: ILoadedTable[] } = {}) => {
         fullOrgWithdata.forEach((office, officeIDx) => {
-            setInfo({ ...INFO_INIT, protocol: protocolList.length + 1 });
-            onAddTable(office);
-            setMembers((state) => {
-                return [
-                    ...state,
-                    {
-                        officeNumber: officeIDx + 1,
-                        presence: 0,
-                        userId: office.leadership,
-                    },
-                ];
-            });
+            if (loadedTabels.length) {
+                const curLoadedTable = loadedTabels.find((loadTable) => loadTable.officeID === office.id);
+                if (curLoadedTable) {
+                    onAddTable({ office, loadedTable: curLoadedTable });
+                }
+            } else {
+                onAddTable({ office });
+            }
+
+            if (!loadedTabels.length) {
+                setInfo({ ...INFO_INIT, protocol: protocolList.length + 1 });
+                setMembers((state) => {
+                    return [
+                        ...state,
+                        {
+                            officeNumber: officeIDx + 1,
+                            presence: 0,
+                            userId: office.leadership,
+                        },
+                    ];
+                });
+            }
         });
     };
 
@@ -302,12 +341,24 @@ export default function DirectiveScreen() {
 
     //SAVE PROTOCOL ON SERVER
     const saveDirectOnServer = useCallback(() => {
+        const savedTabels = tabels.reduce<ILoadedTable[]>((acc, table) => {
+            const curStats = table.stats.map((stat) => stat.id);
+            const curTable: ILoadedTable = {
+                officeID: table.officeID,
+                stats: curStats,
+                description: table.description,
+                blankRows: table.blankRows,
+            };
+            return [...acc, curTable];
+        }, []);
+
+        console.log("STATS", savedTabels);
         saveDirect({
             columns: JSON.stringify(headers),
             cacheStatsLogics: JSON.stringify(Object.fromEntries(cacheStatsLogics)),
             info: JSON.stringify(info),
             members: JSON.stringify(members),
-            tabels: JSON.stringify(tabels),
+            tabels: JSON.stringify(savedTabels),
         }).then(() => setIsSavedProtocol(true));
     }, [headers, cacheStatsLogics, info, members, tabels]);
 
@@ -805,7 +856,10 @@ export default function DirectiveScreen() {
     //ЗАГРУЖАЕМ ПО ВЫБОРУ ПРОТОКОЛ
     useEffect(() => {
         if (protocolSelectedId) {
-            getProtocolById({ id: protocolSelectedId, setCacheStstsLogic, setHeaders, setInfo, setMembers, setTables });
+            getProtocolById({ id: protocolSelectedId, setCacheStstsLogic, setHeaders, setInfo, setMembers, setLoadedTabels }).then((loadedTabels) => {
+                console.log("LOADED", loadedTabels);
+                addAllOffices({ loadedTabels });
+            });
         }
     }, [protocolSelectedId]);
 
@@ -825,7 +879,9 @@ export default function DirectiveScreen() {
                 }
 
                 if (mainStatus === "archive") {
-                    getProtocolList({ setProtocolList });
+                    Promise.all([getDirectSettings({ setHeaders, setCacheStstsLogic, defaultHeaders }), getProtocolList({ setProtocolList })]).then(() => {
+                        getProtocolList({ setProtocolList });
+                    });
                 }
                 // });
             }
@@ -1112,6 +1168,8 @@ export default function DirectiveScreen() {
                     <button onClick={() => console.log(charts)}>show charts</button>
                     <hr />
                     <button onClick={() => console.log(selectedCharts)}>show selected charts</button>
+                    <hr />
+                    <button onClick={() => console.log(cacheStatsLogics)}>show logic</button>
                 </div>
             )}
             {mainStatusShooceHtml}
