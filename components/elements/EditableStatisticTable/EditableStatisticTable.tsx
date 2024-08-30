@@ -355,9 +355,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                 dateEnd = new Date(yearsArr.at(-1)! + 1, 11, 31).getTime();
             }
 
-            for (let i = secStart, periodEnd = 0, monthStr = ""; i <= dateEnd + daySec; i += daySec) {
-                // console.log("VARS", i + daySec, "<=", dateEnd);
-                // console.log("❤️❤️❤️", new Date(dateEnd).getDate(), new Date(i).getDate(), getDayOfWeek(i) === dateColumn.firstWeekDay);
+            for (let i = secStart, periodEnd = 0, monthStr = ""; i < dateEnd + daySec; i += daySec) {
                 if (periodEnd <= i + daySec) {
                     if (dateColumn?.type == "Месячный" && getDayOfWeek(i) === dateColumn.firstWeekDay) {
                         let periodEndDate = new Date(i + (dateColumn.periodDayCount - 1) * daySec);
@@ -374,6 +372,7 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                                 end = new Date(i).getTime();
                                 periodEnd = i;
                             }
+
                             newRows = [
                                 {
                                     start: secStart,
@@ -384,11 +383,19 @@ export default function EditableStatisticTable({ selectedTable, disableSelectOnL
                             ];
                         }
 
+                        const curEnd = periodWorning && dateColumn.isFullPeriod ? dateEnd : periodEndDate.getTime();
+                        let curStart = new Date(i).getTime();
+                        console.log("➡️", new Date(curEnd).toLocaleDateString(), new Date(dateEnd).toLocaleDateString(), new Date(i).toLocaleDateString());
+                        if (new Date(i).getMonth() !== new Date(dateEnd).getMonth()) {
+                            curStart = new Date(dateEnd).getTime();
+                        }
+
                         newRows = [
                             ...newRows,
                             {
-                                start: new Date(i).getTime(),
-                                end: periodWorning && dateColumn.isFullPeriod ? dateEnd : periodEndDate.getTime(),
+                                start: curStart,
+                                //start: new Date(i).getTime(),
+                                end: curEnd,
                                 warning: periodWorning ? false : dateEnd < periodEndDate.getTime(),
                                 description: "",
                             },
