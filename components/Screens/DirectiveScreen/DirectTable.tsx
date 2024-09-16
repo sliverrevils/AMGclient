@@ -60,12 +60,12 @@ export default function DirectTable({
             </thead>
         );
     }
-    let allItemStats: TableStatisticListItemI[] = [office.mainPattern, ...office.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: office.name, statFromType: "off" }));
+    let allItemStats: TableStatisticListItemI[] = [office.mainPattern, ...office.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: office.name, statFromType: "off" })) as TableStatisticListItemI[];
     office.departments.forEach((dep) => {
-        const depStatsTemp = [dep.mainPattern, ...dep.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: dep.name, statFromType: "dep" }));
+        const depStatsTemp = [dep.mainPattern, ...dep.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: dep.name, statFromType: "dep" })) as TableStatisticListItemI[];
         allItemStats = [...allItemStats, ...depStatsTemp];
         dep.sections.forEach((sec) => {
-            const secStatsTemp = [sec.mainPattern, ...sec.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: sec.name, statFromType: "sec" }));
+            const secStatsTemp = [sec.mainPattern, ...sec.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: sec.name, statFromType: "sec" })) as TableStatisticListItemI[];
             allItemStats = [...allItemStats, ...secStatsTemp];
         });
     });
