@@ -354,6 +354,8 @@ export interface TableStatisticListItemI {
     name: string;
     dateColumn: DateColumnI;
     lastUpdate: string;
+    statFromName: string;
+    statFromType: string;
 }
 
 export interface StatItemReady extends TableStatisticListItemI {

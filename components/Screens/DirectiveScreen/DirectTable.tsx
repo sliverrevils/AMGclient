@@ -5,7 +5,7 @@ import DirectStat from "./DirectStat";
 import styles from "./table.module.scss";
 
 import useTableStatistics from "@/hooks/useTableStatistics";
-import { clearStatName } from "@/utils/funcs";
+import { clearStatName, setStatColor } from "@/utils/funcs";
 import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import Modal from "@/components/elements/Modal/Modal";
@@ -17,6 +17,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { nanoid } from "@reduxjs/toolkit";
 import BlankCell from "./BlankCell";
+import { orgItemsColorsObj } from "@/utils/vars";
 
 export default function DirectTable({
     table,
@@ -59,11 +60,13 @@ export default function DirectTable({
             </thead>
         );
     }
-    let allItemStats: (TableStatisticListItemI | undefined)[] = [office.mainPattern, ...office.patterns];
+    let allItemStats: TableStatisticListItemI[] = [office.mainPattern, ...office.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: office.name, statFromType: "off" }));
     office.departments.forEach((dep) => {
-        allItemStats = [...allItemStats, dep.mainPattern, ...dep.patterns];
+        const depStatsTemp = [dep.mainPattern, ...dep.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: dep.name, statFromType: "dep" }));
+        allItemStats = [...allItemStats, ...depStatsTemp];
         dep.sections.forEach((sec) => {
-            allItemStats = [...allItemStats, sec.mainPattern, ...sec.patterns];
+            const secStatsTemp = [sec.mainPattern, ...sec.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: sec.name, statFromType: "sec" }));
+            allItemStats = [...allItemStats, ...secStatsTemp];
         });
     });
     const currentOfficeStatsList = allItemStats.filter((stat) => stat !== undefined) as TableStatisticListItemI[];
@@ -248,7 +251,12 @@ export default function DirectTable({
                         return (
                             <div key={stat.name} className={`${styles.statItem} noselect`} onClick={() => (isAdded ? onRemoveStat(stat.id) : addStatToTable({ stat }))}>
                                 <CheckBadgeIcon width={25} fill={isAdded ? "#FF8056" : "gray"} opacity={isAdded ? 1 : 0.2} />
-                                <span>{clearStatName(stat.name)}</span>
+                                <div className={styles.statNameBlock}>
+                                    <div className={`${styles.statFrom}`} style={{ background: setStatColor(stat.statFromType) }}>
+                                        {stat.statFromName}
+                                    </div>
+                                    <div>{clearStatName(stat.name)}</div>
+                                </div>
                             </div>
                         );
                     })}

@@ -1,5 +1,6 @@
 import { TableStatisticListItemI } from "@/types/types";
 import * as ExelJs from "exceljs";
+import { orgItemsColorsObj } from "./vars";
 export const logicMath = (logic, fields, index, lastFields?) => {
     //logic- string(ИНДЕКС ПОЛЯ @ С 1)  fields []
     let clearData = false;
@@ -228,3 +229,17 @@ export function saveExcelFile(workbook: ExelJs.Workbook, fileName: string) {
         window.URL.revokeObjectURL(url);
     });
 }
+
+export const setStatColor = (fromType: string) => {
+    switch (fromType) {
+        case "off":
+            return orgItemsColorsObj.office;
+            break;
+        case "dep":
+            return orgItemsColorsObj.department;
+            break;
+        case "sec":
+            return orgItemsColorsObj.section;
+            break;
+    }
+};

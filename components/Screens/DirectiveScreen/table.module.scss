@@ -35,6 +35,27 @@
         cursor: pointer;
         display: flex;
         gap: 5px;
+
+
+        .statNameBlock {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .statFrom {
+
+                font-size: 10px;
+                border-radius: 3px;
+                text-align: center;
+                padding: 3px 10px;
+                color: white;
+                background: cornflowerblue;
+            }
+
+        }
+
+
+
     }
 }
 

@@ -1170,6 +1170,8 @@ export default function DirectiveScreen() {
                     <button onClick={() => console.log(selectedCharts)}>show selected charts</button>
                     <hr />
                     <button onClick={() => console.log(cacheStatsLogics)}>show logic</button>
+                    <hr />
+                    <button onClick={() => console.log(fullOrgWithdata)}>show fullOrgWithdata</button>
                 </div>
             )}
             {mainStatusShooceHtml}

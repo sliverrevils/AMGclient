@@ -1,6 +1,6 @@
 import { IChartPropListItem, IDirectHeader, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
 import DirectCell from "./DirectCell";
-import { clearStatName } from "@/utils/funcs";
+import { clearStatName, setStatColor } from "@/utils/funcs";
 import { ChartBarSquareIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, EyeIcon, EyeSlashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import styles from "./stat.module.scss";
 import { toast } from "react-toastify";
@@ -56,7 +56,10 @@ export default function DirectStat({
                 if (!headerIdx) {
                     return (
                         <td key={header.id + "_row" + headerIdx}>
-                            <div className={styles.statNameCell}>
+                            <div
+                                className={styles.statNameCell}
+                                // style={{ outline: `2px solid ${setStatColor(stat.statFromType)}`, borderRadius: 3 }}
+                            >
                                 <StatView statView={statView} />
                                 <div className={styles.statPositionBlock}>
                                     <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
@@ -77,7 +80,10 @@ export default function DirectStat({
                                     }}
                                     onMouseLeave={() => !loaded && setStatToView(null)}
                                 >
-                                    <div className={styles.name}>
+                                    <div className={styles.statFrom} style={{ color: setStatColor(stat.statFromType) }}>
+                                        {stat.statFromName}
+                                    </div>
+                                    <div className={styles.name} style={{ color: setStatColor(stat.statFromType) }}>
                                         <span id="cell-value">{clearStatName(stat.name)}</span>
                                     </div>
                                     <div className={styles.period}>
