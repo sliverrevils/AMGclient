@@ -62,7 +62,7 @@ export default function DirectTable({
     }
     let allItemStats: TableStatisticListItemI[] = [office.mainPattern, ...office.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: office.name, statFromType: "off" })) as TableStatisticListItemI[];
     office.departments.forEach((dep) => {
-        const depStatsTemp = [dep.mainPattern, ...dep.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: dep.name, statFromType: "dep" })) as TableStatisticListItemI[];
+        const depStatsTemp = [dep.mainPattern, ...dep.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: dep.name, statFromType: "dep", depCode: dep.ckp })) as TableStatisticListItemI[];
         allItemStats = [...allItemStats, ...depStatsTemp];
         dep.sections.forEach((sec) => {
             const secStatsTemp = [sec.mainPattern, ...sec.patterns].filter((stat) => stat !== undefined).map((stat) => ({ ...stat, statFromName: sec.name, statFromType: "sec" })) as TableStatisticListItemI[];
@@ -356,12 +356,13 @@ export default function DirectTable({
                 // СТАТИСТИКИ
                 table.stats.map((stat, statIdx) => {
                     const statReady = addingFilledField(stat);
+                    const depCode = stat?.depCode || null;
                     const statItemLogic: StatItemLogic = {
                         ...statReady,
                         logicStrArr: stat.logicStrArr,
                     };
 
-                    return <DirectStat key={stat.id + "statKey"} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
+                    return <DirectStat fullOrgWithdata={fullOrgWithdata} key={stat.id + "statKey"} depCode={depCode} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
                 })
             }
             {table.blankRows?.map((blankRow) => {

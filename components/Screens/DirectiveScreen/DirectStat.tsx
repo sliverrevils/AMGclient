@@ -1,4 +1,4 @@
-import { IChartPropListItem, IDirectHeader, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
+import { IChartPropListItem, IDirectHeader, IDirectOffice, RaportTableInfoI, StatItemLogic, StatItemReadyWithCoords } from "@/types/types";
 import DirectCell from "./DirectCell";
 import { clearStatName, setStatColor } from "@/utils/funcs";
 import { ChartBarSquareIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, EyeIcon, EyeSlashIcon, XCircleIcon } from "@heroicons/react/24/outline";
@@ -20,6 +20,8 @@ export default function DirectStat({
     saveScroll,
     cacheLogic,
     loaded,
+    depCode,
+    fullOrgWithdata,
 }: {
     headers: IDirectHeader[];
     stat: StatItemLogic;
@@ -32,6 +34,8 @@ export default function DirectStat({
     saveScroll: () => void;
     cacheLogic: () => void;
     loaded: boolean;
+    depCode: string | null;
+    fullOrgWithdata: IDirectOffice[];
 }) {
     const addChartToggle = (statId: number) => {
         setCharts((state) => {
@@ -60,6 +64,7 @@ export default function DirectStat({
                                 className={styles.statNameCell}
                                 // style={{ outline: `2px solid ${setStatColor(stat.statFromType)}`, borderRadius: 3 }}
                             >
+                                {depCode !== null && <div className={styles.depCode}>{depCode}</div>}
                                 <StatView statView={statView} />
                                 <div className={styles.statPositionBlock}>
                                     <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
@@ -134,7 +139,7 @@ export default function DirectStat({
                     return <td key={header.id + "_row" + headerIdx}>!!?логика</td>;
                 }
 
-                return <DirectCell key={header.id + "_row" + headerIdx} logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} cacheLogic={cacheLogic} loaded={loaded} />;
+                return <DirectCell key={header.id + "_row" + headerIdx} fullOrgWithdata={fullOrgWithdata} logicStr={currentLogic.logicStr} onCurrentChangeLogic={onCurrentChangeLogic} cellIndex={headerIdx} stat={stat} columnName={headers[headerIdx].title} cacheLogic={cacheLogic} loaded={loaded} />;
             })}
         </tr>
     );

@@ -3,6 +3,17 @@
     display: flex;
     justify-content: space-between;
 
+    .depCode {
+        background: cornflowerblue;
+        color: white;
+        padding: 3px 5px;
+        position: absolute;
+        top: 50%;
+        transform: translateX(-100%) translateY(-50%);
+        border-radius: 5px 0 0 5px;
+
+    }
+
 
     .statPositionBlock {
         //border: 1px solid black;

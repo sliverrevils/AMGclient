@@ -1,0 +1,19 @@
+.mainBlock {
+    background: white;
+    border: 1px solid black;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .titleBlock {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .offices {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+    }
+}

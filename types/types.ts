@@ -356,6 +356,7 @@ export interface TableStatisticListItemI {
     lastUpdate: string;
     statFromName: string;
     statFromType: string;
+    depCode?: string;
 }
 
 export interface StatItemReady extends TableStatisticListItemI {

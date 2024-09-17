@@ -1,15 +1,35 @@
 import Modal from "@/components/elements/Modal/Modal";
-import { RaportTableInfoI, StatItemLogic } from "@/types/types";
+import { IDirectOffice, RaportTableInfoI, StatItemLogic } from "@/types/types";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./cell.module.scss";
+import menuStyle from "./orgMenu.module.scss";
 import { clearStatName } from "@/utils/funcs";
+import useUI from "@/hooks/useUI";
 
-export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded }: { logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
+export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded, fullOrgWithdata }: { fullOrgWithdata: IDirectOffice[]; logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
     const { statHeaders, statLastRowValues, statFilled, statPrevRowValues, statFutureRowValues } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
     //STATE
     const [isSelectedCell, setIsSelectedCell] = useState(false);
+    //HOOKS
+    const { createMenu } = useUI();
+
+    const [lineMenu, onOpenLineMenu, onCloseLineMenu, lineMenuStyle] = createMenu({ onWindow: true, position: "fixed" });
+
+    const menuHTML = (
+        <div style={{ ...lineMenuStyle }} className={menuStyle.mainBlock}>
+            <div className={menuStyle.titleBlock}>
+                <div> Выбор статистики </div>
+                <div onClick={onCloseLineMenu}>🚾</div>
+            </div>
+            <div className={menuStyle.offices}>
+                {fullOrgWithdata.map((office) => (
+                    <div>{office.name}</div>
+                ))}
+            </div>
+        </div>
+    );
 
     const statHelpMenu = () => {
         return (
@@ -122,6 +142,11 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
         return calcedLogic || "пусто";
     };
 
+    const onOrgMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.preventDefault();
+        onOpenLineMenu(event);
+    };
+
     return (
         <td className={styles.cellWrap} onClick={() => !loaded && setIsSelectedCell(true)}>
             <div className={styles.cellBlock}>
@@ -133,6 +158,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                         fullWidth
                         scrollOnTop={false}
                     >
+                        {menuHTML}
                         <div className={styles.modalBlock}>
                             <div className={styles.field}>
                                 <div className={styles.help}>колонка Директивы РК</div>
@@ -171,7 +197,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
 
                             <div className={styles.field}>
                                 <div className={styles.help}>логическая строка</div>
-                                <input className={styles.logicStr} value={logicStr} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" />
+                                <input className={styles.logicStr} value={logicStr} onContextMenu={onOrgMenu} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" />
                             </div>
 
                             <div className={styles.field}>
