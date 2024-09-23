@@ -16,11 +16,11 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
         let curOffStats: TableStatisticListItemI[] = [off.mainPattern, ...off.patterns].filter((stat) => stat !== undefined) as TableStatisticListItemI[];
         off.departments.forEach((dep) => {
             const depStats = [dep.mainPattern, ...dep.patterns].filter((stat) => !!stat);
-            curOffStats = [...curOffStats, ...depStats];
+            curOffStats = [...curOffStats, ...depStats].filter((stat) => stat !== undefined) as TableStatisticListItemI[];
 
             dep.sections.forEach((sec) => {
                 const secStats = [sec.mainPattern, ...sec.patterns].filter((stat) => !!stat);
-                curOffStats = [...curOffStats, ...secStats];
+                curOffStats = [...curOffStats, ...secStats].filter((stat) => stat !== undefined) as TableStatisticListItemI[];
             });
         });
 
