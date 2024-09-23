@@ -1,19 +1,209 @@
 .mainBlock {
+    position: relative;
+    font-size: 12px;
     background: white;
-    border: 1px solid black;
-    padding: 5px 10px;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 10px;
+    padding: 5px 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 5px;
+    overflow-y: scroll;
+    max-height: 600px;
+    box-shadow: 5px 5px 10px rgb(138, 138, 138);
+
+    .closeMenuBtn {
+        position: absolute;
+        right: 0px;
+        cursor: pointer;
+    }
+
 
     .titleBlock {
         display: flex;
         justify-content: space-between;
     }
 
-    .offices {
+    .officesList {
         display: flex;
         flex-direction: column;
-        gap: 50px;
+        gap: 5px;
+
+        .officeItem {
+            position: relative;
+            border: 2px solid #FF8056;
+            border-radius: 5px;
+            background: #FF8056;
+
+
+            .officeName {
+                //background: #FF8056;
+                padding: 2px 10px;
+                text-align: center;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+            }
+
+
+
+            .officeStats {
+                display: flex;
+                flex-direction: column;
+
+            }
+
+            .officeDeps {
+                //padding-left: 3px;
+
+                .depItem {
+                    background: cornflowerblue;
+
+                    .depName {
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: space-between;
+                        color: white;
+                    }
+
+                    .depStats {}
+
+                    .depSecs {
+                        // padding-left: 3px;
+
+                        .secItem {
+                            background: lightgreen;
+
+                            .secName {}
+                        }
+                    }
+
+                }
+
+            }
+
+
+        }
     }
+}
+
+.statItem {
+    width: 500px;
+    position: relative;
+
+    padding-bottom: 2px;
+    cursor: default;
+    //overflow: hidden;
+
+
+
+
+    .statName {
+
+        background: rgb(234, 234, 234);
+        font-weight: 500;
+        color: rgb(0, 0, 0);
+        border: 1px solid black;
+        text-align: center;
+        border-radius: 5px;
+        padding: 2px 5px;
+    }
+
+    .statHeaders {
+        //position: absolute;
+        //left: 10%;
+        //right: 10%;
+        z-index: 999;
+        display: none;
+
+        background: white;
+
+        cursor: default;
+        //padding-left: 5px;
+        justify-content: center;
+
+        flex-wrap: wrap;
+        font-size: 10px;
+        max-width: 100%;
+        gap: 3px;
+
+
+        .statHeaderItem {
+
+            min-width: 75px;
+            background: rgb(240, 240, 240);
+            position: relative;
+            display: flex;
+            border-radius: 5px;
+            //flex: 0 1 auto;
+
+            padding: 2px 5px;
+
+            border: 1px solid black;
+
+            .headerName {
+                //background: #fcb39b;
+                width: 100%;
+                padding: 2px 5px;
+                border-radius: 3px;
+                text-align: center;
+            }
+
+            .headerBtns {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translateX(-50%) translateY(-55%);
+                display: none;
+                cursor: pointer;
+
+                &>* {
+                    font-size: 15px;
+                }
+            }
+
+
+
+            &:hover {
+                background: #FF8056;
+
+                .headerName {
+                    background: #FF8056;
+                    color: white;
+                }
+
+                .headerBtns {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    &:hover {
+        z-index: 999;
+        border: 1px solid rgb(0, 0, 0);
+        border-radius: 5px;
+        box-shadow: -3px -3px 8px black, 3px 3px 8px black;
+
+
+        .statName {
+            background: #FFEB3B;
+            color: black;
+            border: 0;
+            //border: 2px solid black;
+            //font-weight: 600;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .statHeaders {
+            //padding: 5px 0px;
+            display: flex;
+            border-radius: 0px 0px 5px 5px;
+        }
+    }
+
+
 }

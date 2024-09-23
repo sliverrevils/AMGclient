@@ -1,32 +1,125 @@
 import Modal from "@/components/elements/Modal/Modal";
-import { IDirectOffice, RaportTableInfoI, StatItemLogic } from "@/types/types";
+import { IDirectOffice, RaportTableInfoI, StatItemLogic, TableStatisticListItemI } from "@/types/types";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./cell.module.scss";
 import menuStyle from "./orgMenu.module.scss";
 import { clearStatName } from "@/utils/funcs";
 import useUI from "@/hooks/useUI";
+import { ChevronDoubleDownIcon, ChevronLeftIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 
 export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, stat, columnName, cacheLogic, loaded, fullOrgWithdata }: { fullOrgWithdata: IDirectOffice[]; logicStr: string; onCurrentChangeLogic: (value: string) => void; cellIndex: number; stat: StatItemLogic; columnName: string; cacheLogic: () => void; loaded: boolean }) {
     const { isGrowing, filled, lastUpdate, periodStr } = stat;
     const { statHeaders, statLastRowValues, statFilled, statPrevRowValues, statFutureRowValues } = stat.dateColumn.raportInfo as RaportTableInfoI;
 
+    //! ALL STATS LIST
+    const allStatsList = fullOrgWithdata.reduce<TableStatisticListItemI[]>((acc, off) => {
+        let curOffStats: TableStatisticListItemI[] = [off.mainPattern, ...off.patterns].filter((stat) => stat !== undefined) as TableStatisticListItemI[];
+        off.departments.forEach((dep) => {
+            const depStats = [dep.mainPattern, ...dep.patterns].filter((stat) => !!stat);
+            curOffStats = [...curOffStats, ...depStats];
+
+            dep.sections.forEach((sec) => {
+                const secStats = [sec.mainPattern, ...sec.patterns].filter((stat) => !!stat);
+                curOffStats = [...curOffStats, ...secStats];
+            });
+        });
+
+        return [...acc, ...curOffStats];
+    }, []);
+
     //STATE
     const [isSelectedCell, setIsSelectedCell] = useState(false);
+    const [fullOrgDataState, setFullOrgDataState] = useState(fullOrgWithdata.map((off) => ({ ...off, selected: false, departments: off.departments.map((dep) => ({ ...dep, selected: false, sections: dep.sections.map((sec) => ({ ...sec, selected: false })) })) })));
     //HOOKS
     const { createMenu } = useUI();
 
-    const [lineMenu, onOpenLineMenu, onCloseLineMenu, lineMenuStyle] = createMenu({ onWindow: true, position: "fixed" });
+    const [lineMenu, onOpenLineMenu, onCloseLineMenu, lineMenuStyle] = createMenu({ onWindow: false, position: "fixed" });
+
+    const statMenuItem = useCallback(
+        (stat: TableStatisticListItemI | undefined) => {
+            if (stat === undefined) return null;
+            const onHeaderClick = ({ headerIdxAndpos }: { headerIdxAndpos: string }) => {
+                onCurrentChangeLogic(`${logicStr} <${clearStatName(stat.name)}&${headerIdxAndpos}>`);
+            };
+
+            const isFuture = stat.dateColumn.raportInfo?.statFutureRowValues?.length ? true : false;
+            const isPrev = stat.dateColumn.raportInfo?.statPrevRowValues?.length ? true : false;
+            const isCur = stat.dateColumn.raportInfo?.statLastRowValues?.length ? true : false;
+            return (
+                <div className={menuStyle.statItem}>
+                    <div className={menuStyle.statName}>{clearStatName(stat.name)}</div>
+                    <div className={menuStyle.statHeaders}>
+                        {stat.dateColumn.raportInfo?.statHeaders?.map((header, headerIdx) => (
+                            <div className={menuStyle.statHeaderItem}>
+                                <div className={menuStyle.headerName}> {header}</div>
+                                <div className={menuStyle.headerBtns}>
+                                    {isCur && <div onClick={() => onHeaderClick({ headerIdxAndpos: `@${headerIdx}` })}>➡️</div>}
+                                    {isPrev && <div onClick={() => onHeaderClick({ headerIdxAndpos: `@@${headerIdx}` })}>⤴️</div>}
+                                    {isFuture && <div onClick={() => onHeaderClick({ headerIdxAndpos: `@@@${headerIdx}` })}>⤵️</div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        },
+        [logicStr]
+    );
 
     const menuHTML = (
         <div style={{ ...lineMenuStyle }} className={menuStyle.mainBlock}>
             <div className={menuStyle.titleBlock}>
                 <div> Выбор статистики </div>
-                <div onClick={onCloseLineMenu}>🚾</div>
             </div>
-            <div className={menuStyle.offices}>
-                {fullOrgWithdata.map((office) => (
-                    <div>{office.name}</div>
-                ))}
+            <div className={menuStyle.closeMenuBtn} onClick={onCloseLineMenu}>
+                ❌
+            </div>
+            <div className={menuStyle.officesList}>
+                {fullOrgDataState.map((office, offIdx) => {
+                    const offStatsArr = [office.mainPattern, ...office.patterns];
+                    const isSelectedOff = fullOrgDataState.some((off) => off.selected);
+                    if (isSelectedOff && !office.selected) return null;
+                    return (
+                        <div className={menuStyle.officeItem}>
+                            <div className={menuStyle.officeName} onClick={() => setFullOrgDataState((state) => state.map((curOff, curOffIdx) => (curOffIdx !== offIdx ? { ...curOff, selected: false } : { ...curOff, selected: !curOff.selected })))}>
+                                <div>{office.name}</div>
+                                <div>{office.selected ? <ChevronDoubleDownIcon width={15} /> : <ChevronLeftIcon width={15} />}</div>
+                            </div>
+
+                            <div className={menuStyle.officeStats}>{offStatsArr.map((stat) => statMenuItem(stat))}</div>
+                            {office.selected && (
+                                <div className={menuStyle.officeDeps}>
+                                    {office.departments.map((dep, depIdx) => {
+                                        const depStatsArr = [dep.mainPattern, ...dep.patterns];
+                                        return (
+                                            <div className={menuStyle.depItem}>
+                                                <div className={menuStyle.depName} onClick={() => setFullOrgDataState((state) => state.map((curOff, curOffIdx) => (curOffIdx !== offIdx ? curOff : { ...curOff, departments: curOff.departments.map((curDep, curDepIdx) => (curDepIdx !== depIdx ? { ...curDep, selected: false } : { ...curDep, selected: !curDep.selected })) })))}>
+                                                    <div>{dep.name}</div>
+                                                    <div>{dep.selected ? <ChevronDoubleDownIcon width={15} /> : <ChevronLeftIcon width={15} />}</div>
+                                                </div>
+                                                <div className={menuStyle.depStats}>{depStatsArr.map((stat) => statMenuItem(stat))}</div>
+                                                {dep.selected && (
+                                                    <div className={menuStyle.depSecs}>
+                                                        {dep.sections.map((sec) => {
+                                                            const secStatsArr = [sec.mainPattern, ...sec.patterns].filter((stat) => !!stat);
+                                                            if (!secStatsArr.length) return null;
+                                                            return (
+                                                                <div className={menuStyle.secItem}>
+                                                                    <div className={menuStyle.secName}> {sec.name}</div>
+                                                                    <div className={menuStyle.secStats}>{secStatsArr.map((stat) => statMenuItem(stat))}</div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
@@ -102,9 +195,42 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
     };
 
     const calcCell = (logic: string): string => {
-        logic = logic.replace("@status", isGrowing);
+        //TODO ВЫРЕЗАЕМ СТРОКИ И МЕНЯЕМ ЗНАЧЕНИЕ
+        let replacedLogic = logic.replaceAll(/<(.*?)>/g, (decorator, a, b) => {
+            decorator = decorator.replaceAll("<", "");
+            decorator = decorator.replaceAll(">", "");
+            let [statName, pos] = decorator.split("&");
+            console.log({ decorator, stat, pos });
 
-        let replacedLogic = logic.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {
+            const curStat = allStatsList.find((stat) => clearStatName(stat.name) === statName);
+            if (!curStat) return "статистика не найдена ";
+            if (!pos) return "ошибка в написании";
+
+            //
+            pos = pos.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {
+                const targetIndex = Number(decorator.replace("@@@", ""));
+                const cellValue = curStat.dateColumn.raportInfo?.statFutureRowValues[targetIndex];
+                return String(cellValue);
+            });
+
+            pos = pos.replaceAll(/@@\d{1,3}/g, (decorator, a, b) => {
+                const targetIndex = Number(decorator.replace("@@", ""));
+                const cellValue = curStat.dateColumn.raportInfo?.statPrevRowValues?.[targetIndex];
+                return String(cellValue);
+            });
+
+            pos = pos.replaceAll(/@\d{1,3}/g, (decorator, a, b) => {
+                const targetIndex = Number(decorator.replace("@", ""));
+                const cellValue = curStat.dateColumn.raportInfo?.statLastRowValues?.[targetIndex];
+                return String(cellValue);
+            });
+
+            return pos;
+        });
+
+        replacedLogic = replacedLogic.replace("@status", isGrowing);
+
+        replacedLogic = replacedLogic.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {
             const targetIndex = Number(decorator.replace("@@@", ""));
 
             // console.log(statLastRowValues?.[targetIndex]);
@@ -142,7 +268,7 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
         return calcedLogic || "пусто";
     };
 
-    const onOrgMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const onOrgMenu = (event: React.MouseEvent<HTMLTextAreaElement | HTMLDivElement, MouseEvent>) => {
         event.preventDefault();
         onOpenLineMenu(event);
     };
@@ -160,12 +286,27 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                     >
                         {menuHTML}
                         <div className={styles.modalBlock}>
-                            <div className={styles.field}>
-                                <div className={styles.help}>колонка Директивы РК</div>
+                            <div className={styles.field} style={{ alignSelf: "flex-start" }}>
+                                <div className={styles.help}>текущая колонка Директивы РК</div>
                                 <div className={styles.columnName}>{columnName}</div>
                             </div>
+                            <div className={styles.field} style={{ alignSelf: "center" }}>
+                                <div className={styles.help}>результат ячейки</div>
+                                <div className={styles.resultBlock}>{calcCell(logicStr)}</div>
+                            </div>
                             <div className={styles.field}>
-                                <div className={styles.help}>используемая статистика ( последнее обновление в {new Date(lastUpdate).toLocaleString()} )</div>
+                                <div className={styles.help}>логическая строка ячейки</div>
+                                <div className={styles.addBtn} onClick={onOrgMenu}>
+                                    <span>
+                                        <PlusCircleIcon width={20} />
+                                    </span>
+                                    <span>Добавить данные из статистик</span>
+                                </div>
+                                <textarea className={styles.logicStr} value={logicStr} onContextMenu={onOrgMenu} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" spellCheck={false}></textarea>
+                            </div>
+
+                            <div className={styles.field}>
+                                <div className={styles.help}>используемая статистика в ячейке ( последнее обновление в {new Date(lastUpdate).toLocaleString()} )</div>
                                 <div className={styles.statName}>{clearStatName(stat.name)}</div>
                             </div>
                             {statPrevRowValues && statPrevRowValues.length && (
@@ -195,15 +336,6 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 </div>
                             )}
 
-                            <div className={styles.field}>
-                                <div className={styles.help}>логическая строка</div>
-                                <input className={styles.logicStr} value={logicStr} onContextMenu={onOrgMenu} onChange={(event) => onCurrentChangeLogic(event.target.value.trimStart())} placeholder="мат. вычесления оборачивать в квадратные скобки [ 2 + 1 ]" />
-                            </div>
-
-                            <div className={styles.field}>
-                                <div className={styles.help}>результат колонки</div>
-                                <div className={styles.resultBlock}>{calcCell(logicStr)}</div>
-                            </div>
                             {process.env.NODE_ENV !== "production" && (
                                 <div>
                                     <button onClick={() => console.log("PREV PERIOD", statPrevRowValues)}>check raport info</button>

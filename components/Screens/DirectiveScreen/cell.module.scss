@@ -8,7 +8,7 @@
             border-radius: 10px;
             padding: 30px 20px;
             background: white;
-            align-self: center;
+            align-self: flex-start;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -23,9 +23,28 @@
                 padding: 10px;
                 background: rgb(250, 250, 250);
 
+                .addBtn {
+                    font-size: 17px;
+                    cursor: pointer;
+                    align-self: flex-start;
+                    padding: 2px 10px;
+                    display: flex;
+                    //align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    border: 2px solid cornflowerblue;
+                    border-radius: 5px;
+                    background: rgb(169, 193, 238);
+                    color: white;
+
+                    &:hover {
+                        background: cornflowerblue;
+                    }
+                }
+
 
                 .help {
-                    opacity: .6;
+                    opacity: 1;
                     margin-left: 20px;
                 }
 
@@ -34,7 +53,7 @@
                     font-size: 20px;
                     align-self: flex-start;
                     padding: 5px 10px;
-                    border: 2px solid rgba(100, 148, 237, 0.425);
+                    border: 2px solid rgb(100, 148, 237);
                     border-radius: 5px;
                 }
 
@@ -50,11 +69,13 @@
                 .logicStr {
                     background-color: white;
                     width: 100%;
-                    font-size: 20px;
+                    font-size: 15px;
                     padding: 5px 10px;
                     border-radius: 5px;
                     border: 2px solid rgb(4, 131, 4);
-                    text-align: center;
+                    text-align: left;
+                    min-height: 150px;
+                    resize: vertical;
                 }
 
                 .helpBlock {
@@ -66,13 +87,13 @@
                     .helpItem {
                         color: white;
                         background: #FF8056;
-                        border: 1px solid rgba(0, 0, 0, 0.171);
+                        border: 1px solid rgb(206, 206, 206);
                         border-radius: 5px;
                         padding: 2px 5px;
                         display: flex;
                         gap: 5px;
                         cursor: pointer;
-                        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.521);
+                        box-shadow: 2px 2px 3px rgb(0, 0, 0);
 
                         .decor {
                             background: white;
