@@ -338,6 +338,12 @@ export default function DirectTable({
         }
     }, [selectedStats, blankRows, selectedCharts]);
 
+    //TODO SORTED LIST
+
+    const sortedList = useEffect(() => {
+        //   const allList=[table.blankRows]erjgiojsdfiljlgk
+    }, [table]);
+
     return [
         <thead>
             <tr>
@@ -371,7 +377,7 @@ export default function DirectTable({
                         {blankRow.values.map((value, idx) => {
                             const onChange = onChangeBlank.bind(null, blankRow.id, idx);
                             const onDelRow = onDelBlankRow.bind(null, blankRow.id);
-                            return <BlankCell value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
+                            return <BlankCell columnName={headers[idx].title} fullOrgWithdata={fullOrgWithdata} value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
                         })}
                     </tr>
                 );
