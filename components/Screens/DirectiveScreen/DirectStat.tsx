@@ -64,7 +64,11 @@ export default function DirectStat({
                                 className={styles.statNameCell}
                                 // style={{ outline: `2px solid ${setStatColor(stat.statFromType)}`, borderRadius: 3 }}
                             >
-                                {depCode !== null && <div className={styles.depCode}>{depCode}</div>}
+                                {depCode !== null && (
+                                    <div className={styles.depCode} id="depCode">
+                                        {depCode}
+                                    </div>
+                                )}
                                 <StatView statView={statView} />
                                 <div className={styles.statPositionBlock}>
                                     <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />

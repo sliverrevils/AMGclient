@@ -1007,7 +1007,10 @@ export default function DirectiveScreen() {
             if (child.nodeName === "THEAD") {
                 const row = child.querySelector("tr");
                 //console.log(row);
-                const cells = [...row!.querySelectorAll("#head")].map((el) => el.innerHTML);
+                let cells = [...row!.querySelectorAll("#head")].map((el) => el.innerHTML);
+
+                console.log("CELLS", cells);
+
                 parsedArr.push({
                     type: "head",
                     cells,
@@ -1055,12 +1058,28 @@ export default function DirectiveScreen() {
                 const rows = [...child.querySelectorAll("tr")];
                 rows.forEach((row) => {
                     const cells = [...row.querySelectorAll("#cell-value")].map((el) => el.innerHTML);
+                    const depCode = row.querySelector("#depCode")?.innerHTML;
                     parsedArr.push({
                         type: "row",
                         cells,
                     });
 
-                    const curRow = sheet.addRow(cells.reduce((acc, value, idx) => ({ ...acc, [idx + "_column"]: value }), {}));
+                    // const curRow = sheet.addRow(cells.reduce((acc, value, idx) => ({ ...acc, [idx + "_column"]: value }), {}));
+                    const curRow = sheet.addRow(
+                        cells.reduce((acc, value, idx) => {
+                            let textArr = [{ text: value, font: { color: { argb: "FF000000" } } }];
+                            if (!idx && depCode) {
+                                textArr = [{ text: depCode + " ", font: { color: { argb: "FF0000FF" } } }, ...textArr];
+                            }
+
+                            return {
+                                ...acc,
+                                [idx + "_column"]: {
+                                    richText: textArr,
+                                },
+                            };
+                        }, {})
+                    );
                     curRow.alignment = { vertical: "middle", horizontal: "center" };
                     curRow.height = 35;
                 });
