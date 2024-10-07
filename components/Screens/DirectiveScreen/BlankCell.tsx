@@ -225,7 +225,7 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
                             </Modal>
                         )}
                         <div className={styles.value} onClick={() => !loaded && setIsSelectedCell(true)}>
-                            <span>{calcCell(input)}</span>
+                            <span id="cell-value">{calcCell(input)}</span>
                         </div>
                         {first && (
                             <div onClick={() => delRowFn()} className={styles.delBtn}>
