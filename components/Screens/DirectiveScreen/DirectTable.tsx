@@ -340,9 +340,36 @@ export default function DirectTable({
 
     //TODO SORTED LIST
 
-    const sortedList = useEffect(() => {
-        //   const allList=[table.blankRows]erjgiojsdfiljlgk
-    }, [table]);
+    const sortedList = useMemo(() => {
+        const allItemsArr = [...table.stats, ...table.blankRows];
+
+        return allItemsArr.map((item) => {
+            if (item.type === "stat") {
+                //STAT HTML
+                const stat = item;
+                const statReady = addingFilledField(stat);
+                const depCode = stat?.depCode || null;
+                const statItemLogic: StatItemLogic = {
+                    ...statReady,
+                    logicStrArr: stat.logicStrArr,
+                };
+
+                return <DirectStat fullOrgWithdata={fullOrgWithdata} key={stat.id + "statKey"} depCode={depCode} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
+            } else {
+                //BLANK HTML
+                const blankRow = item;
+                return (
+                    <tr key={Math.random()}>
+                        {blankRow.values.map((value, idx) => {
+                            const onChange = onChangeBlank.bind(null, blankRow.id, idx);
+                            const onDelRow = onDelBlankRow.bind(null, blankRow.id);
+                            return <BlankCell columnName={headers[idx].title} fullOrgWithdata={fullOrgWithdata} value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
+                        })}
+                    </tr>
+                );
+            }
+        });
+    }, [table, loaded, fullOrgWithdata]);
 
     return [
         <thead>
@@ -358,7 +385,8 @@ export default function DirectTable({
             </tr>
         </thead>,
         <tbody>
-            {
+            {sortedList}
+            {/* {
                 // СТАТИСТИКИ
                 table.stats.map((stat, statIdx) => {
                     const statReady = addingFilledField(stat);
@@ -381,7 +409,7 @@ export default function DirectTable({
                         })}
                     </tr>
                 );
-            })}
+            })} */}
 
             {/* ДОБАВЛЕНИЕ СТАТИСТИКИ */}
             <tr>

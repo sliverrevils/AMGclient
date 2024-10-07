@@ -1,5 +1,5 @@
 import Modal from "@/components/elements/Modal/Modal";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./blank.module.scss";
 import { ChevronDoubleDownIcon, ChevronLeftIcon, PlusCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { IDirectOffice, TableStatisticListItemI } from "@/types/types";
@@ -181,6 +181,13 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
         event.preventDefault();
         onOpenLineMenu(event);
     };
+
+    useEffect(() => {
+        if (!isSelectedCell && input !== value) {
+            onChange(input);
+        }
+    }, [isSelectedCell]);
+
     return (
         <td className={styles.blankCellMain}>
             <div className={styles.wrap}>
@@ -228,7 +235,7 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
                     </>
                 ) : (
                     <div className={styles.loaded} id="cell-value">
-                        {value}
+                        {input}
                     </div>
                 )}
             </div>
