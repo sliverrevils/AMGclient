@@ -61,6 +61,11 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
                                 </div>
                             </div>
                         ))}
+                        <div className={menuStyle.statHeaderItem}>
+                            <div className={menuStyle.headerName} style={{ cursor: "pointer" }} onClick={() => onHeaderClick({ headerIdxAndpos: `@status` })}>
+                                Статус 📈
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -138,6 +143,9 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
             const curStat = allStatsList.find((stat) => clearStatName(stat.name) === statName);
             if (!curStat) return "статистика не найдена ";
             if (!pos) return "ошибка в написании";
+
+            //status
+            pos = pos.replace("@status", String(curStat.dateColumn.raportInfo?.trendStatus));
 
             //
             pos = pos.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {

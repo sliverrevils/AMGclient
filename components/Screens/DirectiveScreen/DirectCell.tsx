@@ -59,6 +59,11 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
                                 </div>
                             </div>
                         ))}
+                        <div className={menuStyle.statHeaderItem}>
+                            <div className={menuStyle.headerName} style={{ cursor: "pointer" }} onClick={() => onHeaderClick({ headerIdxAndpos: `@status` })}>
+                                Статус 📈
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -200,11 +205,14 @@ export default function DirectCell({ logicStr, onCurrentChangeLogic, cellIndex, 
             decorator = decorator.replaceAll("<", "");
             decorator = decorator.replaceAll(">", "");
             let [statName, pos] = decorator.split("&");
-            console.log({ decorator, stat, pos });
+            //console.log({ decorator, stat, pos });
 
             const curStat = allStatsList.find((stat) => clearStatName(stat.name) === statName);
             if (!curStat) return "статистика не найдена ";
             if (!pos) return "ошибка в написании";
+
+            //status
+            pos = pos.replace("@status", String(curStat.dateColumn.raportInfo?.trendStatus));
 
             //
             pos = pos.replaceAll(/@@@\d{1,3}/g, (decorator, a, b) => {
