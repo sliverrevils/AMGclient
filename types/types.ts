@@ -490,6 +490,7 @@ export interface IDirectTable {
     stats: ITableStat[];
     description: string;
     blankRows: IBlankRow[];
+    sortItemsArr: string[];
     // stats: StatItemLogic[];
 }
 

@@ -22,7 +22,11 @@ export default function DirectStat({
     loaded,
     depCode,
     fullOrgWithdata,
+    onItemMoveDown,
+    onItemMoveUp,
 }: {
+    onItemMoveDown: Function;
+    onItemMoveUp: Function;
     headers: IDirectHeader[];
     stat: StatItemLogic;
     onChangeLogic: (statId: number, logicHeaderId: string, value: string) => void;
@@ -71,8 +75,10 @@ export default function DirectStat({
                                 )}
                                 <StatView statView={statView} />
                                 <div className={styles.statPositionBlock}>
-                                    <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
-                                    <DocumentArrowDownIcon width={20} onClick={() => onStatMoveDown(stat.id)} />
+                                    {/* <DocumentArrowUpIcon width={20} onClick={() => onStatMoveUp(stat.id)} />
+                                    <DocumentArrowDownIcon width={20} onClick={() => onStatMoveDown(stat.id)} /> */}
+                                    <DocumentArrowUpIcon width={20} onClick={() => onItemMoveUp()} />
+                                    <DocumentArrowDownIcon width={20} onClick={() => onItemMoveDown()} />
                                 </div>
                                 <div
                                     className={styles.statNameBlock}

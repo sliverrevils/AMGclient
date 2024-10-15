@@ -1,14 +1,14 @@
 import Modal from "@/components/elements/Modal/Modal";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./blank.module.scss";
-import { ChevronDoubleDownIcon, ChevronLeftIcon, PlusCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ChevronDoubleDownIcon, ChevronLeftIcon, DocumentArrowDownIcon, DocumentArrowUpIcon, PlusCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { IDirectOffice, TableStatisticListItemI } from "@/types/types";
 import { clearStatName } from "@/utils/funcs";
 import menuStyle from "./orgMenu.module.scss";
 import useUI from "@/hooks/useUI";
 import mStyles from "./blank.module.scss";
 
-export default function BlankCell({ loaded, first, value, onChange, delRowFn, fullOrgWithdata, columnName }: { columnName: string; fullOrgWithdata: IDirectOffice[]; loaded: boolean; first: boolean; value: string; onChange: Function; delRowFn: Function }) {
+export default function BlankCell({ firstCell, loaded, first, value, onChange, delRowFn, fullOrgWithdata, columnName, onItemMoveUp, onItemMoveDown }: { onItemMoveDown: Function; onItemMoveUp: Function; firstCell: boolean; columnName: string; fullOrgWithdata: IDirectOffice[]; loaded: boolean; first: boolean; value: string; onChange: Function; delRowFn: Function }) {
     //const [isModal, setIsModal] = useState(false);
 
     //! ALL STATS LIST
@@ -231,6 +231,12 @@ export default function BlankCell({ loaded, first, value, onChange, delRowFn, fu
                                     </div>
                                 </div>
                             </Modal>
+                        )}
+                        {firstCell && (
+                            <div className={styles.statPositionBlock}>
+                                <DocumentArrowUpIcon width={20} onClick={() => onItemMoveUp()} />
+                                <DocumentArrowDownIcon width={20} onClick={() => onItemMoveDown()} />
+                            </div>
                         )}
                         <div className={styles.value} onClick={() => !loaded && setIsSelectedCell(true)}>
                             <span id="cell-value">{calcCell(input)}</span>

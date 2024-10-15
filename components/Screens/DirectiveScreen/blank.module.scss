@@ -51,9 +51,23 @@
             color: rgb(71, 71, 71);
         }
 
+        .statPositionBlock {
+            padding: 10px 0;
+            height: 100%;
+            color: green;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
         &:hover {
             .delBtn {
                 opacity: .6;
+            }
+
+            .statPositionBlock {
+                display: flex;
             }
         }
 

@@ -106,9 +106,10 @@ export default function DirectTable({
 
                 return {
                     ...curTable,
-
+                    sortItemsArr: [...curTable.sortItemsArr, currentStatCelarName],
                     stats: [
                         ...curTable.stats,
+
                         {
                             ...stat,
                             type: "stat",
@@ -223,12 +224,15 @@ export default function DirectTable({
             state.map((curTable) => {
                 if (curTable.id !== table.id) return curTable;
 
+                const curId = nanoid();
+
                 return {
                     ...curTable,
+                    sortItemsArr: [...curTable.sortItemsArr, curId],
                     blankRows: [
                         ...curTable.blankRows,
                         {
-                            id: nanoid(),
+                            id: curId,
                             type: "blank",
                             values: values?.length ? headers.map((_, idx) => values[idx] || "") : new Array(headers.length).fill(""),
                         },
@@ -339,36 +343,86 @@ export default function DirectTable({
     }, [selectedStats, blankRows, selectedCharts]);
 
     //TODO SORTED LIST
+    const onItemMoveUp = (idx: number) => {
+        if (idx) {
+            console.log("move up", idx);
+            let tempSortArr = JSON.parse(JSON.stringify(table.sortItemsArr));
+            const temp = tempSortArr[idx - 1];
+            tempSortArr[idx - 1] = tempSortArr[idx];
+            tempSortArr[idx] = temp;
+            //console.log(tempSortArr);
+
+            setTables((state) => state.map((curTable) => (table.id !== curTable.id ? curTable : { ...curTable, sortItemsArr: tempSortArr })));
+        }
+    };
+    const onItemMoveDown = (idx: number) => {
+        if (idx !== table.sortItemsArr.length - 1) {
+            console.log("move down", idx);
+            let tempSortArr = JSON.parse(JSON.stringify(table.sortItemsArr));
+            const temp = tempSortArr[idx + 1];
+            tempSortArr[idx + 1] = tempSortArr[idx];
+            tempSortArr[idx] = temp;
+            //console.log(tempSortArr);
+            setTables((state) => state.map((curTable) => (table.id !== curTable.id ? curTable : { ...curTable, sortItemsArr: tempSortArr })));
+        }
+    };
 
     const sortedList = useMemo(() => {
         const allItemsArr = [...table.stats, ...table.blankRows];
+        const order = table.sortItemsArr;
 
-        return allItemsArr.map((item) => {
-            if (item.type === "stat") {
-                //STAT HTML
-                const stat = item;
-                const statReady = addingFilledField(stat);
-                const depCode = stat?.depCode || null;
-                const statItemLogic: StatItemLogic = {
-                    ...statReady,
-                    logicStrArr: stat.logicStrArr,
-                };
+        return allItemsArr
+            .sort((a, b) => {
+                let aName, bName;
+                aName = a.type == "blank" ? a.id : clearStatName(a.name);
+                bName = b.type == "blank" ? b.id : clearStatName(b.name);
+                return order.indexOf(aName) - order.indexOf(bName);
+            })
+            .map((item, itemIdx) => {
+                if (item.type === "stat") {
+                    //STAT HTML
+                    const stat = item;
+                    const statReady = addingFilledField(stat);
+                    const depCode = stat?.depCode || null;
+                    const statItemLogic: StatItemLogic = {
+                        ...statReady,
+                        logicStrArr: stat.logicStrArr,
+                    };
 
-                return <DirectStat fullOrgWithdata={fullOrgWithdata} key={stat.id + "statKey"} depCode={depCode} headers={headers} onChangeLogic={onChangeLogic} stat={statItemLogic} setCharts={setCharts} charts={charts} onStatMoveDown={onStatMoveDown} onStatMoveUp={onStatMoveUp} onRemoveStat={onRemoveStat} saveScroll={saveScroll} cacheLogic={cacheLogic} loaded={loaded} />;
-            } else {
-                //BLANK HTML
-                const blankRow = item;
-                return (
-                    <tr key={Math.random()}>
-                        {blankRow.values.map((value, idx) => {
-                            const onChange = onChangeBlank.bind(null, blankRow.id, idx);
-                            const onDelRow = onDelBlankRow.bind(null, blankRow.id);
-                            return <BlankCell columnName={headers[idx].title} fullOrgWithdata={fullOrgWithdata} value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
-                        })}
-                    </tr>
-                );
-            }
-        });
+                    return (
+                        <DirectStat
+                            fullOrgWithdata={fullOrgWithdata}
+                            onItemMoveDown={() => onItemMoveDown(itemIdx)}
+                            onItemMoveUp={() => onItemMoveUp(itemIdx)}
+                            key={stat.id + "statKey"}
+                            depCode={depCode}
+                            headers={headers}
+                            onChangeLogic={onChangeLogic}
+                            stat={statItemLogic}
+                            setCharts={setCharts}
+                            charts={charts}
+                            onStatMoveDown={onStatMoveDown}
+                            onStatMoveUp={onStatMoveUp}
+                            onRemoveStat={onRemoveStat}
+                            saveScroll={saveScroll}
+                            cacheLogic={cacheLogic}
+                            loaded={loaded}
+                        />
+                    );
+                } else {
+                    //BLANK HTML
+                    const blankRow = item;
+                    return (
+                        <tr key={Math.random()}>
+                            {blankRow.values.map((value, idx) => {
+                                const onChange = onChangeBlank.bind(null, blankRow.id, idx);
+                                const onDelRow = onDelBlankRow.bind(null, blankRow.id);
+                                return <BlankCell onItemMoveDown={() => onItemMoveDown(itemIdx)} onItemMoveUp={() => onItemMoveUp(itemIdx)} firstCell={!!!idx} columnName={headers[idx].title} fullOrgWithdata={fullOrgWithdata} value={value} onChange={onChange} delRowFn={onDelRow} first={!!!idx} loaded={loaded} />;
+                            })}
+                        </tr>
+                    );
+                }
+            });
     }, [table, loaded, fullOrgWithdata]);
 
     return [

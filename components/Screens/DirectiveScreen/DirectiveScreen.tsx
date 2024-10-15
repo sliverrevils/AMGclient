@@ -301,6 +301,7 @@ export default function DirectiveScreen() {
                 description: "",
                 blankRows: [],
                 stats: statsWithLogic,
+                sortItemsArr: [],
             },
         ]);
     };
