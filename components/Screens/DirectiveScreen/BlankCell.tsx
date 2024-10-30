@@ -249,7 +249,7 @@ export default function BlankCell({ firstCell, loaded, first, value, onChange, d
                     </>
                 ) : (
                     <div className={styles.loaded} id="cell-value">
-                        {input}
+                        {calcCell(input)}
                     </div>
                 )}
             </div>
