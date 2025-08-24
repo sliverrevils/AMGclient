@@ -9,7 +9,27 @@ import { StateReduxI } from "@/redux/store";
 import usePatterns from "@/hooks/usePatterns";
 import { celarPeriodStats, clearStatName } from "@/utils/funcs";
 
-export default function Section({ sectionItem, users, userById, updateOrgScheme, office_id, department_id, charts, index, isAdmin }: { sectionItem: SectionI; users: Array<UserFullI>; userById: any; updateOrgScheme: any; office_id: number; department_id: number; charts: Array<ChartI>; index: number; isAdmin: boolean }) {
+export default function Section({
+    sectionItem,
+    users,
+    userById,
+    updateOrgScheme,
+    office_id,
+    department_id,
+    charts,
+    index,
+    isAdmin,
+}: {
+    sectionItem: SectionI;
+    users: Array<UserFullI>;
+    userById: any;
+    updateOrgScheme: any;
+    office_id: number;
+    department_id: number;
+    charts: Array<ChartI>;
+    index: number;
+    isAdmin: boolean;
+}) {
     //state
     const [inputAddAdmin, setInputAddAdmin] = useState("");
     const [addAdminField, setAddAdminField] = useState(false);
@@ -17,7 +37,8 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState("");
     const [selectAddChart, setSelectAddChart] = useState(1);
     //hooks
-    const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } = useOrg();
+    const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } =
+        useOrg();
 
     //selectors
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -29,7 +50,14 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     };
 
     const addAdministrator = () => {
-        addSectionAdministrator(sectionItem.id, office_id, department_id, +inputAddAdmin, inputDescriptionsAddAdmin, updateOrgScheme).then(() => {
+        addSectionAdministrator(
+            sectionItem.id,
+            office_id,
+            department_id,
+            +inputAddAdmin,
+            inputDescriptionsAddAdmin,
+            updateOrgScheme
+        ).then(() => {
             setInputDescriptionsAddAdmin("");
             setInputAddAdmin("");
             setAddAdminField(false);
@@ -49,13 +77,26 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
     const [sectionCkp, setSectionCkp] = useState(sectionItem?.ckp || "");
 
     const updateSetionHandle = () => {
-        updateSection(sectionItem!.id, sectionName, sectionLeadership, sectionDescriptions, sectionCkp, () => {
-            updateOrgScheme(), setUpdated(false);
-        });
+        updateSection(
+            sectionItem!.id,
+            sectionName,
+            sectionLeadership,
+            sectionDescriptions,
+            sectionCkp,
+            () => {
+                updateOrgScheme(), setUpdated(false);
+            }
+        );
     };
 
     useEffect(() => {
-        if (sectionItem!.name !== sectionName || sectionItem!.descriptions !== sectionDescriptions || sectionItem!.ckp !== sectionCkp || sectionItem?.leadership !== sectionLeadership) setUpdated(true);
+        if (
+            sectionItem!.name !== sectionName ||
+            sectionItem!.descriptions !== sectionDescriptions ||
+            sectionItem!.ckp !== sectionCkp ||
+            sectionItem?.leadership !== sectionLeadership
+        )
+            setUpdated(true);
         else setUpdated(false);
     }, [sectionName, sectionDescriptions, sectionCkp, sectionLeadership]);
 
@@ -88,14 +129,36 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                         <div className={styles.update}></div>
                     )}
                     <div className={styles.sectionName}>
-                        <input value={sectionName} onChange={(event) => setSectionName(event.target.value)} disabled={!isAdmin} />
+                        {/* <input
+                            value={sectionName}
+                            onChange={(event) => setSectionName(event.target.value)}
+                            disabled={!isAdmin}
+                        /> */}
+                        <textarea
+                            value={sectionName}
+                            onChange={(event) => setSectionName(event.target.value)}
+                            disabled={!isAdmin}
+                        />
                     </div>
-                    {isAdmin && <img className={styles.delete} onClick={() => confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) && deleteSection(sectionItem.id, updateOrgScheme)} src="svg/org/delete_white.svg" />}
+                    {isAdmin && (
+                        <img
+                            className={styles.delete}
+                            onClick={() =>
+                                confirm(`Вы точно хотите удалить секцию "${sectionItem.name}"`) &&
+                                deleteSection(sectionItem.id, updateOrgScheme)
+                            }
+                            src="svg/org/delete_white.svg"
+                        />
+                    )}
                 </div>
                 <div className={styles.sectionBody}>
                     <div className={styles.propLine}>
                         <img src="svg/org/leadership.svg" />
-                        <select value={sectionLeadership || ""} onChange={(event) => setSectionLeadership(+event.target.value)} disabled={!isAdmin}>
+                        <select
+                            value={sectionLeadership || ""}
+                            onChange={(event) => setSectionLeadership(+event.target.value)}
+                            disabled={!isAdmin}
+                        >
                             <option value={""}>администратор не назначен</option>
                             {users.map((user) => (
                                 <option key={user.id + user.name} value={user.id}>
@@ -106,23 +169,46 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                     </div>
                     <div className={styles.propLine}>
                         <img src="svg/org/ckp.svg" />
-                        <textarea value={sectionCkp} spellCheck="false" onChange={(event) => setSectionCkp(event.target.value)} disabled={!isAdmin} />
+                        <textarea
+                            value={sectionCkp}
+                            spellCheck="false"
+                            onChange={(event) => setSectionCkp(event.target.value)}
+                            disabled={!isAdmin}
+                        />
                     </div>
                     <div className={`${styles.propLine} ${styles.hideFieldFlex}`}>
                         <img src="svg/org/description.svg" />
-                        <textarea value={sectionDescriptions} spellCheck="false" onChange={(event) => setSectionDescriptions(event.target.value)} disabled={!isAdmin} />
+                        <textarea
+                            value={sectionDescriptions}
+                            spellCheck="false"
+                            onChange={(event) => setSectionDescriptions(event.target.value)}
+                            disabled={!isAdmin}
+                        />
                     </div>
 
                     <div className={`${styles.patternsBlock} ${styles.hideField}`}>
                         <div className={styles.textInfo}>Главная статистика</div>
-                        <select value={patternSelect} onChange={onSelectPattern} disabled={!isAdmin}>
-                            <option value={0}>Выберите главную статистику</option>
-                            {celarPeriodStats(tableStatisticsList).map((pattern) => (
-                                <option key={pattern.id + "_patternItem"} value={pattern.id}>
-                                    {clearStatName(pattern.name)}
-                                </option>
-                            ))}
-                        </select>
+                        <div className={styles.mainStatText}>
+                            {clearStatName(
+                                tableStatisticsList.find(
+                                    (stat) => stat.id == sectionItem.mainPattern
+                                )?.name || "Главная статистика не назначена"
+                            )}
+                        </div>
+                        {isAdmin && (
+                            <select
+                                value={patternSelect}
+                                onChange={onSelectPattern}
+                                disabled={!isAdmin}
+                            >
+                                <option value={0}>Выберите главную статистику</option>
+                                {celarPeriodStats(tableStatisticsList).map((pattern) => (
+                                    <option key={pattern.id + "_patternItem"} value={pattern.id}>
+                                        {clearStatName(pattern.name)}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
 
                         <div>
                             <span className={styles.textInfo}>Дополнительные статистики</span>
@@ -130,13 +216,23 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                                 <div>
                                     {/* <span className={styles.textInfo}> Добавление дополнительной статистики </span> */}
                                     <div style={{ display: "flex" }}>
-                                        <select value={addPatternSelect} onChange={(event) => setAddPatternSelect(+event.target.value)}>
+                                        <select
+                                            value={addPatternSelect}
+                                            onChange={(event) =>
+                                                setAddPatternSelect(+event.target.value)
+                                            }
+                                        >
                                             <option value={0}>Выберите главный шаблон</option>
-                                            {celarPeriodStats(tableStatisticsList).map((pattern) => (
-                                                <option key={pattern.id + "_addpatternItem"} value={pattern.id}>
-                                                    {clearStatName(pattern.name)}
-                                                </option>
-                                            ))}
+                                            {celarPeriodStats(tableStatisticsList).map(
+                                                (pattern) => (
+                                                    <option
+                                                        key={pattern.id + "_addpatternItem"}
+                                                        value={pattern.id}
+                                                    >
+                                                        {clearStatName(pattern.name)}
+                                                    </option>
+                                                )
+                                            )}
                                         </select>
                                         <span onClick={onAddPattern} style={{ cursor: "pointer" }}>
                                             ➕
@@ -147,13 +243,20 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
 
                             <div className={styles.patternsList}>
                                 {sectionItem.patterns.map((id) => {
-                                    const pattern = tableStatisticsList.find((pattern) => pattern.id == id);
+                                    const pattern = tableStatisticsList.find(
+                                        (pattern) => pattern.id == id
+                                    );
                                     return (
                                         <div>
                                             📉
                                             {clearStatName(pattern?.name || "статистика удалена")}
                                             {isAdmin && (
-                                                <span style={{ cursor: "pointer" }} onClick={() => delSectionPatter(sectionItem.id, id)}>
+                                                <span
+                                                    style={{ cursor: "pointer" }}
+                                                    onClick={() =>
+                                                        delSectionPatter(sectionItem.id, id)
+                                                    }
+                                                >
                                                     ❌
                                                 </span>
                                             )}
@@ -165,18 +268,48 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                     </div>
 
                     <div className={`${styles.administratorsList} `}>
-                        <div className={styles.propLine} onClick={adminsListToggle} style={{ cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div
+                            className={styles.propLine}
+                            onClick={adminsListToggle}
+                            style={{
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <span
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                }}
+                            >
                                 <img src="svg/org/admins.svg" />
-                                <span onClick={adminsListToggle}>сотрудники: {sectionItem.administrators.length}</span>
+                                <span onClick={adminsListToggle}>
+                                    сотрудники: {sectionItem.administrators.length}
+                                </span>
                             </span>
-                            {sectionItem.administrators.length ? <img className="open_list" style={{ width: 15 }} src={`svg/org/${adminsListOpen ? "arrow_dawn" : "arrow_up"}.svg`} /> : <span> </span>}
+                            {sectionItem.administrators.length ? (
+                                <img
+                                    className="open_list"
+                                    style={{ width: 15 }}
+                                    src={`svg/org/${
+                                        adminsListOpen ? "arrow_dawn" : "arrow_up"
+                                    }.svg`}
+                                />
+                            ) : (
+                                <span> </span>
+                            )}
                             <span></span>
                         </div>
 
                         {addAdminField ? (
                             <div className={styles.addAdmin}>
-                                <select value={inputAddAdmin} onChange={(event) => setInputAddAdmin(event.target.value)}>
+                                <select
+                                    value={inputAddAdmin}
+                                    onChange={(event) => setInputAddAdmin(event.target.value)}
+                                >
                                     <option value={""}>👥выбор сотрудника</option>
                                     {users.map((user) => (
                                         <option key={user.id + "_addAdmins"} value={user.id}>
@@ -184,7 +317,13 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                                         </option>
                                     ))}
                                 </select>
-                                <textarea value={inputDescriptionsAddAdmin} onChange={(event) => setInputDescriptionsAddAdmin(event.target.value)} placeholder="описание сотрудника" />
+                                <textarea
+                                    value={inputDescriptionsAddAdmin}
+                                    onChange={(event) =>
+                                        setInputDescriptionsAddAdmin(event.target.value)
+                                    }
+                                    placeholder="описание сотрудника"
+                                />
                                 <div className={styles.addAdminBtns}>
                                     <button onClick={addAdministrator} disabled={!inputAddAdmin}>
                                         добавить
@@ -199,14 +338,31 @@ export default function Section({ sectionItem, users, userById, updateOrgScheme,
                             isAdmin && (
                                 <div className={styles.addAdminBtn}>
                                     {" "}
-                                    <img src="svg/org/admin_add.svg" onClick={addAdminFieldToggle} />
+                                    <img
+                                        src="svg/org/admin_add.svg"
+                                        onClick={addAdminFieldToggle}
+                                    />
                                 </div>
                             )
                         )}
 
                         {adminsListOpen &&
                             sectionItem.administrators.map((admin: AdministratorI, idx) => {
-                                return <AdministratorsList key={idx + "adminsList"} {...{ admin, charts, findChartById, idx, updateOrgScheme, user_id: admin.user_id, userById, isAdmin }} />;
+                                return (
+                                    <AdministratorsList
+                                        key={idx + "adminsList"}
+                                        {...{
+                                            admin,
+                                            charts,
+                                            findChartById,
+                                            idx,
+                                            updateOrgScheme,
+                                            user_id: admin.user_id,
+                                            userById,
+                                            isAdmin,
+                                        }}
+                                    />
+                                );
                             })}
                     </div>
                 </div>

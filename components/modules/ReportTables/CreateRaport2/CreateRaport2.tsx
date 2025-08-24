@@ -1,5 +1,15 @@
 import { StateReduxI } from "@/redux/store";
-import { IOrgItem, IPieChartProps, IPieObj, RaportTableInfoI, StatItemReady, StatItemReadyWithCoords, TableStatisticListItemI, UserFullI, UserI } from "@/types/types";
+import {
+    IOrgItem,
+    IPieChartProps,
+    IPieObj,
+    RaportTableInfoI,
+    StatItemReady,
+    StatItemReadyWithCoords,
+    TableStatisticListItemI,
+    UserFullI,
+    UserI,
+} from "@/types/types";
 import { useSelector } from "react-redux";
 import styles from "./raport2.module.scss";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
@@ -59,7 +69,9 @@ const saveTableToExcel = (headers: string[], tableData: string[][]) => {
 
     // Сохраняем книгу в файл
     workbook.xlsx.writeBuffer().then((buffer) => {
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -71,16 +83,30 @@ const saveTableToExcel = (headers: string[], tableData: string[][]) => {
 
 export default function CreateRaport2({ getPie = false }: { getPie?: boolean } = {}) {
     //STATE
-    const [isShowLastUpdate, setIsShowLastUpdate] = useState<boolean>(JSON.parse(localStorage.getItem("showLastUpdate") || `false`));
+    const [isShowLastUpdate, setIsShowLastUpdate] = useState<boolean>(
+        JSON.parse(localStorage.getItem("showLastUpdate") || `false`)
+    );
     const [isShowFilteredOrg, setIsShowFilteredOrg] = useState(false);
     const [isSelectedAllOrgChildren, setIsSelectedAllOrgChildren] = useState(true);
-    const [selectedStats, setSelectedStats] = useState<number[]>(JSON.parse(localStorage.getItem("selectedStats") || `[]`));
-    const addToSelectedStatToggle = (id: number) => setSelectedStats((state) => (state.includes(id) ? state.filter((stateId) => stateId !== id) : [...new Set([...state, id])]));
+    const [selectedStats, setSelectedStats] = useState<number[]>(
+        JSON.parse(localStorage.getItem("selectedStats") || `[]`)
+    );
+    const addToSelectedStatToggle = (id: number) =>
+        setSelectedStats((state) =>
+            state.includes(id)
+                ? state.filter((stateId) => stateId !== id)
+                : [...new Set([...state, id])]
+        );
 
     //stats filter
     const [statView, setStatToView] = useState<StatItemReadyWithCoords | null>(null);
     const [statViewArr, setStatViewArr] = useState<StatItemReady[]>([]);
-    const statViewArrToggle = (stat: StatItemReady) => setStatViewArr((state) => (state.findLastIndex((statState) => statState.id === stat.id) < 0 ? [stat, ...state] : state.filter((statState) => statState.id !== stat.id)));
+    const statViewArrToggle = (stat: StatItemReady) =>
+        setStatViewArr((state) =>
+            state.findLastIndex((statState) => statState.id === stat.id) < 0
+                ? [stat, ...state]
+                : state.filter((statState) => statState.id !== stat.id)
+        );
 
     //stats filter show
     const [isOfficeListShow, setIsOfficeListShow] = useState(false);
@@ -92,7 +118,9 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     const isAdmin = useSelector((state: any) => state.main.user?.role === "admin");
     const user: UserI = useSelector((state: any) => state.main.user);
     const { users }: { users: UserFullI[] } = useSelector((state: StateReduxI) => state.users);
-    const isViewOnly = useSelector((state: any) => state.main.user.post.includes("raports")) as boolean;
+    const isViewOnly = useSelector((state: any) =>
+        state.main.user.post.includes("raports")
+    ) as boolean;
     const initOrgItems = useSelector((state: StateReduxI) => {
         //ФУНКЦИЯ  ПРОВЕРКИ ЗАПОЛНЕНОГО ПЕРИОДА✍️⌛
         const addingFilledField = (stat: TableStatisticListItemI, main = false): StatItemReady => {
@@ -100,8 +128,15 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
 
             //Формируем строку времен периода
             let periodStr = `не заполнена`;
-            if (stat.dateColumn.raportInfo?.lastFilledPeriod?.start && stat.dateColumn.raportInfo?.lastFilledPeriod?.end) {
-                periodStr = `${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.start).toLocaleDateString()} - ${new Date(stat.dateColumn.raportInfo.lastFilledPeriod.end).toLocaleDateString()}`;
+            if (
+                stat.dateColumn.raportInfo?.lastFilledPeriod?.start &&
+                stat.dateColumn.raportInfo?.lastFilledPeriod?.end
+            ) {
+                periodStr = `${new Date(
+                    stat.dateColumn.raportInfo.lastFilledPeriod.start
+                ).toLocaleDateString()} - ${new Date(
+                    stat.dateColumn.raportInfo.lastFilledPeriod.end
+                ).toLocaleDateString()}`;
             }
 
             if (!stat?.dateColumn.raportInfo) {
@@ -114,20 +149,30 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 //проверяем заполнение прошлого месяца
                 const lastMonth = new Date(new Date().setDate(0));
                 lastMonth.setHours(0, 0, 0, 0);
-                if (lastMonth.getTime() <= info.lastFilledPeriod?.end) return { ...stat, main, periodStr, isGrowing, filled: true };
+                if (lastMonth.getTime() <= info.lastFilledPeriod?.end)
+                    return { ...stat, main, periodStr, isGrowing, filled: true };
                 else return { ...stat, main, isGrowing, periodStr, filled: false };
             }
             if (info.statHeaders?.[0].trim() == "13ти недельный период") {
                 //проверяем заполнение прошлой недели
                 const currentDate = new Date();
-                const startOfLastWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() - 6);
+                const startOfLastWeek = new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    currentDate.getDate() - currentDate.getDay() - 6
+                );
 
                 const filled = startOfLastWeek.getTime() <= info.lastFilledPeriod?.start;
 
                 return { ...stat, main, isGrowing, periodStr, filled };
             }
-            if (currentDateSec >= info.lastFilledPeriod?.start && currentDateSec <= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: true };
-            if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2) return { ...stat, main, isGrowing, periodStr, filled: false };
+            if (
+                currentDateSec >= info.lastFilledPeriod?.start &&
+                currentDateSec <= info.lastFilledPeriod?.end + daySec * 2
+            )
+                return { ...stat, main, isGrowing, periodStr, filled: true };
+            if (currentDateSec >= info.lastFilledPeriod?.end + daySec * 2)
+                return { ...stat, main, isGrowing, periodStr, filled: false };
 
             return { ...stat, main, isGrowing, periodStr, filled: false };
         };
@@ -138,11 +183,15 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 // ЗАМЕНЯЕМ ID СТАТИСТИК НА ПОСЛЕДНИЕ
 
                 const getLatestTable = (id: number) => {
-                    const currentStat = state.stats.tableStatisticsList.find((stat) => stat.id == id);
+                    const currentStat = state.stats.tableStatisticsList.find(
+                        (stat) => stat.id == id
+                    );
 
                     if (currentStat && /@/g.test(currentStat.name)) {
                         const statName = currentStat.name.split("@")[0].trim();
-                        const statsArr = state.stats.tableStatisticsList.filter((stat) => stat.name.split("@")[0].trim() == statName).toSorted((a, b) => b.id - a.id);
+                        const statsArr = state.stats.tableStatisticsList
+                            .filter((stat) => stat.name.split("@")[0].trim() == statName)
+                            .toSorted((a, b) => b.id - a.id);
                         if (statsArr.length) {
                             return statsArr[0];
                         } else {
@@ -165,12 +214,16 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                 mainPattern: getLatestTable(dep.mainPattern),
                                 patterns: dep.patterns.map((stat) => getLatestTable(stat)),
                                 sections: dep.sections
-                                    .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
+                                    .toSorted(
+                                        (off1, off2) => parseInt(off1.name) - parseInt(off2.name)
+                                    )
                                     .map((sec) => {
                                         return {
                                             ...sec,
                                             mainPattern: getLatestTable(sec.mainPattern),
-                                            patterns: sec.patterns.map((stat) => getLatestTable(stat)).filter((stat) => !!stat),
+                                            patterns: sec.patterns
+                                                .map((stat) => getLatestTable(stat))
+                                                .filter((stat) => !!stat),
                                             itemType: "section", // - отображение секции
                                         };
                                     }),
@@ -192,7 +245,15 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 return []; // если нет статистик не возвращаем item
             } else {
                 //дополняем каждую статистику полем filled - ЗАПОЛНЕНОСТЬ
-                return [{ ...item, mainPattern: item.mainPattern ? addingFilledField(item.mainPattern, true) : undefined, patterns: patterns.map((item) => addingFilledField(item, false)) }];
+                return [
+                    {
+                        ...item,
+                        mainPattern: item.mainPattern
+                            ? addingFilledField(item.mainPattern, true)
+                            : undefined,
+                        patterns: patterns.map((item) => addingFilledField(item, false)),
+                    },
+                ];
             }
         };
         fullOrgWithdata.forEach((office) => {
@@ -211,7 +272,11 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     // console.log(initOrgItems);
 
     //HOOKS
-    const { filteredOrgItems, filters, filtersToggle, options, counters } = useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isSelectedAllOrgChildren });
+    const { filteredOrgItems, filters, filtersToggle, options, counters } = useOrgItemFilters({
+        initOrgItems,
+        isShowFilteredOrg,
+        isSelectedAllOrgChildren,
+    });
     const { userByID } = useUsers();
     const { accessedRoutes } = useAccessRoutes();
     const tabelsRoute = accessedRoutes.find((route) => route.id === 10);
@@ -237,22 +302,34 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                     currentTrendStatus = "empty";
                 }
 
-                const trendType = item.dateColumn.raportInfo?.trendType.toLowerCase().replace("тренд", "").replace("не указан", "");
+                const trendType = item.dateColumn.raportInfo?.trendType
+                    .toLowerCase()
+                    .replace("тренд", "")
+                    .replace("не указан", "");
                 const trendStatus = /не определено/.test(item.isGrowing) ? "" : item.isGrowing;
                 const isFilledPeriod = !/не заполнена/.test(item.periodStr);
                 //console.log(item);
 
-                const lineStyle = `${styles.statLine} ${selectedStats.includes(item.id) ? styles.statLine_selected : ""}`;
+                const lineStyle = `${styles.statLine} ${
+                    selectedStats.includes(item.id) ? styles.statLine_selected : ""
+                }`;
                 return (
-                    <tr className={lineStyle} key={item.name + "statItem"} onClick={() => addToSelectedStatToggle(item.id)}>
+                    <tr
+                        className={lineStyle}
+                        key={item.name + "statItem"}
+                        onClick={() => addToSelectedStatToggle(item.id)}
+                    >
                         <td title={"🚩 - главная\n📄- дополнительная"}>
                             <span>{item.main ? "🚩" : "📄"}</span>
                         </td>
                         <td
-                            className={`${styles.timeCell} ${item.filled ? styles.timeCell_filled : ""}`}
+                            className={`${styles.timeCell} ${
+                                item.filled ? styles.timeCell_filled : ""
+                            }`}
                             title={`последний заполненный период`}
                             onMouseEnter={(event) => {
-                                const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
+                                const { x, y, width, height } =
+                                    event.currentTarget.getBoundingClientRect();
 
                                 setStatToView({ ...item, x, y: y + height + 10, type: "period" });
                             }}
@@ -262,15 +339,20 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                 <span>{item.periodStr}</span>
                                 {isShowLastUpdate && isFilledPeriod && (
                                     <span className={styles.lastUpdate}>
-                                        <span className={styles.date}>{new Date(item.lastUpdate).toLocaleDateString()}</span>
-                                        <span className={styles.time}>{new Date(item.lastUpdate).toLocaleTimeString()}</span>
+                                        <span className={styles.date}>
+                                            {new Date(item.lastUpdate).toLocaleDateString()}
+                                        </span>
+                                        <span className={styles.time}>
+                                            {new Date(item.lastUpdate).toLocaleTimeString()}
+                                        </span>
                                     </span>
                                 )}
                             </div>
                         </td>
                         <td
                             onMouseEnter={(event) => {
-                                const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
+                                const { x, y, width, height } =
+                                    event.currentTarget.getBoundingClientRect();
 
                                 setStatToView({ ...item, x, y: y + height + 10, type: "table" });
                             }}
@@ -286,13 +368,22 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                         </td>
                         {/* <td title={trendType}>{trendType!.replace("перевёрнутый", "📈").replace("стандартный", "📉")}</td> */}
                         <td
-                            className={`${styles.trendCell} ${styles[`trendCell_${currentTrendStatus}`]}`}
+                            className={`${styles.trendCell} ${
+                                styles[`trendCell_${currentTrendStatus}`]
+                            }`}
                             //style={{ background: trendResultColorsObj[currentTrendStatus] }}
 
                             onMouseEnter={(event) => {
-                                const { x, y, width, height } = event.currentTarget.getBoundingClientRect();
+                                const { x, y, width, height } =
+                                    event.currentTarget.getBoundingClientRect();
                                 // console.log({ width });
-                                currentTrendStatus !== "empty" && setStatToView({ ...item, x, y: y + height + 10, type: "chart" });
+                                currentTrendStatus !== "empty" &&
+                                    setStatToView({
+                                        ...item,
+                                        x,
+                                        y: y + height + 10,
+                                        type: "chart",
+                                    });
                             }}
                             onMouseLeave={() => setStatToView(null)}
                             onContextMenu={(event) => {
@@ -303,7 +394,9 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                             }}
                         >
                             <span className={styles.trendText}>{trendStatus}</span>
-                            <span className={styles[`trendIco_${currentTrendStatus}`]}>{Icons().stat?.[currentTrendStatus] || ""}</span>
+                            <span className={styles[`trendIco_${currentTrendStatus}`]}>
+                                {Icons().stat?.[currentTrendStatus] || ""}
+                            </span>
                         </td>
                     </tr>
                 );
@@ -314,15 +407,22 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                     {filteredOrgItems.map((item) => {
                         const patterns = item.patterns.filter((pattern) => !!pattern); // убираем отсутствующие статистики
                         return [
-                            <tr key={item.name + "itemMainList" + Math.random()} className={styles[`orgItem_${item.itemType}`]}>
+                            <tr
+                                key={item.name + "itemMainList" + Math.random()}
+                                className={styles[`orgItem_${item.itemType}`]}
+                            >
                                 <th colSpan={4} className={styles.itemHeader}>
                                     <div className={styles.itemBlock}>
                                         <div className={styles.itemTitleBlock}>
-                                            <span className={styles.itemIcon}>{Icons().org[item.itemType]}</span>
+                                            <span className={styles.itemIcon}>
+                                                {Icons().org[item.itemType]}
+                                            </span>
                                             <span className={styles.itemName}>{item.name}</span>
                                         </div>
 
-                                        <span className={styles.itemLeadership}>{userByID(item.leadership)?.name}</span>
+                                        <span className={styles.itemLeadership}>
+                                            {userByID(item.leadership)?.name}
+                                        </span>
                                     </div>
                                 </th>
                             </tr>,
@@ -353,8 +453,13 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
         localStorage.setItem("showLastUpdate", JSON.stringify(isShowLastUpdate));
     }, [selectedStats, isShowLastUpdate]);
 
-    const selectedFilterStyle = (selected: boolean): CSSProperties => ({ border: selected ? `2px solid black` : `2px solid transparent` });
-    const selectedOrgFilterClass = (type: (typeof filters.orgTypeFilter)[0]) => (filters.orgTypeFilter.includes(type) ? `${styles.selectedFilter} noselect` : `${styles.notSelectedFilter} noselect`);
+    const selectedFilterStyle = (selected: boolean): CSSProperties => ({
+        border: selected ? `2px solid black` : `2px solid transparent`,
+    });
+    const selectedOrgFilterClass = (type: (typeof filters.orgTypeFilter)[0]) =>
+        filters.orgTypeFilter.includes(type)
+            ? `${styles.selectedFilter} noselect`
+            : `${styles.notSelectedFilter} noselect`;
     const dropOrgSelectFilter = () => {
         setIsOfficeListShow(false);
         setIsDepartmentListShow(false);
@@ -363,7 +468,9 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     const saveExel = () => {
         const columns = ["Период", "Название статистики", "Статус"];
         const rows = filteredOrgItems.reduce<string[][]>((acc, item) => {
-            const temp = [item.mainPattern, ...item.patterns].filter((stat) => stat).map((stat) => [stat?.periodStr + "", stat?.name + "", stat?.isGrowing + ""]);
+            const temp = [item.mainPattern, ...item.patterns]
+                .filter((stat) => stat)
+                .map((stat) => [stat?.periodStr + "", stat?.name + "", stat?.isGrowing + ""]);
             return [...acc, ...temp];
         }, []);
 
@@ -373,13 +480,37 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     //ГРАФИК КРУГ📈
     if (getPie) {
         const all: IPieChartProps = {
-            labels: [`Растущие статистики`, "Падающие статистики", "Пустые статистики", "Заполненные статистики", "Не заполненные статистики"],
+            labels: [
+                `Растущие статистики`,
+                "Падающие статистики",
+                "Пустые статистики",
+                "Заполненные статистики",
+                "Не заполненные статистики",
+            ],
             datasets: [
                 {
                     label: "",
-                    data: [counters.growingStatsCount, counters.notGrowingStatsCount, counters.noDataGrowingStatsCount, counters.fillledStatsCount, counters.notFillledStatsCount],
-                    backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)", "rgba(7, 89, 255, 0.2)", "rgba(194, 84, 109, 0.2)"],
-                    borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)", "rgba(7, 89, 255, 1)", "rgba(194, 84, 109, 1)"],
+                    data: [
+                        counters.growingStatsCount,
+                        counters.notGrowingStatsCount,
+                        counters.noDataGrowingStatsCount,
+                        counters.fillledStatsCount,
+                        counters.notFillledStatsCount,
+                    ],
+                    backgroundColor: [
+                        "rgba(5, 135, 98, 0.4)",
+                        "rgb(255, 41, 3,0.4)",
+                        "rgba(168, 168, 168, 0.2)",
+                        "rgba(7, 89, 255, 0.2)",
+                        "rgba(194, 84, 109, 0.2)",
+                    ],
+                    borderColor: [
+                        "rgb(5, 135, 98)",
+                        "rgb(255, 41, 3)",
+                        "rgba(168, 168, 168, 1)",
+                        "rgba(7, 89, 255, 1)",
+                        "rgba(194, 84, 109, 1)",
+                    ],
                     borderWidth: 2,
                 },
             ],
@@ -390,7 +521,11 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 {
                     label: "",
                     data: [counters.growingStatsCount, counters.notGrowingStatsCount],
-                    backgroundColor: ["rgba(5, 135, 98, 0.4)", "rgb(255, 41, 3,0.4)", "rgba(168, 168, 168, 0.2)"],
+                    backgroundColor: [
+                        "rgba(5, 135, 98, 0.4)",
+                        "rgb(255, 41, 3,0.4)",
+                        "rgba(168, 168, 168, 0.2)",
+                    ],
                     borderColor: ["rgb(5, 135, 98)", "rgb(255, 41, 3)", "rgba(168, 168, 168, 1)"],
                     borderWidth: 2,
                 },
@@ -453,57 +588,132 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                     {isOfficeListShow && (
                         <div style={{ outline: `2px solid tomato` }}>
                             {options.lists.officesListOptions.map((offName) => (
-                                <div key={offName + "optonsFilter" + Math.random()} onClick={() => options.selectsToggle.officeToggle(offName)} style={{ ...(options.selectedLists.officesSelectedList.includes(offName) ? { background: orgItemsColorsObj.office, color: "white" } : {}) }}>
+                                <div
+                                    key={offName + "optonsFilter" + Math.random()}
+                                    onClick={() => options.selectsToggle.officeToggle(offName)}
+                                    style={{
+                                        ...(options.selectedLists.officesSelectedList.includes(
+                                            offName
+                                        )
+                                            ? {
+                                                  background: orgItemsColorsObj.office,
+                                                  color: "white",
+                                              }
+                                            : {}),
+                                    }}
+                                >
                                     {offName}
                                 </div>
                             ))}
-                            {!!!options.lists.officesListOptions.length && <div>нет доступных отделений</div>}
+                            {!!!options.lists.officesListOptions.length && (
+                                <div>нет доступных отделений</div>
+                            )}
                         </div>
                     )}
                     {isDepartmentListShow && (
                         <div style={{ outline: `2px solid blue` }}>
                             {options.lists.departmentsListOtions.map((depName) => (
-                                <div key={depName + "optonsFilter"} onClick={() => options.selectsToggle.departmentToggle(depName)} style={{ ...(options.selectedLists.departmentsSelectedList.includes(depName) ? { background: orgItemsColorsObj.department, color: "white" } : {}) }}>
+                                <div
+                                    key={depName + "optonsFilter"}
+                                    onClick={() => options.selectsToggle.departmentToggle(depName)}
+                                    style={{
+                                        ...(options.selectedLists.departmentsSelectedList.includes(
+                                            depName
+                                        )
+                                            ? {
+                                                  background: orgItemsColorsObj.department,
+                                                  color: "white",
+                                              }
+                                            : {}),
+                                    }}
+                                >
                                     {depName}
                                 </div>
                             ))}
-                            {!!!options.lists.departmentsListOtions.length && <div>нет доступных отделов : добавьте отделения</div>}
+                            {!!!options.lists.departmentsListOtions.length && (
+                                <div>нет доступных отделов : добавьте отделения</div>
+                            )}
                         </div>
                     )}
                     {isSectionListShow && (
                         <div style={{ outline: `2px solid green` }}>
                             {options.lists.sectionsListOptions.map((secName) => (
-                                <div key={secName + "optonsFilter"} onClick={() => options.selectsToggle.sectionToggle(secName)} style={{ ...(options.selectedLists.sectionsSelectedList.includes(secName) ? { background: orgItemsColorsObj.section, color: "white" } : {}) }}>
+                                <div
+                                    key={secName + "optonsFilter"}
+                                    onClick={() => options.selectsToggle.sectionToggle(secName)}
+                                    style={{
+                                        ...(options.selectedLists.sectionsSelectedList.includes(
+                                            secName
+                                        )
+                                            ? {
+                                                  background: orgItemsColorsObj.section,
+                                                  color: "white",
+                                              }
+                                            : {}),
+                                    }}
+                                >
                                     {secName}
                                 </div>
                             ))}
-                            {!!!options.lists.sectionsListOptions.length && <div>нет доступных секций : добавьте отделы</div>}
+                            {!!!options.lists.sectionsListOptions.length && (
+                                <div>нет доступных секций : добавьте отделы</div>
+                            )}
                         </div>
                     )}
                 </div>
             )}
             <div className={styles.tableWrap}>
-                <table style={{ opacity: isOfficeListShow || isDepartmentListShow || isSectionListShow ? 0.4 : 1 }}>
+                <table
+                    style={{
+                        opacity:
+                            isOfficeListShow || isDepartmentListShow || isSectionListShow ? 0.4 : 1,
+                    }}
+                >
                     <caption>
                         <div className={styles.filterBlockWrap}>
                             <div className={styles.filterTitle}>
-                                <span>Фильтр ОРГ-схемы</span> <div className={styles.iconSmall}>{Icons().filter.filter}</div>
+                                <span>Фильтр ОРГ-схемы</span>{" "}
+                                <div className={styles.iconSmall}>{Icons().filter.filter}</div>
                             </div>
                             <div className={styles.filterOrgTypeBlock}>
                                 <div className={styles.filtersOrgBtns}>
                                     <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
                                         <label title="применить фильтр к элементам оргсхемы">
-                                            <span className={styles.iconSmall}>{Icons().filter.filter}</span>
-                                            <span> Включить фильтр РОГ-схемы</span>
-                                            <input type="checkbox" checked={isShowFilteredOrg} onChange={(event) => setIsShowFilteredOrg(event.target.checked)} />
+                                            <span className={styles.iconSmall}>
+                                                {Icons().filter.filter}
+                                            </span>
+                                            <span> Включить фильтр ОРГ-схемы</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={isShowFilteredOrg}
+                                                onChange={(event) =>
+                                                    setIsShowFilteredOrg(event.target.checked)
+                                                }
+                                            />
                                         </label>
                                     </div>
                                     {isShowFilteredOrg && (
-                                        <div className={styles[`isSelectFilter_${isShowFilteredOrg}`]}>
+                                        <div
+                                            className={
+                                                styles[`isSelectFilter_${isShowFilteredOrg}`]
+                                            }
+                                        >
                                             <label title="автоматический выбор всех дочерних элементов">
-                                                <span className={styles.iconSmall}>{Icons().filter.autoSelects}</span>
-                                                <span> Автоматический выбор всех позиций фильтра</span>
-                                                <input type="checkbox" checked={isSelectedAllOrgChildren} onChange={(event) => setIsSelectedAllOrgChildren(event.target.checked)} />
+                                                <span className={styles.iconSmall}>
+                                                    {Icons().filter.autoSelects}
+                                                </span>
+                                                <span>
+                                                    Автоматический выбор всех позиций фильтра
+                                                </span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelectedAllOrgChildren}
+                                                    onChange={(event) =>
+                                                        setIsSelectedAllOrgChildren(
+                                                            event.target.checked
+                                                        )
+                                                    }
+                                                />
                                             </label>
                                         </div>
                                     )}
@@ -527,12 +737,21 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        <div className={styles.filtersIco}>{Icons().org.office}</div>
-                                        <div className={styles.filtersText}>отделения {isShowFilteredOrg ? `${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}` : ""}</div>
+                                        <div className={styles.filtersIco}>
+                                            {Icons().org.office}
+                                        </div>
+                                        <div className={styles.filtersText}>
+                                            отделения{" "}
+                                            {isShowFilteredOrg
+                                                ? `${options.selectedLists.officesSelectedList.length} из ${options.lists.officesListOptions.length}`
+                                                : ""}
+                                        </div>
                                     </div>
                                     <div
                                         className={selectedOrgFilterClass("department")}
-                                        onClick={() => filtersToggle.orgTypeFiltersToggle("department")}
+                                        onClick={() =>
+                                            filtersToggle.orgTypeFiltersToggle("department")
+                                        }
                                         style={{ background: orgItemsColorsObj.department }}
                                         onContextMenu={(event) => {
                                             event.preventDefault();
@@ -548,12 +767,22 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        <div className={styles.filtersIco}>{Icons().org.department}</div>
-                                        <div className={styles.filtersText}> отделы {isShowFilteredOrg ? `${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}` : ""}</div>
+                                        <div className={styles.filtersIco}>
+                                            {Icons().org.department}
+                                        </div>
+                                        <div className={styles.filtersText}>
+                                            {" "}
+                                            отделы{" "}
+                                            {isShowFilteredOrg
+                                                ? `${options.selectedLists.departmentsSelectedList.length} из ${options.lists.departmentsListOtions.length}`
+                                                : ""}
+                                        </div>
                                     </div>
                                     <div
                                         className={selectedOrgFilterClass("section")}
-                                        onClick={() => filtersToggle.orgTypeFiltersToggle("section")}
+                                        onClick={() =>
+                                            filtersToggle.orgTypeFiltersToggle("section")
+                                        }
                                         style={{ background: orgItemsColorsObj.section }}
                                         onContextMenu={(event) => {
                                             event.preventDefault();
@@ -569,17 +798,27 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 });
                                         }}
                                     >
-                                        <div className={styles.filtersIco}>{Icons().org.section}</div>
-                                        <div className={styles.filtersText}> секции {isShowFilteredOrg ? `${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}` : ""}</div>
+                                        <div className={styles.filtersIco}>
+                                            {Icons().org.section}
+                                        </div>
+                                        <div className={styles.filtersText}>
+                                            {" "}
+                                            секции{" "}
+                                            {isShowFilteredOrg
+                                                ? `${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}`
+                                                : ""}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={styles.filtersHelp}>
                                     <span>
-                                        <b>Левой кнопкой мыши</b> включение/отключение отображения в таблице
+                                        <b>Левой кнопкой мыши</b> включение/отключение отображения в
+                                        таблице
                                     </span>
                                     {isShowFilteredOrg && (
                                         <span>
-                                            <b>Правой кнопкой мыши</b> вызов меню с конкретными позициями для отображения
+                                            <b>Правой кнопкой мыши</b> вызов меню с конкретными
+                                            позициями для отображения
                                         </span>
                                     )}
                                 </div>
@@ -594,11 +833,33 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                             <div className={styles.filter}>
                                 <div className={styles.text}>Тип : </div>
                                 <div className={styles.filterTypeBlock}>
-                                    <div className={styles[`selectedFilter_${filters.mainStatFilter}`]} onClick={filtersToggle.mainStatFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>Главные : </span> <span className={styles.count}>{counters.mainStatCount || 0}</span>
+                                    <div
+                                        className={
+                                            styles[`selectedFilter_${filters.mainStatFilter}`]
+                                        }
+                                        onClick={filtersToggle.mainStatFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Главные :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.mainStatCount || 0}
+                                        </span>
                                     </div>
-                                    <div className={styles[`selectedFilter_${filters.additionalStatsFilter}`]} onClick={filtersToggle.additionalStatsFilter}>
-                                        <span className={`${styles.title} noselect`}>Дополнительные : </span> <span className={styles.count}>{counters.additionalStatCount || 0}</span>
+                                    <div
+                                        className={
+                                            styles[
+                                                `selectedFilter_${filters.additionalStatsFilter}`
+                                            ]
+                                        }
+                                        onClick={filtersToggle.additionalStatsFilter}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Дополнительные :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.additionalStatCount || 0}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -606,15 +867,43 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                             <div className={styles.filter}>
                                 <div className={styles.text}>Статус:</div>
                                 <div className={styles.filterBlock}>
-                                    <div className={styles[`selectedFilter_${filters.growingFilter}`]} onClick={filtersToggle.growingFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>Растущие : </span> <span className={styles.count}>{counters.growingStatsCount || 0}</span>
+                                    <div
+                                        className={
+                                            styles[`selectedFilter_${filters.growingFilter}`]
+                                        }
+                                        onClick={filtersToggle.growingFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Растущие :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.growingStatsCount || 0}
+                                        </span>
                                     </div>
-                                    <div className={styles[`selectedFilter_${filters.fallingFilter}`]} onClick={filtersToggle.fallingFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>Падающие : </span> <span className={styles.count}>{counters.notGrowingStatsCount || 0}</span>
+                                    <div
+                                        className={
+                                            styles[`selectedFilter_${filters.fallingFilter}`]
+                                        }
+                                        onClick={filtersToggle.fallingFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Падающие :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.notGrowingStatsCount || 0}
+                                        </span>
                                     </div>
 
-                                    <div className={styles[`selectedFilter_${filters.emptyFilter}`]} onClick={filtersToggle.emptyFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>Пустые : </span> <span className={styles.count}>{counters.noDataGrowingStatsCount || 0}</span>
+                                    <div
+                                        className={styles[`selectedFilter_${filters.emptyFilter}`]}
+                                        onClick={filtersToggle.emptyFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Пустые :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.noDataGrowingStatsCount || 0}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -622,11 +911,29 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                             <div className={styles.filter}>
                                 <div className={styles.text}>Заполнение:</div>
                                 <div className={styles.filterFellingBlock}>
-                                    <div className={styles[`selectedFilter_${filters.filledFilter}`]} onClick={filtersToggle.filledFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>Заполненные : </span> <span className={styles.count}>{counters.fillledStatsCount || 0}</span>
+                                    <div
+                                        className={styles[`selectedFilter_${filters.filledFilter}`]}
+                                        onClick={filtersToggle.filledFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            Заполненные :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.fillledStatsCount || 0}
+                                        </span>
                                     </div>
-                                    <div className={styles[`selectedFilter_${filters.notFilledFilter}`]} onClick={filtersToggle.notFilledFilterToggle}>
-                                        <span className={`${styles.title} noselect`}>He заполненные : </span> <span className={styles.count}>{counters.notFillledStatsCount || 0}</span>
+                                    <div
+                                        className={
+                                            styles[`selectedFilter_${filters.notFilledFilter}`]
+                                        }
+                                        onClick={filtersToggle.notFilledFilterToggle}
+                                    >
+                                        <span className={`${styles.title} noselect`}>
+                                            He заполненные :{" "}
+                                        </span>{" "}
+                                        <span className={styles.count}>
+                                            {counters.notFillledStatsCount || 0}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -639,7 +946,10 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                             <th className={styles.mainColumn}>
                                 <div className={styles.periodColumnBlock}>
                                     <span>Период</span>
-                                    <span className={styles[`isLastUpdate_${isShowLastUpdate}`]} onClick={() => setIsShowLastUpdate((state) => !state)}>
+                                    <span
+                                        className={styles[`isLastUpdate_${isShowLastUpdate}`]}
+                                        onClick={() => setIsShowLastUpdate((state) => !state)}
+                                    >
                                         ⏲️
                                     </span>
                                 </div>

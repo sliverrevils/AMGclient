@@ -4,7 +4,14 @@ import EditableTable from "@/components/elements/EditableTable/EditableTable";
 import useOrg from "@/hooks/useOrg";
 import useTableStatistics from "@/hooks/useTableStatistics";
 import { StateReduxI } from "@/redux/store";
-import { DepartmentI, OfficeI, SectionI, TableStatisticI, TableStatisticListItemI, UserI } from "@/types/types";
+import {
+    DepartmentI,
+    OfficeI,
+    SectionI,
+    TableStatisticI,
+    TableStatisticListItemI,
+    UserI,
+} from "@/types/types";
 import { nanoid } from "@reduxjs/toolkit";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -54,7 +61,9 @@ export default function Statistics2Screen() {
 
     //selectors
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
-    const isAdmin: boolean = useSelector((state: any) => state.main.user.email === "admin@admin.com");
+    const isAdmin: boolean = useSelector(
+        (state: any) => state.main.user.email === "admin@admin.com"
+    );
     const user = useSelector((state: any) => state.main.user as UserI);
     const { offices, generalDirector } = useSelector((state: StateReduxI) => state.org);
 
@@ -77,7 +86,17 @@ export default function Statistics2Screen() {
 
             //ЛИСТ ПОСТОВ
             // console.log("USER POSTS⭐⭐⭐⭐");
-            const tempList = [...userOffices.map((office, officeIdx) => ({ listName: `РО : ${office.name}@${officeIdx}` })), ...userDepartments.map((department, departmentIdx) => ({ listName: `НО : ${department.name}@${departmentIdx}` })), ...userSections.map((section, sectionIdx) => ({ listName: `АС : ${section.name}@${sectionIdx}` }))];
+            const tempList = [
+                ...userOffices.map((office, officeIdx) => ({
+                    listName: `РО : ${office.name}@${officeIdx}`,
+                })),
+                ...userDepartments.map((department, departmentIdx) => ({
+                    listName: `НО : ${department.name}@${departmentIdx}`,
+                })),
+                ...userSections.map((section, sectionIdx) => ({
+                    listName: `АС : ${section.name}@${sectionIdx}`,
+                })),
+            ];
             setUserPostList(tempList);
         }
     }, [tableStatisticsList, user, isAdmin]);
@@ -113,7 +132,9 @@ export default function Statistics2Screen() {
             const currentTable = tableStatisticsList.find((table) => table.id == tableSelect);
             if (currentTable && /@/g.test(currentTable.name)) {
                 const statName = currentTable.name.split("@")[0].trim();
-                setPeriodList(tableStatisticsList.filter((table) => table.name.includes(`${statName} @`)));
+                setPeriodList(
+                    tableStatisticsList.filter((table) => table.name.includes(`${statName} @`))
+                );
                 setPeriodSelect(0);
                 setSelectedTable("clear");
             } else {
@@ -181,7 +202,9 @@ export default function Statistics2Screen() {
             return (
                 <div className={styles.targetBlock}>
                     <div>{targetOrg.name}</div>
-                    <div onClick={() => setTableSelect(targetOrg.mainPattern)}>главный шаблон : {clearStatName(statNameById(targetOrg.mainPattern))}</div>
+                    <div onClick={() => setTableSelect(targetOrg.mainPattern)}>
+                        главный шаблон : {clearStatName(statNameById(targetOrg.mainPattern))}
+                    </div>
                     {!!targetOrg.patterns.length && (
                         <div>
                             {targetOrg.patterns.map((statId) => (
@@ -215,7 +238,11 @@ export default function Statistics2Screen() {
         <div className={styles.stat2Wrap}>
             {!isAdmin && ( // ВЫБОР ПОСТА У ПОЛЬЗОВАТЕЛЯ
                 <div className={styles.userShooseStatBlock}>
-                    <select className={styles.postSelect} value={userPostSelect} onChange={(event) => setUserPostSelect(event.target.value)}>
+                    <select
+                        className={styles.postSelect}
+                        value={userPostSelect}
+                        onChange={(event) => setUserPostSelect(event.target.value)}
+                    >
                         <option value={""}>выбор поста</option>
                         {isGenDir && <option value="genDir">⭐Генеральный директор</option>}
                         {userPostList.map((post) => (
@@ -265,10 +292,26 @@ export default function Statistics2Screen() {
                                 </div>
                             )}
                         </div>
-                        <select ref={statSelectRef} value={param || tableSelect} onChange={(event) => setTableSelect(+event.target.value)}>
-                            <option value={0}>{filterStats.trim().length ? `статистики по фильтру " ${filterStats.trim()} " : 📉${statisticList.filter((stat) => stat.name.toLowerCase().includes(filterStats.toLowerCase())).length}` : "выбор из всех статистик "}</option>
+                        <select
+                            ref={statSelectRef}
+                            value={param || tableSelect}
+                            onChange={(event) => setTableSelect(+event.target.value)}
+                        >
+                            <option value={0}>
+                                {filterStats.trim().length
+                                    ? `статистики по фильтру " ${filterStats.trim()} " : 📉${
+                                          statisticList.filter((stat) =>
+                                              stat.name
+                                                  .toLowerCase()
+                                                  .includes(filterStats.toLowerCase())
+                                          ).length
+                                      }`
+                                    : "выбор из всех статистик "}
+                            </option>
                             {statisticList
-                                .filter((stat) => stat.name.toLowerCase().includes(filterStats.toLowerCase()))
+                                .filter((stat) =>
+                                    stat.name.toLowerCase().includes(filterStats.toLowerCase())
+                                )
                                 .toSorted((a, b) => a.name.trim().localeCompare(b.name.trim()))
                                 .map((table) => (
                                     <option key={nanoid()} value={table.id}>
@@ -285,11 +328,18 @@ export default function Statistics2Screen() {
                 isAdmin && (
                     <div className={styles.orgFilterBlock}>
                         {!!officeSelect && (
-                            <div className={styles.orgFilterClose} onClick={() => setOfficeSelect(0)}>
+                            <div
+                                className={styles.orgFilterClose}
+                                onClick={() => setOfficeSelect(0)}
+                            >
                                 <XCircleIcon width={25} />
                             </div>
                         )}
-                        <select className={styles.officeList} value={officeSelect} onChange={(event) => setOfficeSelect(+event.target.value)}>
+                        <select
+                            className={styles.officeList}
+                            value={officeSelect}
+                            onChange={(event) => setOfficeSelect(+event.target.value)}
+                        >
                             <option value={0}>выбор по орг схеме</option>
                             {offices.map((office) => (
                                 <option key={nanoid()} value={office.id}>
@@ -298,7 +348,11 @@ export default function Statistics2Screen() {
                             ))}
                         </select>
                         {!!departmentList.length && (
-                            <select className={styles.depList} value={depSelect} onChange={(event) => setDepSelect(+event.target.value)}>
+                            <select
+                                className={styles.depList}
+                                value={depSelect}
+                                onChange={(event) => setDepSelect(+event.target.value)}
+                            >
                                 <option value={0}>выбор отделения</option>
                                 {departmentList.map((dep) => (
                                     <option key={nanoid()} value={dep.id}>
@@ -308,7 +362,11 @@ export default function Statistics2Screen() {
                             </select>
                         )}
                         {!!secList.length && (
-                            <select className={styles.secList} value={secSelect} onChange={(event) => setSecSelect(+event.target.value)}>
+                            <select
+                                className={styles.secList}
+                                value={secSelect}
+                                onChange={(event) => setSecSelect(+event.target.value)}
+                            >
                                 <option value={0}>выбор секции</option>
                                 {secList.map((sec) => (
                                     <option key={nanoid()} value={sec.id}>
@@ -319,9 +377,15 @@ export default function Statistics2Screen() {
                         )}
 
                         {targetOrg && (
-                            <select className={styles.targetList} value={targetStatSelect} onChange={(event) => setTargetStatSelect(+event.target.value)}>
+                            <select
+                                className={styles.targetList}
+                                value={targetStatSelect}
+                                onChange={(event) => setTargetStatSelect(+event.target.value)}
+                            >
                                 <option value={0}>выбор статистики из "{targetOrg?.name}"</option>
-                                <option value={targetOrg.mainPattern}>🚩{clearStatName(statNameById(targetOrg.mainPattern))}</option>
+                                <option value={targetOrg.mainPattern}>
+                                    🚩{clearStatName(statNameById(targetOrg.mainPattern))}
+                                </option>
                                 {!!targetOrg.patterns.length &&
                                     targetOrg.patterns.map((statId) => (
                                         <option key={nanoid()} value={statId}>
@@ -344,9 +408,12 @@ export default function Statistics2Screen() {
                     <div className={styles.periodSelect}>
                         {/* {clearStatName(tableStatisticsList.find(table => table.id == tableSelect)?.name || '')} */}
                         <span>🕒</span>
-                        <select value={periodSelect} onChange={(event) => setPeriodSelect(+event.target.value)}>
+                        <select
+                            value={periodSelect}
+                            onChange={(event) => setPeriodSelect(+event.target.value)}
+                        >
                             <option value={0}>выбрать период</option>
-                            {periodList.map((table) => (
+                            {periodList.toReversed().map((table) => (
                                 <option key={nanoid()} value={table.id}>
                                     {table.name.split("@")[1]}
                                 </option>
