@@ -1378,6 +1378,7 @@ export default function EditableStatisticTable({
                     break;
                 }
                 case "ArrowRight": {
+                    console.log("RIGHT");
                     setSelectedItem((state) => {
                         const value = inputsArrRef.current[selectedRow!]?.[state + 1]
                             ? state + 1
@@ -1388,6 +1389,7 @@ export default function EditableStatisticTable({
                     break;
                 }
                 case "ArrowLeft": {
+                    console.log("LEFT");
                     setSelectedItem((state) => {
                         const value = state ? state - 1 : state;
                         selectedItemRef.current = value;
