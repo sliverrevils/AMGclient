@@ -58,6 +58,7 @@ export interface SectionI {
     ckp: string;
     mainPattern: number;
     patterns: number[];
+    divisions: Array<SectionI>;
 }
 
 export interface StatInfoWithData {

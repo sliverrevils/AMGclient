@@ -8,9 +8,8 @@ import { useSelector } from "react-redux";
 import { StateReduxI } from "@/redux/store";
 import usePatterns from "@/hooks/usePatterns";
 import { celarPeriodStats, clearStatName } from "@/utils/funcs";
-import Division from "../Division/Division";
 
-export default function Section({
+export default function Division({
     sectionItem,
     users,
     userById,
@@ -37,53 +36,9 @@ export default function Section({
     const [adminsListOpen, setAdminsListOpen] = useState(!!!sectionItem.administrators.length);
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState("");
     const [selectAddChart, setSelectAddChart] = useState(1);
-
-    const [addSection, setAddSection] = useState(false);
-    const [inputSectionName, setInputSectionName] = useState("");
-    const [inputDescriptions, setInputDescriptions] = useState("");
-    const [inputCkp, setInputCkp] = useState("");
-    const [inputLeadership, setInputLeadership] = useState("");
-    const [sectionsOpen, setSectionsOpen] = useState(false);
     //hooks
     const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } =
         useOrg();
-
-    //hooks
-    const { createDivision } = useOrg();
-
-    //selectors
-
-    const addSectionToggle = () =>
-        setAddSection((state) => {
-            if (state) {
-                setInputSectionName("");
-                setInputDescriptions("");
-                setSectionsOpen(true);
-            }
-            return !state;
-        });
-
-    const creaetDepartmentHandle = (sectionId: number) => {
-        createDivision(
-            inputSectionName,
-            inputDescriptions,
-            office_id,
-            department_id,
-            inputCkp,
-            +inputLeadership,
-            sectionId
-        ).then((data) => {
-            if (data) {
-                updateOrgScheme();
-                setInputSectionName("");
-                setInputDescriptions("");
-                setAddSection(false);
-                setInputCkp("");
-                setInputDescriptions("");
-                setInputLeadership("");
-            }
-        });
-    };
 
     //selectors
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -160,14 +115,15 @@ export default function Section({
 
     const onAddPattern = () => addSectionPatter(sectionItem.id, addPatternSelect);
 
+    // useEffect(() => { console.log('ADMIN SELECT', inputAddAdmin) }, [inputAddAdmin])
     useEffect(() => {
-        console.log("➡️", sectionItem);
+        console.log("❤️", sectionItem);
     }, []);
     return (
-        <div className={styles.sectionWrap}>
+        <div className={styles.divisionWrap}>
             <div key={sectionItem.id + "_section"} className={styles.sectionItem}>
                 <div className={styles.sectionItemHead}>
-                    <div className={styles.help}>секция {index + 1}</div>
+                    <div className={styles.help}>подразделение {index + 1}</div>
                     {updated && isAdmin ? (
                         <div className={styles.update} onClick={updateSetionHandle}>
                             <img src="svg/org/update_white.svg" />
@@ -413,92 +369,6 @@ export default function Section({
                             })}
                     </div>
                 </div>
-                {isAdmin && !addSection && (
-                    <div
-                        className={styles.addItemBtn}
-                        onClick={addSectionToggle}
-                        style={{ background: "#c9960b" }}
-                    >
-                        Добавить подразделение
-                        <img src="svg/org/add_white.svg" />
-                    </div>
-                )}
-                {addSection && (
-                    <div className={styles.addSectionForm}>
-                        <div className={styles.addForm}>
-                            <h3 style={{ color: "#c9960b" }}>Новое подразделение</h3>
-                            <span className={styles.addHelp}>
-                                Название подразделения( число через пробел в начале для сортировки)
-                            </span>
-                            <input
-                                type="text"
-                                value={inputSectionName}
-                                onChange={(event) => setInputSectionName(event.target.value)}
-                                placeholder="1 название подразделения"
-                            />
-                            <span className={styles.addHelp}>Руководитель подразделения</span>
-                            <select
-                                value={inputLeadership}
-                                onChange={(event) => setInputLeadership(event.target.value)}
-                            >
-                                <option>выбор руководителя</option>
-                                {users.map((user) => (
-                                    <option key={user.id + user.name + "_userItem"} value={user.id}>
-                                        id:{user.id} {user.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <span className={styles.addHelp}>КПЦ подразделения</span>
-                            <textarea
-                                value={inputCkp}
-                                spellCheck="false"
-                                onChange={(event) => setInputCkp(event.target.value)}
-                                placeholder="ЦКП"
-                            />
-                            <span className={styles.addHelp}>Описание подразделения</span>
-                            <textarea
-                                value={inputDescriptions}
-                                spellCheck="false"
-                                onChange={(event) => setInputDescriptions(event.target.value)}
-                                placeholder="Описание подразделения"
-                            />
-                            <button
-                                onClick={() => creaetDepartmentHandle(sectionItem.id)}
-                                style={{ background: "#c9960b" }}
-                            >
-                                Добавить подразделение
-                            </button>
-                            {/* <img src="svg/org/close_field_white.svg" onClick={addSectionToggle} className="close" /> */}
-                            <img
-                                src="svg/org/close_field.svg"
-                                onClick={addSectionToggle}
-                                className={styles.close}
-                            />
-                        </div>
-                    </div>
-                )}
-                {sectionItem.divisions
-                    .toSorted(
-                        (a, b) =>
-                            (parseInt(a.name.split(" ")[0]) || 999) -
-                            (parseInt(b.name.split(" ")[0]) || 999)
-                    )
-                    .map((division, index: number) => (
-                        <Division
-                            key={division.id + "_divisionItem"}
-                            sectionItem={division}
-                            {...{
-                                charts,
-                                users,
-                                userById,
-                                updateOrgScheme,
-                                office_id,
-                                department_id: division.department_id,
-                                index,
-                                isAdmin,
-                            }}
-                        />
-                    ))}
             </div>
 
             {/* <div className={styles.line}></div> */}

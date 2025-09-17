@@ -116,7 +116,7 @@
     background: #ff8056;
     padding: 6px 5px;
     border-radius: 5px;
-    width: 180px;
+    width: 220px;
     box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.568);
     margin-top: 5px;
     align-self: flex-end;
@@ -702,7 +702,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin: 10px;
+    // margin: 10px;
     gap: 30px;
     padding: 30px 0;
 
@@ -896,7 +896,7 @@
             background: -moz-linear-gradient(
                 0deg,
                 rgba(249, 249, 249, 0.4164040616246498) 0%,
-                rgba(42, 153, 85, 0.4023984593837535) 100%
+                rgba(129, 153, 42, 0.402) 100%
             );
             background: -webkit-linear-gradient(
                 0deg,
@@ -1027,6 +1027,272 @@
                         border: 0;
                         padding: 3px 0;
                         box-shadow: 1px 1px 4px black;
+                    }
+                }
+            }
+        }
+    }
+    .divisionWrap {
+        margin-top: 20px;
+        margin-right: 10px;
+        margin-left: -5px;
+        display: flex;
+        background: #e0e41ad7;
+
+        .line {
+            width: 10px;
+            background: #e0e41ad7;
+            //transform: scale(120%) translateY(-15px);
+        }
+
+        .sectionItem {
+            width: 100%;
+            background-color: white;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            width: 350px;
+
+            &:hover {
+                .hideField {
+                    display: block;
+                    animation: fildsOpen 300ms ease-in;
+                }
+
+                .hideFieldFlex {
+                    display: flex;
+                    align-items: center;
+                    animation: fildsOpen 500ms ease-in;
+                }
+            }
+
+            .sectionItemHead {
+                //border: 1px solid black;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 200ms ease-in-out;
+                background-color: #c9960b;
+                color: white;
+                border-radius: 5px 5px 2px 2px;
+                font-size: 15px;
+                padding: 5px 5px;
+                position: relative;
+
+                .help {
+                    position: absolute;
+                    font-size: 13px;
+                    left: 10px;
+                    top: -21px;
+                    letter-spacing: 1px;
+                    opacity: 1;
+                    color: black;
+                }
+
+                .delete {
+                    width: 17px;
+                    opacity: 0;
+                    cursor: pointer;
+                }
+
+                .sectionName {
+                    display: flex;
+                    justify-content: space-between;
+                    text-align: center;
+                    width: 100%;
+                    font-size: 17px;
+                    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.63);
+                    font-weight: 500;
+                    width: 100%;
+                    color: white;
+                    text-align: center;
+                    position: relative;
+
+                    textarea {
+                        width: 100%;
+                        text-align: center;
+                        background: transparent;
+                        color: white;
+                        font-size: 13px;
+                        text-shadow: 2px 2px 2px black;
+                        font-weight: 500;
+                        resize: none;
+                        border: 0;
+                        &:focus {
+                            outline: 0;
+                        }
+                    }
+
+                    .index {
+                        opacity: 0.6;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        span {
+                            margin-left: 3px;
+                            font-size: 14px;
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            padding: 0 5px;
+                        }
+                    }
+                }
+
+                &:hover {
+                    .delete {
+                        opacity: 0.5;
+
+                        &:hover {
+                            transform: scale(140%);
+                            opacity: 0.8;
+                        }
+                    }
+                }
+            }
+
+            .sectionBody {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                padding: 3px 5px;
+
+                background: rgb(249, 249, 249);
+                background: -moz-linear-gradient(
+                    0deg,
+                    rgba(249, 249, 249, 0.4164040616246498) 0%,
+                    rgba(129, 153, 42, 0.402) 100%
+                );
+                background: -webkit-linear-gradient(
+                    0deg,
+                    rgba(249, 249, 249, 0.4164040616246498) 0%,
+                    rgba(214, 194, 7, 0.402) 100%
+                );
+                background: linear-gradient(
+                    0deg,
+                    rgba(249, 249, 249, 0.4164040616246498) 0%,
+                    rgba(228, 190, 22, 0.402) 100%
+                );
+                //filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f9f9f9",endColorstr="#2a9955",GradientType=1);
+                border-radius: 0 0 5px 5px;
+            }
+
+            .administratorsList {
+                //border-left: 4px solid #FF8056;
+                border-radius: 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 3px 5px 0px 0;
+                margin-bottom: 5px;
+                //animation: open 200ms ease-in;
+
+                img {
+                    width: 20px;
+
+                    &:nth-child(2) {
+                        opacity: 0.4;
+                    }
+                }
+
+                // img:first-child{
+                //     width: 30px;
+                // }
+
+                .administratorsField {
+                    //background-color: aqua;
+                    display: flex;
+                    justify-content: space-between;
+                    cursor: pointer;
+
+                    img {
+                        &:first-child {
+                            width: 30px;
+                        }
+
+                        &:nth-child(2) {
+                            opacity: 0.3;
+                            width: 20px;
+                        }
+                    }
+                }
+
+                .addAdminBtn {
+                    width: 100%;
+                    display: flex;
+                    justify-content: left;
+                    margin-left: 10px;
+                    padding: 0;
+                    opacity: 0.2;
+
+                    transition: all 200ms ease-in-out;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+
+                .addAdmin {
+                    //border: 1px solid black;
+                    background-color: #dab03e;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                    align-items: center;
+                    margin: 5px 0 10px 2px;
+                    padding: 5px 5px;
+                    border-radius: 5px;
+                    display: flex;
+                    justify-content: space-between;
+                    box-shadow: 1px 10px 6px 2px #000000c4;
+                    animation: open 200ms ease-in;
+
+                    input,
+                    select,
+                    textarea {
+                        width: 100%;
+                        font-size: 14px;
+                        padding: 2px 2px;
+                        border-radius: 5px;
+                    }
+
+                    textarea {
+                        resize: vertical;
+                    }
+
+                    img {
+                        cursor: pointer;
+                        width: 20px;
+                    }
+
+                    // select {
+                    //     border: 0;
+                    //     padding: 0px;
+                    //     margin: 0;
+                    // }
+
+                    &::selection {
+                        border: 0;
+                        outline: 0;
+                    }
+
+                    .addAdminBtns {
+                        display: flex;
+                        justify-content: space-around;
+                        width: 100%;
+                        gap: 10px;
+                        padding: 0 10px;
+
+                        button {
+                            width: 100%;
+                            cursor: pointer;
+                            font-size: 14px;
+                            border-radius: 5px;
+                            border: 0;
+                            padding: 3px 0;
+                            box-shadow: 1px 1px 4px black;
+                        }
                     }
                 }
             }

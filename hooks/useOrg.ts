@@ -2,7 +2,11 @@ import axiosClient, { axiosError } from "@/app/axiosClient";
 import { setLoadingRedux } from "@/redux/appSlice";
 import { setUserOnDirectRedux } from "@/redux/mainSlice";
 import { setOfficesRedux } from "@/redux/orgSlice";
-import { setAccessPatternsRedux, setPatternsRedux, setTableHeadersRedux } from "@/redux/patternsSlce";
+import {
+    setAccessPatternsRedux,
+    setPatternsRedux,
+    setTableHeadersRedux,
+} from "@/redux/patternsSlce";
 import { setTableStatisticsListRedux } from "@/redux/statsSlice";
 import { setUsersRedux } from "@/redux/usersSlice";
 import { ChartI, ChartPatternI, LineI, OfficeI } from "@/types/types";
@@ -14,60 +18,84 @@ export default function useOrg() {
     const dispatch = useDispatch();
 
     // GET FULL ORG
-    const getOrgFullScheme = ({ setOrgScheme, setUsers, setCharts }: { setOrgScheme?: any; setUsers?: any; setCharts?: any } = {}) => {
+    const getOrgFullScheme = ({
+        setOrgScheme,
+        setUsers,
+        setCharts,
+    }: { setOrgScheme?: any; setUsers?: any; setCharts?: any } = {}) => {
         dispatch(setLoadingRedux(true));
         axiosClient
             .get("info")
-            .then(({ data: { offices, users, patterns, patternAccesses, tablePatterns, tableStatistics, userOnDirect } }) => {
-                //set on state
-                setOrgScheme && setOrgScheme(offices);
-                setOrgScheme && setUsers(users);
-                setCharts && setCharts(patterns);
+            .then(
+                ({
+                    data: {
+                        offices,
+                        users,
+                        patterns,
+                        patternAccesses,
+                        tablePatterns,
+                        tableStatistics,
+                        userOnDirect,
+                    },
+                }) => {
+                    //set on state
+                    setOrgScheme && setOrgScheme(offices);
+                    setOrgScheme && setUsers(users);
+                    setCharts && setCharts(patterns);
 
-                //REDUX
-                //users
-                if (users) {
-                    dispatch(
-                        setUsersRedux(
-                            users.map((user) => {
-                                return {
-                                    ...user,
-                                    name: replaceFio(user.name),
-                                    post: JSON.parse(user.post || "[]"),
-                                };
-                            })
-                        )
-                    );
-                }
+                    //REDUX
+                    //users
+                    if (users) {
+                        dispatch(
+                            setUsersRedux(
+                                users.map((user) => {
+                                    return {
+                                        ...user,
+                                        name: replaceFio(user.name),
+                                        post: JSON.parse(user.post || "[]"),
+                                    };
+                                })
+                            )
+                        );
+                    }
 
-                //patterns
-                if (patterns?.length) {
-                    const paternsParsed = (patterns as ChartI[]).map((pattern) => ({ ...pattern, lines: JSON.parse(pattern.lines), fields: JSON.parse(pattern.fields), access: JSON.parse(pattern.access) }));
-                    //console.log('PATTERNS',paternsParsed)
-                    dispatch(setPatternsRedux(paternsParsed as ChartPatternI[]));
-                }
-                //offices
-                if (offices?.length) {
-                    dispatch(setOfficesRedux(offices as OfficeI[]));
-                }
-                //ACCESS
-                dispatch(setAccessPatternsRedux(patternAccesses));
+                    //patterns
+                    if (patterns?.length) {
+                        const paternsParsed = (patterns as ChartI[]).map((pattern) => ({
+                            ...pattern,
+                            lines: JSON.parse(pattern.lines),
+                            fields: JSON.parse(pattern.fields),
+                            access: JSON.parse(pattern.access),
+                        }));
+                        //console.log('PATTERNS',paternsParsed)
+                        dispatch(setPatternsRedux(paternsParsed as ChartPatternI[]));
+                    }
+                    //offices
+                    if (offices?.length) {
+                        dispatch(setOfficesRedux(offices as OfficeI[]));
+                    }
+                    //ACCESS
+                    dispatch(setAccessPatternsRedux(patternAccesses));
 
-                if (tablePatterns?.length) {
-                    const tablePatternsParsed = tablePatterns.map((pattern) => ({ ...pattern, headers: JSON.parse(pattern.headers) }));
-                    // console.log('TABLE PATTERNS 📌📌📌📌',tablePatternsParsed);
-                    dispatch(setTableHeadersRedux(tablePatternsParsed));
-                } else {
-                    dispatch(setTableHeadersRedux([]));
-                }
+                    if (tablePatterns?.length) {
+                        const tablePatternsParsed = tablePatterns.map((pattern) => ({
+                            ...pattern,
+                            headers: JSON.parse(pattern.headers),
+                        }));
+                        // console.log('TABLE PATTERNS 📌📌📌📌',tablePatternsParsed);
+                        dispatch(setTableHeadersRedux(tablePatternsParsed));
+                    } else {
+                        dispatch(setTableHeadersRedux([]));
+                    }
 
-                if (tableStatistics) {
-                    // console.log("TABELS📅", tableStatistics);
-                    dispatch(setTableStatisticsListRedux(tableStatistics));
+                    if (tableStatistics) {
+                        // console.log("TABELS📅", tableStatistics);
+                        dispatch(setTableStatisticsListRedux(tableStatistics));
+                    }
+                    //USER ON DIRECT
+                    dispatch(setUserOnDirectRedux(userOnDirect));
                 }
-                //USER ON DIRECT
-                dispatch(setUserOnDirectRedux(userOnDirect));
-            })
+            )
             .catch(axiosError)
             .finally(() => dispatch(setLoadingRedux(false)));
     };
@@ -88,10 +116,20 @@ export default function useOrg() {
     };
 
     //--------------------------Oficces
-    const createOffice = async (name: string, leadership: null | number, descriptions: string, ckp: string) => {
+    const createOffice = async (
+        name: string,
+        leadership: null | number,
+        descriptions: string,
+        ckp: string
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post("offices/create", { name, leadership, descriptions, ckp });
+            const created: any = await axiosClient.post("offices/create", {
+                name,
+                leadership,
+                descriptions,
+                ckp,
+            });
             //console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -105,10 +143,22 @@ export default function useOrg() {
         }
     };
 
-    const updateOffice = async (officeId: number, name: string, leadership: null | number, descriptions: string, ckp: string, updateFunc?: any) => {
+    const updateOffice = async (
+        officeId: number,
+        name: string,
+        leadership: null | number,
+        descriptions: string,
+        ckp: string,
+        updateFunc?: any
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post("offices/update/" + officeId, { name, leadership, descriptions, ckp });
+            const created: any = await axiosClient.post("offices/update/" + officeId, {
+                name,
+                leadership,
+                descriptions,
+                ckp,
+            });
             // console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -141,7 +191,14 @@ export default function useOrg() {
         }
     };
     //-------------------Departments
-    const createDepartment = async (office_id: number, name: string, code: string, leadership: number, descriptions: string, ckp: string) => {
+    const createDepartment = async (
+        office_id: number,
+        name: string,
+        code: string,
+        leadership: number,
+        descriptions: string,
+        ckp: string
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
             const created: any = await axiosClient.post("departments/create", {
@@ -164,10 +221,24 @@ export default function useOrg() {
         }
     };
 
-    const updateDepatment = async (depatmentId: number, name: string, leadership: null | number, code: string, descriptions: string, ckp: string, updateFunc?: any) => {
+    const updateDepatment = async (
+        depatmentId: number,
+        name: string,
+        leadership: null | number,
+        code: string,
+        descriptions: string,
+        ckp: string,
+        updateFunc?: any
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post("departments/update/" + depatmentId, { name, leadership, code, descriptions, ckp });
+            const created: any = await axiosClient.post("departments/update/" + depatmentId, {
+                name,
+                leadership,
+                code,
+                descriptions,
+                ckp,
+            });
             // console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -200,10 +271,24 @@ export default function useOrg() {
     };
 
     //--------------------Sections
-    const createSection = async (name: string, descriptions: string, office_id: number, department_id: number, ckp: string, leadership: number) => {
+    const createSection = async (
+        name: string,
+        descriptions: string,
+        office_id: number,
+        department_id: number,
+        ckp: string,
+        leadership: number
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post("sections/create", { name, descriptions, office_id, department_id, ckp, leadership });
+            const created: any = await axiosClient.post("sections/create", {
+                name,
+                descriptions,
+                office_id,
+                department_id,
+                ckp,
+                leadership,
+            });
             dispatch(setLoadingRedux(false));
             if (created) {
                 toast.success(`Секция "${name}" успешно содана`);
@@ -216,10 +301,54 @@ export default function useOrg() {
         }
     };
 
-    const updateSection = async (sectionId: number, name: string, leadership: null | number, descriptions: string, ckp: string, updateFunc?: any) => {
+    const createDivision = async (
+        name: string,
+        descriptions: string,
+        office_id: number,
+        department_id: number,
+        ckp: string,
+        leadership: number,
+        division_for_sector_id: number
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post("sections/update/" + sectionId, { name, leadership, descriptions, ckp });
+            const created: any = await axiosClient.post("sections/create-division", {
+                name,
+                descriptions,
+                office_id,
+                department_id,
+                ckp,
+                leadership,
+                division_for_sector_id,
+            });
+            dispatch(setLoadingRedux(false));
+            if (created) {
+                toast.success(`Подразделение "${name}" успешно содано`);
+            }
+            return true;
+        } catch (err) {
+            dispatch(setLoadingRedux(false));
+            axiosError(err);
+            return false;
+        }
+    };
+
+    const updateSection = async (
+        sectionId: number,
+        name: string,
+        leadership: null | number,
+        descriptions: string,
+        ckp: string,
+        updateFunc?: any
+    ) => {
+        dispatch(setLoadingRedux(true));
+        try {
+            const created: any = await axiosClient.post("sections/update/" + sectionId, {
+                name,
+                leadership,
+                descriptions,
+                ckp,
+            });
             // console.log('CREATE DES', descriptions);
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -251,10 +380,23 @@ export default function useOrg() {
         }
     };
     //ADMINISTRATORS
-    const addSectionAdministrator = async (section_id: number, office_id: number, department_id: number, user_id: number, descriptions: string, update: () => {}) => {
+    const addSectionAdministrator = async (
+        section_id: number,
+        office_id: number,
+        department_id: number,
+        user_id: number,
+        descriptions: string,
+        update: () => {}
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post(`administrators/create`, { section_id, office_id, department_id, user_id, descriptions });
+            const created: any = await axiosClient.post(`administrators/create`, {
+                section_id,
+                office_id,
+                department_id,
+                user_id,
+                descriptions,
+            });
             dispatch(setLoadingRedux(false));
             if (created) {
                 update();
@@ -288,10 +430,17 @@ export default function useOrg() {
         }
     };
     //CHARTS
-    const addChartToAdministrator = async (administrator_id: number, chart_id: number, update: () => {}) => {
+    const addChartToAdministrator = async (
+        administrator_id: number,
+        chart_id: number,
+        update: () => {}
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post(`administrators/add_chart/${administrator_id}`, { chart_id });
+            const created: any = await axiosClient.post(
+                `administrators/add_chart/${administrator_id}`,
+                { chart_id }
+            );
             update();
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -304,10 +453,17 @@ export default function useOrg() {
             return false;
         }
     };
-    const deleteChartFromAdministrator = async (administrator_id: number, chart_id: number, update: () => {}) => {
+    const deleteChartFromAdministrator = async (
+        administrator_id: number,
+        chart_id: number,
+        update: () => {}
+    ) => {
         dispatch(setLoadingRedux(true));
         try {
-            const created: any = await axiosClient.post(`administrators/delete_chart/${administrator_id}`, { chart_id });
+            const created: any = await axiosClient.post(
+                `administrators/delete_chart/${administrator_id}`,
+                { chart_id }
+            );
             update();
             dispatch(setLoadingRedux(false));
             if (created) {
@@ -321,5 +477,22 @@ export default function useOrg() {
         }
     };
 
-    return { getOrgFullScheme, createOffice, deleteOffice, deleteDepartment, createDepartment, createSection, deleteSection, addSectionAdministrator, deleteSectionAdministrator, addChartToAdministrator, deleteChartFromAdministrator, updateOffice, updateDepatment, updateSection, getReportList };
+    return {
+        getOrgFullScheme,
+        createOffice,
+        deleteOffice,
+        deleteDepartment,
+        createDepartment,
+        createSection,
+        deleteSection,
+        addSectionAdministrator,
+        deleteSectionAdministrator,
+        addChartToAdministrator,
+        deleteChartFromAdministrator,
+        updateOffice,
+        updateDepatment,
+        updateSection,
+        getReportList,
+        createDivision,
+    };
 }
