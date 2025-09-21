@@ -1,4 +1,4 @@
-import { DepartmentI, SectionI } from "@/types/types";
+import { DepartmentI, DivisionI, SectionI } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import styles from "./filterStat.module.scss";
 import useUsers from "@/hooks/useUsers";
@@ -9,7 +9,19 @@ import useOrg from "@/hooks/useOrg";
 import { StateReduxI } from "@/redux/store";
 import { useSelector } from "react-redux";
 
-export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTable, setIsControl }: { isGenDir: boolean; postItem: any; setTableSelect: React.Dispatch<React.SetStateAction<number>>; clearTable: () => void; setIsControl: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function FilterStat({
+    isGenDir,
+    postItem,
+    setTableSelect,
+    clearTable,
+    setIsControl,
+}: {
+    isGenDir: boolean;
+    postItem: any;
+    setTableSelect: React.Dispatch<React.SetStateAction<number>>;
+    clearTable: () => void;
+    setIsControl: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
     //STATE
     const [currentTarget, setCurrentTarget] = useState(postItem);
     //offices
@@ -20,6 +32,9 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
     //sections
     const [sectionsList, setSectionsList] = useState<SectionI[]>([]);
     const [sectionSelect, setSectionSelect] = useState(0);
+    //divisions
+    const [divisionsList, setDivisionsList] = useState<DivisionI[]>([]);
+    const [divisionSelect, setDivisionSelect] = useState(0);
     //statistclist
     const [additionalStatsList, setAdditionalStatsList] = useState<number[]>([]);
     const [additionalStatsSelect, setAdditionalStatsSelect] = useState(0);
@@ -54,6 +69,18 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
             return false;
         }
     };
+    //create divisions list
+    const createDivisionsList = (divisionProp: DivisionI[] | undefined): boolean => {
+        //console.log("sectionProp", sectionProp);
+        setDivisionSelect(0);
+        if (divisionProp?.length) {
+            setDivisionsList(divisionProp);
+            return true;
+        } else {
+            setDivisionsList([]);
+            return false;
+        }
+    };
 
     //create statisctic html button
     const StatDiv = ({ statId, control }: { statId: number | null; control: boolean }) => {
@@ -79,7 +106,8 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
         if (currentTarget) {
             if (currentTarget.departments) return `Руководитель отделения`;
             if (currentTarget.sections) return `Начальник отдела`;
-            return `Администратор секции`;
+            if (currentTarget.divisions) return `Администратор секции`;
+            return `Администратор подразделения`;
         }
         return "";
     };
@@ -88,7 +116,8 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
         if (currentTarget) {
             if (currentTarget.departments) return `office`;
             if (currentTarget.sections) return `department`;
-            return `section`;
+            if (currentTarget.divisions) return `section`;
+            return `division`;
         }
         return "";
     };
@@ -105,8 +134,9 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
             setCurrentTarget(postItem);
             createDepatmentsList(postItem?.departments);
             createSectionsList(postItem?.sections);
+            createDivisionsList(postItem?.divisions);
         }
-        //console.log("FILTER UPDATE", postItem?.sections);
+        console.log("FILTER UPDATE", postItem);
     }, [postItem]);
     // ON OFFICE SELECT
     useEffect(() => {
@@ -141,12 +171,29 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
 
         if (sectionSelect) {
             const currentSection = sectionsList.find((sec) => sec.id == sectionSelect);
+            createDivisionsList(currentSection?.divisions);
             setCurrentTarget(currentSection);
         } else {
             const curretDepatment = departmentsList.find((dep) => dep.id == departmentSelect);
             setCurrentTarget(curretDepatment || postItem);
+            setDivisionsList([]);
         }
     }, [sectionSelect]);
+
+    useEffect(() => {
+        // ON DIVISION SELECT
+        clearTable();
+        setTableSelect(0);
+
+        if (divisionSelect) {
+            const currentDivison = divisionsList.find((div) => div.id == divisionSelect);
+
+            setCurrentTarget(currentDivison);
+        } else {
+            const currentSection = sectionsList.find((sec) => sec.id == sectionSelect);
+            setCurrentTarget(currentSection || postItem);
+        }
+    }, [divisionSelect]);
 
     useEffect(() => {
         // ON CHANGE TARGET
@@ -175,7 +222,11 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                 <div className={styles.filterBlock}>
                     {postItem === "genDir" && (
                         <div className={styles.filterItem}>
-                            <select className={styles.offSelect} value={officeSelect} onChange={(event) => setOfficeSelect(Number(event.target.value))}>
+                            <select
+                                className={styles.offSelect}
+                                value={officeSelect}
+                                onChange={(event) => setOfficeSelect(Number(event.target.value))}
+                            >
                                 {offices.map((office) => (
                                     <option key={nanoid()} value={office.id}>
                                         <option>Выбор отделения</option>
@@ -187,7 +238,11 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                     )}
                     {!!departmentsList.length && (
                         <div className={styles.filterItem}>
-                            <select className={styles.depSelect} value={departmentSelect} onChange={(event) => setDepatmentSelect(+event.target.value)}>
+                            <select
+                                className={styles.depSelect}
+                                value={departmentSelect}
+                                onChange={(event) => setDepatmentSelect(+event.target.value)}
+                            >
                                 <option value={0}>Выбор отдела</option>
                                 {departmentsList.map((department) => (
                                     <option key={nanoid()} value={department.id}>
@@ -204,7 +259,11 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                     )}
                     {!!sectionsList.length && (
                         <div className={styles.filterItem}>
-                            <select className={styles.secSelect} value={sectionSelect} onChange={(event) => setSectionSelect(+event.target.value)}>
+                            <select
+                                className={styles.secSelect}
+                                value={sectionSelect}
+                                onChange={(event) => setSectionSelect(+event.target.value)}
+                            >
                                 <option value={0}>Выбор секции</option>
                                 {sectionsList.map((section) => (
                                     <option key={nanoid()} value={section.id}>
@@ -217,6 +276,32 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                                     className={styles.close}
                                     onClick={() => {
                                         setSectionSelect(0);
+                                    }}
+                                >
+                                    ❌
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    {!!divisionsList.length && (
+                        <div className={styles.filterItem}>
+                            <select
+                                className={styles.divSelect}
+                                value={divisionSelect}
+                                onChange={(event) => setDivisionSelect(+event.target.value)}
+                            >
+                                <option value={0}>Выбор подразделения</option>
+                                {divisionsList.map((division) => (
+                                    <option key={nanoid()} value={division.id}>
+                                        {division.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {!!divisionSelect && (
+                                <div
+                                    className={styles.close}
+                                    onClick={() => {
+                                        setDivisionSelect(0);
                                     }}
                                 >
                                     ❌
@@ -242,18 +327,27 @@ export default function FilterStat({ isGenDir, postItem, setTableSelect, clearTa
                         </div>
 
                         <div className={styles.leadershipBlock}>
-                            <span>{getCurrentPostText()} :</span> <div>{userByID(+currentTarget.leadership)?.name || "не назначен"}</div>
+                            <span>{getCurrentPostText()} :</span>{" "}
+                            <div>{userByID(+currentTarget.leadership)?.name || "не назначен"}</div>
                         </div>
 
                         <div className={styles.statsBlock}>
                             <div className={styles.mainStat}>
                                 <span>Главная статистика</span>
-                                <StatDiv statId={currentTarget.mainPattern} control={!(currentTarget?.name == postItem?.name)} />
+                                <StatDiv
+                                    statId={currentTarget.mainPattern}
+                                    control={!(currentTarget?.name == postItem?.name)}
+                                />
                             </div>
                             <div className={styles.addStat}>
                                 <span>Дополнительные статистики</span>
                                 {!!additionalStatsList.length ? (
-                                    <select value={additionalStatsSelect} onChange={(event) => setAdditionalStatsSelect(+event.target.value)}>
+                                    <select
+                                        value={additionalStatsSelect}
+                                        onChange={(event) =>
+                                            setAdditionalStatsSelect(+event.target.value)
+                                        }
+                                    >
                                         <option value={0}>Дополнительные статистики</option>
                                         {additionalStatsList.map((statId) => (
                                             <option key={nanoid()} value={statId}>

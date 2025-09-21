@@ -52,9 +52,9 @@ export default function Statistics2Screen() {
     const [isControl, setIsControl] = useState(false);
 
     //hooks
-    const { getOrgFullScheme } = useOrg();
-    const { getAllTableStatistics, getTableStatisticById, statNameById } = useTableStatistics();
-    const { userPatterns, getUserPosts } = useUsers();
+
+    const { getTableStatisticById, statNameById } = useTableStatistics();
+    const { getUserPosts } = useUsers();
 
     //refs
     const statSelectRef = useRef(null);
@@ -69,7 +69,7 @@ export default function Statistics2Screen() {
 
     //vars
     const isGenDir = generalDirector === user.userId;
-    const { userDepartments, userOffices, userSections } = getUserPosts(user.userId);
+    const { userDepartments, userOffices, userSections, userDivisions } = getUserPosts(user.userId);
     const statGrupType = ["Заполняемые", "Контролируемые"];
     const statType = ["Главная статистика", "Дополнительные статистики"];
     //funcs
@@ -96,6 +96,9 @@ export default function Statistics2Screen() {
                 ...userSections.map((section, sectionIdx) => ({
                     listName: `АС : ${section.name}@${sectionIdx}`,
                 })),
+                ...userDivisions.map((division, divisionIdx) => ({
+                    listName: `АП : ${division.name}@${divisionIdx}`,
+                })),
             ];
             setUserPostList(tempList);
         }
@@ -111,6 +114,7 @@ export default function Statistics2Screen() {
             РО: userOffices,
             НО: userDepartments,
             АС: userSections,
+            АП: userDivisions,
         };
         if (userPostSelect) {
             if (userPostSelect === "genDir") {
@@ -394,10 +398,6 @@ export default function Statistics2Screen() {
                                     ))}
                             </select>
                         )}
-
-                        {/* {
-                        targetHtml
-                    } */}
                     </div>
                 )
             }

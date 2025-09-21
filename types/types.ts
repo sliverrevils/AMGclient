@@ -60,6 +60,7 @@ export interface SectionI {
     patterns: number[];
     divisions: Array<SectionI>;
 }
+export type DivisionI = Omit<SectionI, "divisions">;
 
 export interface StatInfoWithData {
     id: number;
@@ -387,6 +388,7 @@ export interface UserPostsI {
     userDepartments: DepartmentI[];
     userSections: SectionI[];
     workerOnSections: SectionI[];
+    userDivisions: DivisionI[];
 }
 
 export interface IChartPropListItem {

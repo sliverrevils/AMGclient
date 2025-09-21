@@ -1,5 +1,16 @@
 import { StateReduxI } from "@/redux/store";
-import { ChartPatternI, UserFullI, UserI, UserAllPatternsIdsI, UserAllPatternsI, PatternsFromI, DepartmentI, SectionI, UserPostsI } from "@/types/types";
+import {
+    ChartPatternI,
+    UserFullI,
+    UserI,
+    UserAllPatternsIdsI,
+    UserAllPatternsI,
+    PatternsFromI,
+    DepartmentI,
+    SectionI,
+    UserPostsI,
+    DivisionI,
+} from "@/types/types";
 import { useSelector } from "react-redux";
 
 export default function useUsers() {
@@ -9,7 +20,8 @@ export default function useUsers() {
 
     const { users }: { users: UserFullI[] } = useSelector((state: any) => state.users);
 
-    const userByID = (userId: number): UserFullI | undefined => users.find((user) => user.id == userId);
+    const userByID = (userId: number): UserFullI | undefined =>
+        users.find((user) => user.id == userId);
 
     const userPatterns = (userId: number): UserAllPatternsI => {
         const accessPatternsIds: UserAllPatternsIdsI = {
@@ -29,24 +41,46 @@ export default function useUsers() {
             }
         };
 
-        const addSelfPatterns = ({ mainPattern, patterns, name }: { mainPattern: number; patterns: number[]; name: string }) => {
+        const addSelfPatterns = ({
+            mainPattern,
+            patterns,
+            name,
+        }: {
+            mainPattern: number;
+            patterns: number[];
+            name: string;
+        }) => {
             if (mainPattern) {
                 accessPatternsIds.mains = [...new Set([...accessPatternsIds.mains, mainPattern])];
                 addPatternFrom(mainPattern, name);
             }
             if (patterns.length) {
-                accessPatternsIds.additionals = [...new Set([...accessPatternsIds.additionals, ...patterns])];
+                accessPatternsIds.additionals = [
+                    ...new Set([...accessPatternsIds.additionals, ...patterns]),
+                ];
                 patterns.forEach((pattern_id) => addPatternFrom(pattern_id, name));
             }
         };
 
-        const addViewPatterns = ({ mainPattern, patterns, name }: { mainPattern: number; patterns: number[]; name: string }) => {
+        const addViewPatterns = ({
+            mainPattern,
+            patterns,
+            name,
+        }: {
+            mainPattern: number;
+            patterns: number[];
+            name: string;
+        }) => {
             if (mainPattern) {
-                accessPatternsIds.viewMains = [...new Set([...accessPatternsIds.viewMains, mainPattern])];
+                accessPatternsIds.viewMains = [
+                    ...new Set([...accessPatternsIds.viewMains, mainPattern]),
+                ];
                 addPatternFrom(mainPattern, name);
             }
             if (patterns.length) {
-                accessPatternsIds.viewAdditionals = [...new Set([...accessPatternsIds.viewAdditionals, ...patterns])];
+                accessPatternsIds.viewAdditionals = [
+                    ...new Set([...accessPatternsIds.viewAdditionals, ...patterns]),
+                ];
                 addPatternFrom(mainPattern, name);
             }
         };
@@ -94,7 +128,9 @@ export default function useUsers() {
         };
 
         Object.keys(accessPatternsIds).forEach((field) => {
-            accessPatterns[field] = patterns.filter((pattern) => accessPatternsIds[field].includes(pattern.id));
+            accessPatterns[field] = patterns.filter((pattern) =>
+                accessPatternsIds[field].includes(pattern.id)
+            );
         });
 
         //console.log("ACCESS 🔐\n", accessPatterns);
@@ -118,19 +154,36 @@ export default function useUsers() {
         // DEPATMENTS SEARCH
         let userDepartments: DepartmentI[] = [];
         offices.forEach((office) => {
-            userDepartments = [...userDepartments, ...office.departments.filter((department) => department.leadership == userId)];
+            userDepartments = [
+                ...userDepartments,
+                ...office.departments.filter((department) => department.leadership == userId),
+            ];
         });
 
         // SECTION SERCH
         let userSections: SectionI[] = [];
         let workerOnSections: SectionI[] = [];
+
+        let userDivisions: DivisionI[] = [];
+        let workerOnDivisions: DivisionI[] = [];
+
         offices.forEach((office) =>
             office.departments.forEach((department) => {
-                userSections = [...userSections, ...department.sections.filter((section) => section.leadership == userId)];
+                userSections = [
+                    ...userSections,
+                    ...department.sections.filter((section) => section.leadership == userId),
+                ];
                 department.sections.forEach((section) => {
                     if (section.administrators.some((admin) => admin.user_id == userId)) {
                         workerOnSections = [...workerOnSections, section];
                     }
+                    // section.divisions.forEach(division=>{
+
+                    // })
+                    userDivisions = [
+                        ...userDivisions,
+                        ...section.divisions.filter((division) => division.leadership == userId),
+                    ];
                 });
             })
         );
@@ -140,6 +193,7 @@ export default function useUsers() {
             userDepartments,
             userSections,
             workerOnSections,
+            userDivisions,
         };
         return result;
     };

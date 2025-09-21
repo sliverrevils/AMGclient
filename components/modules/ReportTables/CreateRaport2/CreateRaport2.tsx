@@ -802,8 +802,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                             {Icons().org.section}
                                         </div>
                                         <div className={styles.filtersText}>
-                                            {" "}
-                                            секции{" "}
+                                            секции
                                             {isShowFilteredOrg
                                                 ? `${options.selectedLists.sectionsSelectedList.length} из ${options.lists.sectionsListOptions.length}`
                                                 : ""}
@@ -955,9 +954,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                 </div>
                             </th>
                             <th className={styles.mainColumn}>Название статистики</th>
-                            {/* <th className={styles.mainColumn} title={"вид тренда:\n📉 - стандартный\n📈 - перевернуты "}>
-                            Тип
-                        </th> */}
+
                             <th className={styles.mainColumn}>Cтатус </th>
                         </tr>
                     </thead>
