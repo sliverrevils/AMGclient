@@ -115,4 +115,5 @@ export const orgItemsColorsObj = {
     office: "rgb(255, 128, 86)",
     department: "steelblue",
     section: "rgba(42, 153, 85, 0.843)",
+    division: "rgb(209, 162, 6)",
 };

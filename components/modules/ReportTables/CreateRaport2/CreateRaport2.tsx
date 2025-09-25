@@ -112,6 +112,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
     const [isOfficeListShow, setIsOfficeListShow] = useState(false);
     const [isDepartmentListShow, setIsDepartmentListShow] = useState(false);
     const [isSectionListShow, setIsSectionListShow] = useState(false);
+    const [isDivisionListShow, setIsDivisionListShow] = useState(false);
 
     //SELECTORS
     const { tableStatisticsList } = useSelector((state: StateReduxI) => state.stats);
@@ -225,6 +226,19 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 .map((stat) => getLatestTable(stat))
                                                 .filter((stat) => !!stat),
                                             itemType: "section", // - отображение секции
+                                            divisions: sec.divisions
+                                                .toSorted(
+                                                    (div1, div2) =>
+                                                        parseInt(div1.name) - parseInt(div2.name)
+                                                )
+                                                .map((div) => ({
+                                                    ...div,
+                                                    mainPattern: getLatestTable(div.mainPattern),
+                                                    patterns: div.patterns
+                                                        .map((stat) => getLatestTable(stat))
+                                                        .filter((stat) => !!stat),
+                                                    itemType: "division",
+                                                })),
                                         };
                                     }),
                                 itemType: "department", // - отображение деп блока
@@ -262,6 +276,9 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 itemCells = [...itemCells, ...preparationOrgCell(department)];
                 department.sections.forEach((section) => {
                     itemCells = [...itemCells, ...preparationOrgCell(section)];
+                    section.divisions.forEach((division) => {
+                        itemCells = [...itemCells, ...preparationOrgCell(division)];
+                    });
                 });
             });
         });
@@ -417,7 +434,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                             <span className={styles.itemIcon}>
                                                 {Icons().org[item.itemType]}
                                             </span>
-                                            <span className={styles.itemName}>{item.name}</span>
+                                            <span className={styles.itemName}>{item.name} </span>
                                         </div>
 
                                         <span className={styles.itemLeadership}>
@@ -444,6 +461,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
             setIsOfficeListShow(false);
             setIsDepartmentListShow(false);
             setIsSectionListShow(false);
+            setIsDepartmentListShow(false);
         }
     }, [isShowFilteredOrg]);
 
@@ -464,6 +482,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
         setIsOfficeListShow(false);
         setIsDepartmentListShow(false);
         setIsSectionListShow(false);
+        setIsDivisionListShow(false);
     };
     const saveExel = () => {
         const columns = ["Период", "Название статистики", "Статус"];
@@ -573,7 +592,10 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                 </div>
             </div>
 
-            {(isOfficeListShow || isDepartmentListShow || isSectionListShow) && (
+            {(isOfficeListShow ||
+                isDepartmentListShow ||
+                isSectionListShow ||
+                isDivisionListShow) && (
                 <div
                     className={styles.itemsSelectBlock}
                     onContextMenu={(event) => {
@@ -653,6 +675,31 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                     }}
                                 >
                                     {secName}
+                                </div>
+                            ))}
+                            {!!!options.lists.sectionsListOptions.length && (
+                                <div>нет доступных секций : добавьте отделы</div>
+                            )}
+                        </div>
+                    )}
+                    {isDivisionListShow && (
+                        <div style={{ outline: `2px solid green` }}>
+                            {options.lists.divisionsListOptions.map((divName) => (
+                                <div
+                                    key={divName + "optonsFilter"}
+                                    onClick={() => options.selectsToggle.divisionToggle(divName)}
+                                    style={{
+                                        ...(options.selectedLists.divisionsSelectedList.includes(
+                                            divName
+                                        )
+                                            ? {
+                                                  background: orgItemsColorsObj.section,
+                                                  color: "white",
+                                              }
+                                            : {}),
+                                    }}
+                                >
+                                    {divName}
                                 </div>
                             ))}
                             {!!!options.lists.sectionsListOptions.length && (
@@ -808,6 +855,37 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                                 : ""}
                                         </div>
                                     </div>
+                                    <div
+                                        className={selectedOrgFilterClass("division")}
+                                        onClick={() =>
+                                            filtersToggle.orgTypeFiltersToggle("division")
+                                        }
+                                        style={{ background: orgItemsColorsObj.division }}
+                                        onContextMenu={(event) => {
+                                            event.preventDefault();
+                                            isShowFilteredOrg &&
+                                                setIsDivisionListShow((state) => {
+                                                    if (state) {
+                                                        return false;
+                                                    } else {
+                                                        setIsOfficeListShow(false);
+                                                        setIsDepartmentListShow(false);
+                                                        setIsSectionListShow(false);
+                                                        return true;
+                                                    }
+                                                });
+                                        }}
+                                    >
+                                        <div className={styles.filtersIco}>
+                                            {Icons().org.division}
+                                        </div>
+                                        <div className={styles.filtersText}>
+                                            подразделения
+                                            {isShowFilteredOrg
+                                                ? `${options.selectedLists.divisionsSelectedList.length} из ${options.lists.divisionsListOptions.length}`
+                                                : ""}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className={styles.filtersHelp}>
                                     <span>
@@ -839,8 +917,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.mainStatFilterToggle}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            Главные :{" "}
-                                        </span>{" "}
+                                            Главные :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.mainStatCount || 0}
                                         </span>
@@ -854,8 +932,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.additionalStatsFilter}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            Дополнительные :{" "}
-                                        </span>{" "}
+                                            Дополнительные :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.additionalStatCount || 0}
                                         </span>
@@ -873,8 +951,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.growingFilterToggle}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            Растущие :{" "}
-                                        </span>{" "}
+                                            Растущие :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.growingStatsCount || 0}
                                         </span>
@@ -886,8 +964,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.fallingFilterToggle}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            Падающие :{" "}
-                                        </span>{" "}
+                                            Падающие :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.notGrowingStatsCount || 0}
                                         </span>
@@ -897,9 +975,7 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         className={styles[`selectedFilter_${filters.emptyFilter}`]}
                                         onClick={filtersToggle.emptyFilterToggle}
                                     >
-                                        <span className={`${styles.title} noselect`}>
-                                            Пустые :{" "}
-                                        </span>{" "}
+                                        <span className={`${styles.title} noselect`}>Пустые :</span>
                                         <span className={styles.count}>
                                             {counters.noDataGrowingStatsCount || 0}
                                         </span>
@@ -915,8 +991,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.filledFilterToggle}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            Заполненные :{" "}
-                                        </span>{" "}
+                                            Заполненные :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.fillledStatsCount || 0}
                                         </span>
@@ -928,8 +1004,8 @@ export default function CreateRaport2({ getPie = false }: { getPie?: boolean } =
                                         onClick={filtersToggle.notFilledFilterToggle}
                                     >
                                         <span className={`${styles.title} noselect`}>
-                                            He заполненные :{" "}
-                                        </span>{" "}
+                                            He заполненные :
+                                        </span>
                                         <span className={styles.count}>
                                             {counters.notFillledStatsCount || 0}
                                         </span>

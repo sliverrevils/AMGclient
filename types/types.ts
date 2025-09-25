@@ -444,7 +444,7 @@ export interface IOrgItem {
     ckp: string;
     descriptions: string;
     id: number;
-    itemType: "office" | "department" | "section";
+    itemType: "office" | "department" | "section" | "division";
     mainPattern: StatItemReady | undefined;
     patterns: (StatItemReady | undefined)[];
 }

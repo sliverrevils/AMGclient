@@ -12,14 +12,24 @@ let noDataGrowingStatsCount = 0;
 let mainStatCount = 0;
 let additionalStatCount = 0;
 
-export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isSelectedAllOrgChildren }: { initOrgItems: IOrgItem[]; isShowFilteredOrg: boolean; isSelectedAllOrgChildren: boolean }) {
+export default function useOrgItemFilters({
+    initOrgItems,
+    isShowFilteredOrg,
+    isSelectedAllOrgChildren,
+}: {
+    initOrgItems: IOrgItem[];
+    isShowFilteredOrg: boolean;
+    isSelectedAllOrgChildren: boolean;
+}) {
     //SELECTORS
     const { offices } = useSelector((state: StateReduxI) => state.org);
 
     //STATE
     const [filteredOrgItems, setFilteredOrgItems] = useState(initOrgItems);
     //filters
-    const [orgTypeFilter, setOrgTypeFilter] = useState<("office" | "department" | "section")[]>(["office", "department", "section"]);
+    const [orgTypeFilter, setOrgTypeFilter] = useState<
+        ("office" | "department" | "section" | "division")[]
+    >(["office", "department", "section", "division"]);
     const [selectedStatType, setSelectedStatType] = useState<boolean | null>(null);
     const [growingFilter, setGrowingFilter] = useState(false);
     const [fallingFilter, setFallingFilter] = useState(false);
@@ -34,6 +44,8 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
     const [departmentsSelectedList, setDepartmentsSelectedList] = useState<string[]>([]);
     //
     const [sectionsSelectedList, setSectionSelectedList] = useState<string[]>([]);
+
+    const [divisionsSelectedList, setDivisionsSelectedList] = useState<string[]>([]);
 
     //console.log("HOOK", initOrgItems);
 
@@ -78,6 +90,15 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
                     return true;
                 }
             });
+            //divisions
+            filtered = filtered.filter((item) => {
+                if (item.itemType === "division") {
+                    return divisionsSelectedList.includes(item.name);
+                } else {
+                    return true;
+                }
+            });
+            console.log("❤️❤️❤️❤️", divisionsSelectedList);
         }
         //COUNT главные/дополнительные✍️
         filtered.forEach((item) => {
@@ -99,7 +120,9 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
         }
 
         // фильтр растущие|| падающие|| пустые
-        const trendStatus = (statItem: StatItemReady | undefined): "growing" | "falling" | "empty" | undefined => {
+        const trendStatus = (
+            statItem: StatItemReady | undefined
+        ): "growing" | "falling" | "empty" | undefined => {
             if (!statItem) return undefined;
             if (/растущая/.test(statItem.isGrowing.toLowerCase())) {
                 return "growing";
@@ -136,26 +159,39 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
                 if (growingFilter) {
                     return {
                         ...item,
-                        mainPattern: trendStatus(item.mainPattern) === "growing" ? item.mainPattern : undefined,
+                        mainPattern:
+                            trendStatus(item.mainPattern) === "growing"
+                                ? item.mainPattern
+                                : undefined,
 
-                        patterns: item.patterns.map((stat) => (trendStatus(stat) === "growing" ? stat : undefined)).filter((stat) => stat),
+                        patterns: item.patterns
+                            .map((stat) => (trendStatus(stat) === "growing" ? stat : undefined))
+                            .filter((stat) => stat),
                     };
                 }
                 //falling
                 if (fallingFilter) {
                     return {
                         ...item,
-                        mainPattern: trendStatus(item.mainPattern) === "falling" ? item.mainPattern : undefined,
+                        mainPattern:
+                            trendStatus(item.mainPattern) === "falling"
+                                ? item.mainPattern
+                                : undefined,
 
-                        patterns: item.patterns.map((stat) => (trendStatus(stat) === "falling" ? stat : undefined)).filter((stat) => stat),
+                        patterns: item.patterns
+                            .map((stat) => (trendStatus(stat) === "falling" ? stat : undefined))
+                            .filter((stat) => stat),
                     };
                 }
 
                 //empty
                 return {
                     ...item,
-                    mainPattern: trendStatus(item.mainPattern) === "empty" ? item.mainPattern : undefined,
-                    patterns: item.patterns.map((stat) => (trendStatus(stat) === "empty" ? stat : undefined)).filter((stat) => stat),
+                    mainPattern:
+                        trendStatus(item.mainPattern) === "empty" ? item.mainPattern : undefined,
+                    patterns: item.patterns
+                        .map((stat) => (trendStatus(stat) === "empty" ? stat : undefined))
+                        .filter((stat) => stat),
                 };
             });
         }
@@ -175,13 +211,17 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
                 filtered = filtered.map((item) => ({
                     ...item,
                     mainPattern: item.mainPattern?.filled ? item.mainPattern : undefined,
-                    patterns: item.patterns.map((stat) => (stat?.filled ? stat : undefined)).filter((stat) => stat),
+                    patterns: item.patterns
+                        .map((stat) => (stat?.filled ? stat : undefined))
+                        .filter((stat) => stat),
                 }));
             } else {
                 filtered = filtered.map((item) => ({
                     ...item,
                     mainPattern: !item.mainPattern?.filled ? item.mainPattern : undefined,
-                    patterns: item.patterns.map((stat) => (!stat?.filled ? stat : undefined)).filter((stat) => stat),
+                    patterns: item.patterns
+                        .map((stat) => (!stat?.filled ? stat : undefined))
+                        .filter((stat) => stat),
                 }));
             }
         }
@@ -200,11 +240,31 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
         // });
         //сохраняем результат
         setFilteredOrgItems(() => filtered);
-    }, [isShowFilteredOrg, orgTypeFilter, selectedStatType, growingFilter, fallingFilter, filledFilter, notFilledFilter, emptyFilter, officesSelectedList, departmentsSelectedList, sectionsSelectedList, isSelectedAllOrgChildren]);
+    }, [
+        isShowFilteredOrg,
+        orgTypeFilter,
+        selectedStatType,
+        growingFilter,
+        fallingFilter,
+        filledFilter,
+        notFilledFilter,
+        emptyFilter,
+        officesSelectedList,
+        departmentsSelectedList,
+        sectionsSelectedList,
+        divisionsSelectedList,
+        isSelectedAllOrgChildren,
+    ]);
 
     useEffect(() => {
         setDepartmentsSelectedList((state) => {
-            if (isSelectedAllOrgChildren) return offices.filter((office) => officesSelectedList.includes(office.name)).reduce<string[]>((acc, office) => [...acc, ...office.departments.map((dep) => dep.name)], []);
+            if (isSelectedAllOrgChildren)
+                return offices
+                    .filter((office) => officesSelectedList.includes(office.name))
+                    .reduce<string[]>(
+                        (acc, office) => [...acc, ...office.departments.map((dep) => dep.name)],
+                        []
+                    );
             else return [];
         });
     }, [officesSelectedList, isSelectedAllOrgChildren]);
@@ -217,7 +277,8 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
 
                     .reduce<string[]>((acc, office) => {
                         const secArr = office.departments.reduce<string[]>((acc, dep) => {
-                            if (departmentsSelectedList.includes(dep.name)) return [...acc, ...dep.sections.map((sec) => sec.name)];
+                            if (departmentsSelectedList.includes(dep.name))
+                                return [...acc, ...dep.sections.map((sec) => sec.name)];
                             return acc;
                         }, acc);
                         if (secArr.length) return [...acc, ...secArr];
@@ -229,23 +290,103 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
     }, [officesSelectedList, departmentsSelectedList, isSelectedAllOrgChildren]);
 
     useEffect(() => {
-        setOfficesSelectedList(isSelectedAllOrgChildren ? offices.map((office) => office.name) : []);
+        setDivisionsSelectedList((state) => {
+            if (isSelectedAllOrgChildren) {
+                const selectedDivisions = offices
+                    .filter((office) => officesSelectedList.includes(office.name))
+
+                    .reduce<string[]>((acc, office) => {
+                        const secArr = office.departments.reduce<string[]>((acc, dep) => {
+                            if (departmentsSelectedList.includes(dep.name)) {
+                                const divArr = dep.sections.reduce<string[]>((acc, sec) => {
+                                    if (sectionsSelectedList.includes(sec.name)) {
+                                        return [...acc, ...sec.divisions.map((div) => div.name)];
+                                    }
+                                    return acc;
+                                }, []);
+                                return [...acc, ...divArr];
+                            }
+
+                            return acc;
+                        }, acc);
+                        if (secArr.length) return [...acc, ...secArr];
+                        else return acc;
+                    }, []);
+
+                const divisions = [...new Set(selectedDivisions)];
+
+                return divisions;
+            } else return [];
+        });
+    }, [
+        officesSelectedList,
+        departmentsSelectedList,
+        isSelectedAllOrgChildren,
+        sectionsSelectedList,
+    ]);
+
+    useEffect(() => {
+        setOfficesSelectedList(
+            isSelectedAllOrgChildren ? offices.map((office) => office.name) : []
+        );
     }, [isSelectedAllOrgChildren]);
 
     //заполняем общие листы
-    const officesListOptions = offices.toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name)).map((office) => office.name);
-    const departmentsListOtions = offices.filter((office) => officesSelectedList.includes(office.name)).reduce<string[]>((acc, office) => [...acc, ...office.departments.toSorted((dep1, dep2) => parseInt(dep1.name) - parseInt(dep2.name)).map((dep) => dep.name)], []);
+    const officesListOptions = offices
+        .toSorted((off1, off2) => parseInt(off1.name) - parseInt(off2.name))
+        .map((office) => office.name);
+    const departmentsListOtions = offices
+        .filter((office) => officesSelectedList.includes(office.name))
+        .reduce<string[]>(
+            (acc, office) => [
+                ...acc,
+                ...office.departments
+                    .toSorted((dep1, dep2) => parseInt(dep1.name) - parseInt(dep2.name))
+                    .map((dep) => dep.name),
+            ],
+            []
+        );
     const sectionsListOptions = offices
         .filter((office) => officesSelectedList.includes(office.name))
         .reduce<string[]>((acc, office) => {
             const secArr = office.departments.reduce<string[]>((accSec, dep) => {
-                if (departmentsSelectedList.includes(dep.name)) return [...accSec, ...dep.sections.toSorted((sec1, sec2) => parseInt(sec1.name) - parseInt(sec2.name)).map((sec) => sec.name)];
+                if (departmentsSelectedList.includes(dep.name))
+                    return [
+                        ...accSec,
+                        ...dep.sections
+                            .toSorted((sec1, sec2) => parseInt(sec1.name) - parseInt(sec2.name))
+                            .map((sec) => sec.name),
+                    ];
                 return accSec;
             }, []);
 
             if (secArr.length) return [...acc, ...secArr];
             else return acc;
         }, []);
+    const divisionsListOptions = [
+        ...new Set(
+            offices
+                .filter((office) => officesSelectedList.includes(office.name))
+
+                .reduce<string[]>((acc, office) => {
+                    const secArr = office.departments.reduce<string[]>((acc, dep) => {
+                        if (departmentsSelectedList.includes(dep.name)) {
+                            const divArr = dep.sections.reduce<string[]>((acc, sec) => {
+                                if (sectionsSelectedList.includes(sec.name)) {
+                                    return [...acc, ...sec.divisions.map((div) => div.name)];
+                                }
+                                return acc;
+                            }, []);
+                            return [...acc, ...divArr];
+                        }
+
+                        return acc;
+                    }, acc);
+                    if (secArr.length) return [...acc, ...secArr];
+                    else return acc;
+                }, [])
+        ),
+    ];
     // console.log({
     //     counters: {
     //         fillledStatsCount, // количество заполненных
@@ -274,23 +415,44 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
                 officesListOptions,
                 departmentsListOtions,
                 sectionsListOptions,
+                divisionsListOptions,
             },
             //список выбранных
             selectedLists: {
                 officesSelectedList,
                 departmentsSelectedList,
                 sectionsSelectedList,
+                divisionsSelectedList,
             },
             //функции добавления/удаления
             selectsToggle: {
                 officeToggle: (name: string) => {
-                    setOfficesSelectedList((state) => (state.includes(name) ? state.filter((offName) => offName !== name) : [...state, name]));
+                    setOfficesSelectedList((state) =>
+                        state.includes(name)
+                            ? state.filter((offName) => offName !== name)
+                            : [...state, name]
+                    );
                 },
                 departmentToggle: (name: string) => {
-                    setDepartmentsSelectedList((state) => (state.includes(name) ? state.filter((depName) => depName !== name) : [...state, name]));
+                    setDepartmentsSelectedList((state) =>
+                        state.includes(name)
+                            ? state.filter((depName) => depName !== name)
+                            : [...state, name]
+                    );
                 },
                 sectionToggle: (name: string) => {
-                    setSectionSelectedList((state) => (state.includes(name) ? state.filter((secName) => secName !== name) : [...state, name]));
+                    setSectionSelectedList((state) =>
+                        state.includes(name)
+                            ? state.filter((secName) => secName !== name)
+                            : [...state, name]
+                    );
+                },
+                divisionToggle: (name: string) => {
+                    setDivisionsSelectedList((state) =>
+                        state.includes(name)
+                            ? state.filter((divName) => divName !== name)
+                            : [...state, name]
+                    );
                 },
             },
         },
@@ -333,7 +495,11 @@ export default function useOrgItemFilters({ initOrgItems, isShowFilteredOrg, isS
                 setNotFilledFilter((state) => !state), setFilledFilter(false);
             },
             orgTypeFiltersToggle: (orgType: (typeof orgTypeFilter)[0]) => {
-                setOrgTypeFilter((state) => (state.includes(orgType) ? state.filter((state) => state !== orgType) : [...state, orgType]));
+                setOrgTypeFilter((state) =>
+                    state.includes(orgType)
+                        ? state.filter((state) => state !== orgType)
+                        : [...state, orgType]
+                );
             },
         },
     };

@@ -3,13 +3,8 @@
     display: flex;
     flex-direction: column;
 
-
     //border: 2px solid red;
     background: white;
-
-
-
-
 
     .itemsSelectBlock {
         z-index: 100;
@@ -28,7 +23,6 @@
 
         transition: all 300ms linear;
 
-
         .closeWin {
             z-index: 999;
             position: absolute;
@@ -40,7 +34,7 @@
             padding: 2px;
         }
 
-        &>div {
+        & > div {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -49,13 +43,11 @@
             border-radius: 10px;
             padding: 5px;
 
-            &>div {
+            & > div {
                 padding: 2px 10px;
                 border-radius: 5px;
             }
         }
-
-
     }
 
     .tableWrap {
@@ -68,8 +60,6 @@
         padding-left: 20px;
 
         table {
-
-
             //background: rgb(197, 197, 197);
             width: 99%;
             border: 2px solid rgba(0, 0, 0, 0.137);
@@ -78,7 +68,6 @@
             margin-bottom: 50px;
             //margin-left: 20px;
 
-
             caption {
                 //display: none;
                 // background: rgb(216, 216, 216);
@@ -86,13 +75,10 @@
                 caption-side: top;
                 margin-bottom: 15px;
 
-
-
-                &>div {
+                & > div {
                     //padding: 2px;
 
-
-                    &>div {
+                    & > div {
                         border-radius: 3px;
                         padding: 1px;
                         margin: 3px;
@@ -101,10 +87,8 @@
                     }
                 }
 
-
-
                 .filterBlockWrap {
-                    opacity: .8;
+                    opacity: 0.8;
                     background: rgba(128, 128, 128, 0.048);
                     display: flex;
                     flex-direction: column;
@@ -131,12 +115,9 @@
                         border-radius: 5px 5px 2px 2px;
                     }
 
-
-
                     .filterOrgTypeBlock {
                         display: flex;
                         flex-direction: column;
-
 
                         gap: 10px;
                         width: auto;
@@ -147,17 +128,15 @@
                             display: flex;
                             flex-direction: column;
 
-                            &>div {
+                            & > div {
                                 align-self: flex-start;
 
-                                &>label {
+                                & > label {
                                     display: flex;
                                     gap: 10px;
                                     font-size: 15px;
-
                                 }
                             }
-
                         }
 
                         .filtersOrg {
@@ -165,7 +144,7 @@
                             gap: 10px;
                             font-size: 12px;
 
-                            &>div {
+                            & > div {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
@@ -174,7 +153,6 @@
                                 .filtersIco {
                                     width: 20px;
                                     height: 20px;
-
                                 }
 
                                 .filtersText {
@@ -182,9 +160,7 @@
                                 }
                             }
 
-
                             .isSelectFilter_true {
-
                                 width: auto;
                                 display: flex;
                                 justify-content: center;
@@ -194,13 +170,10 @@
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
-
                                 }
-
                             }
 
                             .isSelectFilter_false {
-
                                 width: auto;
                                 display: flex;
                                 align-items: center;
@@ -208,19 +181,17 @@
                                 label {
                                     display: flex;
                                     align-items: center;
-
                                 }
                             }
 
-
-                            &>div {
+                            & > div {
                                 width: 100%;
                                 padding: 5px;
                             }
                         }
 
                         .filtersHelp {
-                            opacity: .6;
+                            opacity: 0.6;
                             background: rgba(255, 255, 0, 0.336);
                             padding: 5px 10px;
                             text-align: left;
@@ -231,27 +202,20 @@
                             border: 2px dotted rgb(88, 88, 88);
                             border-radius: 10px;
                         }
-
-
-
-
-
                     }
-
 
                     .selectedFilter {
                         border-radius: 10px;
                         // padding: 20px;
-                        opacity: .8;
+                        opacity: 0.8;
                         color: white;
                         // border: 1px solid black;
                     }
 
                     .notSelectedFilter {
                         border-radius: 10px;
-                        opacity: .3;
+                        opacity: 0.3;
                     }
-
 
                     .filter {
                         width: 100%;
@@ -263,27 +227,23 @@
                             width: 120px;
                             font-weight: 600;
                             text-align: right;
-                            opacity: .4;
+                            opacity: 0.4;
                         }
 
                         .filterTypeBlock {
-
                             font-size: 13px;
                             display: flex;
 
                             justify-content: center;
                             gap: 10px;
 
-                            &>div {
+                            & > div {
                                 display: flex;
                                 gap: 10px;
                                 padding: 3px 10px;
                                 border-radius: 5px;
                                 font-size: 15px;
-
                             }
-
-
                         }
 
                         .filterBlock {
@@ -291,16 +251,13 @@
                             justify-content: center;
                             gap: 10px;
 
-                            &>div {
+                            & > div {
                                 display: flex;
                                 gap: 10px;
                                 padding: 3px 10px;
                                 border-radius: 5px;
                                 font-size: 15px;
-
                             }
-
-
                         }
 
                         .filterFellingBlock {
@@ -309,23 +266,16 @@
 
                             gap: 10px;
 
-                            &>div {
+                            & > div {
                                 display: flex;
                                 gap: 10px;
                                 padding: 3px 10px;
                                 border-radius: 5px;
                                 font-size: 15px;
-
                             }
-
                         }
                     }
-
-
                 }
-
-
-
             }
 
             thead {
@@ -333,8 +283,6 @@
             }
 
             tr {
-
-
                 .itemHeader {
                     column-span: 5;
                 }
@@ -360,7 +308,8 @@
                             display: flex;
                             gap: 3px;
 
-                            .date {}
+                            .date {
+                            }
 
                             .time {
                                 padding: 0px 2px;
@@ -369,34 +318,28 @@
                             }
                         }
                     }
-
-
-
                 }
 
                 .timeCell_filled {
                     //background: rgb(100, 166, 252, .2);
                     color: rgb(10, 13, 158);
-
-
                 }
 
                 .trendCell {
-
                     font-weight: 500;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     gap: 3px;
 
-                    .trendText {}
+                    .trendText {
+                    }
 
                     .trendIco_falling {
                         width: 20px;
                         height: 15px;
                         color: red;
                         transform: translateY(-2px);
-
                     }
 
                     .trendIco_growing {
@@ -408,7 +351,7 @@
                 }
 
                 .trendCell_growing {
-                    background: rgb(63, 177, 69, .1);
+                    background: rgb(63, 177, 69, 0.1);
                     font-weight: 600;
                     color: rgb(0, 0, 0);
                 }
@@ -417,13 +360,11 @@
                     background: rgb(250, 70, 47, 0.1);
                     font-weight: 600;
                     color: rgb(0, 0, 0);
-
                 }
 
                 .trendCell_empty {
-                    background: rgb(128, 128, 128, .1);
+                    background: rgb(128, 128, 128, 0.1);
                 }
-
 
                 .mainColumn {
                     padding: 10px 2px;
@@ -432,7 +373,7 @@
 
                     color: black;
                     //border: 2px solid rgb(194, 97, 64);
-                    letter-spacing: .9px;
+                    letter-spacing: 0.9px;
                     border-radius: 5px;
 
                     .periodColumnBlock {
@@ -447,7 +388,7 @@
                         }
 
                         .isLastUpdate_false {
-                            opacity: .5;
+                            opacity: 0.5;
                             cursor: pointer;
                         }
                     }
@@ -462,7 +403,6 @@
 
                 border-radius: 3px;
                 //box-shadow: 2px 2px 5px black;
-
             }
 
             th {
@@ -475,47 +415,41 @@
 
                 //box-shadow: 4px 1px 8px black;\
                 div {
-
                     height: 15px;
                     display: flex;
                     width: 100%;
                     justify-content: space-between;
 
-                    &>span:nth-child(1) {
+                    & > span:nth-child(1) {
                         color: rgba(0, 0, 0, 0.418);
-
                     }
 
-                    &>span:nth-child(2) {
+                    & > span:nth-child(2) {
                         color: rgba(0, 0, 0, 0.411);
                         font-weight: 500;
                         text-align: right;
                     }
                 }
-
-
-
-
             }
 
             td {
                 font-size: 12px;
-
-
             }
 
             tbody {
-
-
-
-                tr {}
+                tr {
+                }
 
                 .orgItem_office {
                     font-size: 15px;
                     // outline: 2px solid rgb(255, 128, 86, );
                     // background: #ff8056;
                     background: rgb(255, 128, 86);
-                    background: linear-gradient(90deg, rgba(255, 128, 86, .5) 0%, rgba(255, 255, 255, 1) 53%);
+                    background: linear-gradient(
+                        90deg,
+                        rgba(255, 128, 86, 0.5) 0%,
+                        rgba(255, 255, 255, 1) 53%
+                    );
                     color: rgb(255, 254, 254);
                     //opacity: .5;
 
@@ -529,7 +463,6 @@
                         display: flex;
                         align-items: center;
 
-
                         .itemTitleBlock {
                             display: flex;
                             //background: burlywood;
@@ -545,8 +478,7 @@
 
                             .itemName {
                                 color: black;
-                                opacity: .7;
-
+                                opacity: 0.7;
                             }
                         }
 
@@ -554,7 +486,7 @@
                             font-size: 12px;
                             color: rgb(0, 0, 0);
                             text-wrap: nowrap;
-                            opacity: .8;
+                            opacity: 0.8;
                         }
                     }
                 }
@@ -562,7 +494,11 @@
                 .orgItem_department {
                     //background: #4683b4;
                     background: rgb(70, 131, 180);
-                    background: linear-gradient(90deg, rgba(70, 131, 180, .5) 0%, rgba(255, 255, 255, 1) 53%);
+                    background: linear-gradient(
+                        90deg,
+                        rgba(70, 131, 180, 0.5) 0%,
+                        rgba(255, 255, 255, 1) 53%
+                    );
                     color: white;
 
                     .itemFirst {
@@ -575,7 +511,6 @@
                         display: flex;
                         align-items: center;
 
-
                         .itemTitleBlock {
                             display: flex;
                             //background: burlywood;
@@ -591,8 +526,7 @@
 
                             .itemName {
                                 color: black;
-                                opacity: .7;
-
+                                opacity: 0.7;
                             }
                         }
 
@@ -600,7 +534,7 @@
                             font-size: 12px;
                             color: rgb(0, 0, 0);
                             text-wrap: nowrap;
-                            opacity: .8;
+                            opacity: 0.8;
                         }
                     }
                 }
@@ -608,7 +542,11 @@
                 .orgItem_section {
                     //background: #2a9955;
                     background: rgb(42, 153, 85);
-                    background: linear-gradient(90deg, rgba(42, 153, 85, .5) 0%, rgba(255, 255, 255, 1) 53%);
+                    background: linear-gradient(
+                        90deg,
+                        rgba(42, 153, 85, 0.5) 0%,
+                        rgba(255, 255, 255, 1) 53%
+                    );
 
                     .itemFirst {
                         background: white;
@@ -620,6 +558,51 @@
                         display: flex;
                         align-items: center;
 
+                        .itemTitleBlock {
+                            display: flex;
+                            //background: burlywood;
+                            justify-content: flex-start;
+                            gap: 10px;
+
+                            .itemIcon {
+                                transform: translateY(-3px);
+                                width: 20px;
+                                height: 100%;
+                                color: white;
+                            }
+
+                            .itemName {
+                                color: black;
+                                opacity: 0.7;
+                            }
+                        }
+
+                        .itemLeadership {
+                            font-size: 12px;
+                            color: rgb(0, 0, 0);
+                            text-wrap: nowrap;
+                            opacity: 0.8;
+                        }
+                    }
+                }
+
+                .orgItem_division {
+                    background: rgb(209, 162, 6);
+                    background: linear-gradient(
+                        90deg,
+                        rgba(209, 162, 6, 0.5) 0%,
+                        rgba(255, 255, 255, 1) 53%
+                    );
+
+                    .itemFirst {
+                        background: white;
+                    }
+
+                    .itemBlock {
+                        font-size: 15px;
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
 
                         .itemTitleBlock {
                             display: flex;
@@ -636,8 +619,7 @@
 
                             .itemName {
                                 color: black;
-                                opacity: .7;
-
+                                opacity: 0.7;
                             }
                         }
 
@@ -645,30 +627,26 @@
                             font-size: 12px;
                             color: rgb(0, 0, 0);
                             text-wrap: nowrap;
-                            opacity: .8;
+                            opacity: 0.8;
                         }
                     }
                 }
 
-
                 .statLine {
                     padding: 10px;
 
-
-                    &>td {
+                    & > td {
                         border: 1px solid rgba(0, 0, 0, 0.267);
                     }
 
                     &:hover {
-
                         cursor: pointer;
 
-                        &>td:nth-child(3) {
+                        & > td:nth-child(3) {
                             background: rgba(187, 255, 0, 0.199);
                             font-weight: 600;
                         }
                     }
-
                 }
 
                 .statLine_selected {
@@ -682,13 +660,10 @@
                         top: 50%;
                         transform: translateY(-50%);
                         z-index: 1;
-                        content: '⭐';
+                        content: "⭐";
                     }
-
                 }
             }
-
-
         }
     }
 }
@@ -700,7 +675,6 @@
     justify-content: space-around;
     font-size: 13px;
     transition: all 200ms linear;
-
 
     .title {
         color: rgb(0, 0, 0);
@@ -723,8 +697,6 @@
     justify-content: space-around;
     transition: background 200ms linear;
 
-
-
     .title {
         color: rgb(2, 2, 2);
     }
@@ -738,7 +710,7 @@
     }
 }
 
-.filterTypeBlock>.selectedFilter_true {
+.filterTypeBlock > .selectedFilter_true {
     &:nth-child(1) {
         background: rgb(196, 192, 6, 0.432);
         color: black;
@@ -747,12 +719,9 @@
     &:nth-child(2) {
         background: rgb(168, 168, 167, 0.432);
     }
-
-
-
 }
 
-.filterTypeBlock>.selectedFilter_false {
+.filterTypeBlock > .selectedFilter_false {
     &:nth-child(1) {
         outline: 1px solid rgb(196, 192, 6);
     }
@@ -760,12 +729,9 @@
     &:nth-child(2) {
         outline: 1px solid rgb(168, 168, 167);
     }
-
-
-
 }
 
-.filterBlock>.selectedFilter_true {
+.filterBlock > .selectedFilter_true {
     &:nth-child(1) {
         background: rgb(63, 177, 69, 0.432);
     }
@@ -777,10 +743,9 @@
     &:nth-child(3) {
         background: rgb(134, 134, 134, 0.432);
     }
-
 }
 
-.filterBlock>.selectedFilter_false {
+.filterBlock > .selectedFilter_false {
     &:nth-child(1) {
         outline: 1px solid rgb(63, 177, 69);
     }
@@ -792,10 +757,9 @@
     &:nth-child(3) {
         outline: 1px solid rgb(134, 134, 134);
     }
-
 }
 
-.filterFellingBlock>.selectedFilter_true {
+.filterFellingBlock > .selectedFilter_true {
     &:nth-child(1) {
         background: rgb(100, 166, 252, 0.432);
     }
@@ -805,7 +769,7 @@
     }
 }
 
-.filterFellingBlock>.selectedFilter_false {
+.filterFellingBlock > .selectedFilter_false {
     &:nth-child(1) {
         outline: 1px solid rgb(100, 166, 252);
     }
@@ -837,7 +801,6 @@
         transform: none;
     }
 
-
     .exelBtn {
         cursor: pointer;
         border: 1px solid green;
@@ -850,13 +813,11 @@
         background-color: green;
         color: white;
         box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.726);
-        opacity: .7;
+        opacity: 0.7;
         transition: all 100ms linear;
 
         &:hover {
             opacity: 1;
-
-
         }
     }
 
@@ -867,15 +828,13 @@
         font-size: 12px;
         border-radius: 3px;
         padding: 2px 5px;
-        opacity: .7;
+        opacity: 0.7;
         border: 1px solid rgb(128, 99, 5);
         box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.726);
         transition: all 100ms linear;
 
         &:hover {
             opacity: 1;
-
-
         }
     }
 }

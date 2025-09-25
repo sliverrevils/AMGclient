@@ -4,12 +4,9 @@
     flex-direction: column;
     width: 100%;
     align-items: flex-start;
-
     background: linear-gradient(0deg, rgba(249, 249, 249, 0) 0%, rgba(255, 128, 86, 0.685) 100%);
     padding: 20px;
-
     border-radius: 10px 10px 0 0;
-
     .fullOrgBtn {
         border: 3px solid white;
         padding: 2px 15px;
@@ -19,7 +16,6 @@
         font-weight: 600;
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.733);
         cursor: pointer;
-
         &:hover {
             transform: scale(110%);
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.733);
@@ -121,6 +117,8 @@
     margin-top: 5px;
     align-self: flex-end;
     cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 5px;
 
     img {
         width: 20px;
@@ -1033,11 +1031,13 @@
         }
     }
     .divisionWrap {
-        margin-top: 20px;
+        margin-top: 25px;
         margin-right: 10px;
-        margin-left: -5px;
+        margin-left: -10px;
         display: flex;
         background: #e0e41ad7;
+        border-radius: 20px;
+        box-shadow: 3px 3px 10px rgb(90, 90, 90);
 
         .line {
             width: 10px;
@@ -1082,11 +1082,15 @@
                 .help {
                     position: absolute;
                     font-size: 13px;
-                    left: 10px;
-                    top: -21px;
+                    left: 12px;
+                    top: -18px;
                     letter-spacing: 1px;
                     opacity: 1;
                     color: black;
+                    background-color: #c9960b;
+                    color: white;
+                    padding: 2px 5px;
+                    border-radius: 5px 5px 0 0;
                 }
 
                 .delete {
