@@ -62,6 +62,21 @@ export interface SectionI {
 }
 export type DivisionI = Omit<SectionI, "divisions">;
 
+export type DivisionWithStatsI = {
+    id: number;
+    office_id: number;
+    department_id: number;
+    name: string;
+    leadership: number;
+    administrators: Array<AdministratorI>;
+    descriptions: string;
+    createdAt: string;
+    updatedAt: string;
+    ckp: string;
+    mainPattern: StatInfoWithData;
+    patterns: StatInfoWithData[];
+};
+
 export interface StatInfoWithData {
     id: number;
     name: string;
@@ -80,6 +95,7 @@ export interface SectionWithStatsI {
     ckp: string;
     mainPattern: StatInfoWithData;
     patterns: StatInfoWithData[];
+    divisions: DivisionWithStatsI[];
 }
 
 export interface DepartmentI {
