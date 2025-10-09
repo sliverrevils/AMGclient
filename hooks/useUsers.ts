@@ -177,9 +177,11 @@ export default function useUsers() {
                     if (section.administrators.some((admin) => admin.user_id == userId)) {
                         workerOnSections = [...workerOnSections, section];
                     }
-                    // section.divisions.forEach(division=>{
-
-                    // })
+                    section.divisions.forEach((division) => {
+                        if (division.administrators.some((admin) => admin.user_id == userId)) {
+                            workerOnDivisions = [...workerOnDivisions, division];
+                        }
+                    });
                     userDivisions = [
                         ...userDivisions,
                         ...section.divisions.filter((division) => division.leadership == userId),
@@ -194,6 +196,7 @@ export default function useUsers() {
             userSections,
             workerOnSections,
             userDivisions,
+            workerOnDivisions,
         };
         return result;
     };

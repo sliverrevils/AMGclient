@@ -1,13 +1,19 @@
-import useUsers from '@/hooks/useUsers';
-import { UserFullI } from '@/types/types';
-import { replaceFio } from '@/utils/funcs';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './filter.module.scss';
+import useUsers from "@/hooks/useUsers";
+import { UserFullI } from "@/types/types";
+import { replaceFio } from "@/utils/funcs";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import styles from "./filter.module.scss";
 
-export default function FilterUsers({ setSelectedUserID, selectedUserId }: { selectedUserId: number | null; setSelectedUserID: React.Dispatch<React.SetStateAction<number | null>> }) {
+export default function FilterUsers({
+    setSelectedUserID,
+    selectedUserId,
+}: {
+    selectedUserId: number | null;
+    setSelectedUserID: React.Dispatch<React.SetStateAction<number | null>>;
+}) {
     //STATE
-    const [findUser, setFindUser] = useState('');
+    const [findUser, setFindUser] = useState("");
     //SELECTORS
     const users: UserFullI[] = useSelector((state: any) => state.users.users);
 
@@ -18,7 +24,12 @@ export default function FilterUsers({ setSelectedUserID, selectedUserId }: { sel
     return (
         <div className={styles.filterWrap}>
             <div className={styles.filterAndSelect}>
-                <input type="text" placeholder="поиск по пользователю" value={findUser} onChange={(event) => setFindUser(event.target.value.trimStart())} />
+                <input
+                    type="text"
+                    placeholder="поиск по пользователю"
+                    value={findUser}
+                    onChange={(event) => setFindUser(event.target.value.trimStart())}
+                />
                 {selectedUserId && !findUser.length && (
                     <div className={styles.selectedUser}>
                         <div className={styles.delete} onClick={() => setSelectedUserID(null)}>
@@ -39,7 +50,19 @@ export default function FilterUsers({ setSelectedUserID, selectedUserId }: { sel
                             ))}
 
                             {getUserPosts(selectedUserId).workerOnSections.map((section) => (
-                                <div className={styles.secItem}>сотрудник секуции :{section.name}</div>
+                                <div className={styles.secItem}>
+                                    сотрудник секции :{section.name}
+                                </div>
+                            ))}
+
+                            {getUserPosts(selectedUserId).userDivisions.map((division) => (
+                                <div className={styles.divItem}>{division.name}</div>
+                            ))}
+
+                            {getUserPosts(selectedUserId).workerOnDivisions.map((division) => (
+                                <div className={styles.divItem}>
+                                    сотрудник подразделения :{division.name}
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -49,12 +72,14 @@ export default function FilterUsers({ setSelectedUserID, selectedUserId }: { sel
             {!!findUser.length && (
                 <div className={styles.filterList}>
                     {users
-                        .filter((user) => user.name.toLocaleLowerCase().includes(findUser.toLocaleLowerCase()))
+                        .filter((user) =>
+                            user.name.toLocaleLowerCase().includes(findUser.toLocaleLowerCase())
+                        )
                         .map((user) => (
                             <div
                                 onClick={() => {
                                     setSelectedUserID(user.id);
-                                    setFindUser('');
+                                    setFindUser("");
                                 }}
                             >
                                 {replaceFio(user.name)}

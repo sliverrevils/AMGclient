@@ -318,8 +318,8 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
                                                 (division.leadership === selectedUserId ||
                                                     getUserPosts(
                                                         selectedUserId
-                                                    ).workerOnSections.some(
-                                                        (sec) => sec.id === section.id
+                                                    ).workerOnDivisions.some(
+                                                        (div) => div.id === division.id
                                                     ))
                                         );
                                         addNode({

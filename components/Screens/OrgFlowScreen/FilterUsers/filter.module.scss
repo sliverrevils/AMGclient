@@ -13,9 +13,8 @@
         gap: 5px;
 
         input {
-
             padding: 5px 10px;
-            border: 2px solid #FF8056;
+            border: 2px solid #ff8056;
             border-radius: 5px;
 
             &:focus {
@@ -62,7 +61,7 @@
 
                 .offItem {
                     background: white;
-                    border: 2px solid #FF8056;
+                    border: 2px solid #ff8056;
                     border-radius: 5px;
                     padding: 1px 3px;
                 }
@@ -81,13 +80,19 @@
                     border-radius: 5px;
                     padding: 1px 3px;
                 }
+                .divItem {
+                    background: white;
+                    border: 2px solid rgba(216, 126, 23, 0.843);
+                    border-radius: 5px;
+                    padding: 1px 3px;
+                }
             }
         }
     }
 
     .filterList {
         background: white;
-        outline: 2px solid #FF8056;
+        outline: 2px solid #ff8056;
         border-radius: 5px;
 
         z-index: 9999;

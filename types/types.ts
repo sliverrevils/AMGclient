@@ -405,6 +405,7 @@ export interface UserPostsI {
     userSections: SectionI[];
     workerOnSections: SectionI[];
     userDivisions: DivisionI[];
+    workerOnDivisions: DivisionI[];
 }
 
 export interface IChartPropListItem {
