@@ -399,7 +399,11 @@ export default function OrgFlowScreen({ closeFn }: { closeFn: Function }) {
 
     // MENU ITEM
     const menuBlock = useMemo(() => {
-        if (activeItem && activeItem.eventType === "mouseenter" && activeItem.type === "sec") {
+        if (
+            activeItem &&
+            activeItem.eventType === "mouseenter" &&
+            (activeItem.type === "sec" || activeItem.type === "div")
+        ) {
             //alert(JSON.stringify(activeItem.data.administrators, null, 2));
             return (
                 <div
