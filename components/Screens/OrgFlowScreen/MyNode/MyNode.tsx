@@ -40,6 +40,37 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
         itemName = nameArr.join();
     }
 
+    const descriptionFix = (str: string) => {
+        if (!str) return str;
+        const arr = str.toLocaleLowerCase().split(":");
+        if (arr.length > 1) {
+            const [first, ...other] = arr;
+            return (
+                <>
+                    <div>
+                        <span
+                            style={{
+                                color: "whitesmoke",
+                                fontWeight: 600,
+                                fontStyle: "initial",
+                                letterSpacing: 1,
+                                textDecorationLine: "underline",
+                                textDecorationColor: "whitesmoke",
+                            }}
+                        >
+                            {first.toUpperCase()}
+                        </span>{" "}
+                        :
+                    </div>
+                    <div style={{ fontStyle: "italic", paddingLeft: 8, paddingTop: 1 }}>
+                        {other.join(":")}
+                    </div>
+                </>
+            );
+        }
+        return arr;
+    };
+
     return (
         <div
             className={`${styles.mainWrap} ${styles[`mainWrap_${data.type}`]} ${
@@ -90,7 +121,7 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
                     </div>
                 )}
                 {data.ckp && <div className={styles.ckp}>{data.ckp}</div>}
-                <div className={styles.description}>{data.descriptions}</div>
+                <div className={styles.description}>{descriptionFix(data.descriptions)} </div>
             </div>
         </div>
     );
