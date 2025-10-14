@@ -272,22 +272,22 @@ export default function UsersScreen() {
                     <div className={styles.addForm}>
                         <h3>Создание нового пользователя</h3>
 
-                        <span className={styles.addHelp}>Имя</span>
-                        <input
-                            type="text"
-                            value={newUserName}
-                            onChange={(event) =>
-                                setNewUserName(clearSmiels(event.target.value.trim()))
-                            }
-                            placeholder=""
-                        />
-
                         <span className={styles.addHelp}>Фамилия</span>
                         <input
                             type="text"
                             value={newUserSurname}
                             onChange={(event) =>
                                 setNewUserSurname(clearSmiels(event.target.value.trim()))
+                            }
+                            placeholder=""
+                        />
+
+                        <span className={styles.addHelp}>Имя</span>
+                        <input
+                            type="text"
+                            value={newUserName}
+                            onChange={(event) =>
+                                setNewUserName(clearSmiels(event.target.value.trim()))
                             }
                             placeholder=""
                         />
