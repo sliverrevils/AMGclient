@@ -108,31 +108,28 @@ export default function UsersScreen() {
                     {/* <span className={styles.infoLine}>Имя : {currentUser.name}</span> */}
 
                     <div className={styles.editebleField}>
+                        <span>Фамилия</span>
+                        <input
+                            value={editUserSurname}
+                            onChange={(event) => setEditUserSurname(event.target.value)}
+                            placeholder="фамилия"
+                        />
+                    </div>
+
+                    <div className={styles.editebleField}>
                         <span>Имя</span>
                         <input
                             value={editUserName}
-                            onChange={(event) => setEditUserName(clearSmiels(event.target.value))}
+                            onChange={(event) => setEditUserName(event.target.value)}
                             placeholder="имя"
                         />
                     </div>
 
                     <div className={styles.editebleField}>
-                        <span>Фамилия</span>
-                        <input
-                            value={editUserSurname}
-                            onChange={(event) =>
-                                setEditUserSurname(clearSmiels(event.target.value))
-                            }
-                            placeholder="фамилия"
-                        />
-                    </div>
-                    <div className={styles.editebleField}>
                         <span>Отчество</span>
                         <input
                             value={editUserPatronymic}
-                            onChange={(event) =>
-                                setEditUserPatronymic(clearSmiels(event.target.value))
-                            }
+                            onChange={(event) => setEditUserPatronymic(event.target.value)}
                             placeholder="отчество"
                         />
                     </div>
@@ -276,9 +273,7 @@ export default function UsersScreen() {
                         <input
                             type="text"
                             value={newUserSurname}
-                            onChange={(event) =>
-                                setNewUserSurname(clearSmiels(event.target.value.trim()))
-                            }
+                            onChange={(event) => setNewUserSurname(event.target.value)}
                             placeholder=""
                         />
 
@@ -286,9 +281,7 @@ export default function UsersScreen() {
                         <input
                             type="text"
                             value={newUserName}
-                            onChange={(event) =>
-                                setNewUserName(clearSmiels(event.target.value.trim()))
-                            }
+                            onChange={(event) => setNewUserName(event.target.value)}
                             placeholder=""
                         />
 
@@ -296,9 +289,7 @@ export default function UsersScreen() {
                         <input
                             type="text"
                             value={newUserPatronymic}
-                            onChange={(event) =>
-                                setNewUserPatronymic(clearSmiels(event.target.value.trim()))
-                            }
+                            onChange={(event) => setNewUserPatronymic(event.target.value)}
                             placeholder=""
                         />
 

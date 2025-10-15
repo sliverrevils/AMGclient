@@ -1,7 +1,7 @@
 import { AdministratorI, ChartI, OfficeI, SectionI, UserFullI } from "@/types/types";
 import styles from "../../Screens/Org/org.module.scss";
 import useOrg from "@/hooks/useOrg";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AxiosError } from "axios";
 import AdministratorsList from "../AdministratorsList/AdministratorsList";
 import { useSelector } from "react-redux";
@@ -36,6 +36,8 @@ export default function Division({
     const [adminsListOpen, setAdminsListOpen] = useState(!!!sectionItem.administrators.length);
     const [inputDescriptionsAddAdmin, setInputDescriptionsAddAdmin] = useState("");
     const [selectAddChart, setSelectAddChart] = useState(1);
+
+    const [filterUser, setFilterUser] = useState("");
     //hooks
     const { addSectionAdministrator, deleteSectionAdministrator, deleteSection, updateSection } =
         useOrg();
@@ -115,10 +117,16 @@ export default function Division({
 
     const onAddPattern = () => addSectionPatter(sectionItem.id, addPatternSelect);
 
-    // useEffect(() => { console.log('ADMIN SELECT', inputAddAdmin) }, [inputAddAdmin])
-    useEffect(() => {
-        console.log("❤️", sectionItem);
-    }, []);
+    //MEMO
+    const filteredUsers = useMemo(() => {
+        if (users && filterUser) {
+            return users.filter((user) =>
+                user.name.toLowerCase().includes(filterUser.toLowerCase())
+            );
+        }
+        return users;
+    }, [users, filterUser]);
+
     return (
         <div className={styles.divisionWrap}>
             <div key={sectionItem.id + "_section"} className={styles.sectionItem}>
@@ -309,12 +317,19 @@ export default function Division({
 
                         {addAdminField ? (
                             <div className={styles.addAdmin}>
+                                <input
+                                    placeholder="фильтр сотрудников"
+                                    value={filterUser}
+                                    onChange={(e) => setFilterUser(e.target.value)}
+                                />
                                 <select
                                     value={inputAddAdmin}
                                     onChange={(event) => setInputAddAdmin(event.target.value)}
                                 >
-                                    <option value={""}>👥выбор сотрудника</option>
-                                    {users.map((user) => (
+                                    <option value={""}>
+                                        ({filteredUsers.length})👥выбор сотрудника{" "}
+                                    </option>
+                                    {filteredUsers.map((user) => (
                                         <option key={user.id + "_addAdmins"} value={user.id}>
                                             🆔{user.id}👤{user.name}
                                         </option>
@@ -331,7 +346,7 @@ export default function Division({
                                     <button onClick={addAdministrator} disabled={!inputAddAdmin}>
                                         добавить
                                     </button>
-                                    <button onClick={addAdminFieldToggle}>отемна</button>
+                                    <button onClick={addAdminFieldToggle}>отмена</button>
                                     {/* <img onClick={addAdministrator} src="svg/org/admin_add.svg" />
                             <img onClick={addAdminFieldToggle} src="svg/org/close_field.svg" /> */}
                                 </div>
