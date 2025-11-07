@@ -50,6 +50,7 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
                     <div>
                         <span
                             style={{
+                                fontSize: 7,
                                 color: "whitesmoke",
                                 fontWeight: 600,
                                 fontStyle: "initial",
@@ -62,7 +63,14 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
                         </span>{" "}
                         :
                     </div>
-                    <div style={{ fontStyle: "italic", paddingLeft: 8, paddingTop: 1 }}>
+                    <div
+                        style={{
+                            fontStyle: "italic",
+                            paddingLeft: 3,
+                            paddingTop: 0,
+                            fontSize: 6,
+                        }}
+                    >
                         {other.join(":")}
                     </div>
                 </>
@@ -102,11 +110,11 @@ export default function MyNode({ data }: { data: OfficeWithStatsTypeI }) {
                 <Handle id={String(Math.random())} type="target" position={Position.Top} />
             )}
             {data.type == "sec" && (
-                <Handle id={String(Math.random())} type="source" position={Position.Bottom} />
+                <Handle id={String(Math.random())} type="source" position={Position.Right} />
             )}
 
             {data.type == "div" && (
-                <Handle id={String(Math.random())} type="target" position={Position.Top} />
+                <Handle id={String(Math.random())} type="target" position={Position.Right} />
             )}
 
             <div className={styles.content}>

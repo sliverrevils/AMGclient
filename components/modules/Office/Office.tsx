@@ -355,21 +355,27 @@ export default function Office({
                         </div>
                     )}
 
-                    {officeItem.departments.map((department, indexDep: number) => (
-                        <Depatment
-                            key={department.id + "_departmentItem"}
-                            departmentItem={department}
-                            {...{
-                                charts,
-                                users,
-                                userById,
-                                updateOrgScheme,
-                                office_id: officeItem.id,
-                                indexDep,
-                                isAdmin,
-                            }}
-                        />
-                    ))}
+                    {officeItem.departments
+                        .toSorted(
+                            (a, b) =>
+                                (parseInt(a.name.split(" ")[0]) || 999) -
+                                (parseInt(b.name.split(" ")[0]) || 999)
+                        )
+                        .map((department, indexDep: number) => (
+                            <Depatment
+                                key={department.id + "_departmentItem"}
+                                departmentItem={department}
+                                {...{
+                                    charts,
+                                    users,
+                                    userById,
+                                    updateOrgScheme,
+                                    office_id: officeItem.id,
+                                    indexDep,
+                                    isAdmin,
+                                }}
+                            />
+                        ))}
                 </div>
             </div>
         </>
